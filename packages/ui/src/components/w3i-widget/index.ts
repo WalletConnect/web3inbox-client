@@ -1,13 +1,14 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
-import styles from "./widget.module.css";
 
 @customElement("w3i-widget")
 export class W3iWidget extends LitElement {
   public static styles = [
     css`
-      ${styles}
+      iframe {
+        position: relative;
+      }
     `,
   ];
 

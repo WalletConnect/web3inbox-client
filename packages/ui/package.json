@@ -8,9 +8,6 @@
     "lint": "eslint \"**/*.ts*\"",
     "generate:component": "turbo gen react-component"
   },
-	"dependencies": {
-		"@web3inbox/ui": "*"
-	},
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
