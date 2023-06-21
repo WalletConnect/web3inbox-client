@@ -1,10 +1,9 @@
-import { Button, Header } from "ui";
+import { W3iWidget } from "@web3inbox/react-widget";
 
 export default function Page() {
   return (
     <>
-      <Header text="Docs" />
-      <Button />
+      <W3iWidget />
     </>
   );
 }
