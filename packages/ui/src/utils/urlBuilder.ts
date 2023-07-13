@@ -5,8 +5,12 @@ export const buildW3iUrl = (
 ) => {
   const searchParams = new URLSearchParams();
   if (account) {
+    searchParams.append("authProvider", "external");
     searchParams.append("account", account);
   }
+
+  searchParams.append("dappContext", window.location.origin);
+
   if (uiEnabled) {
     for (const [key, value] of Object.entries(uiEnabled)) {
       searchParams.append(`${key}Enabled`, JSON.parse(value));
