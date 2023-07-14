@@ -7,7 +7,7 @@ import {
   w3mProvider,
 } from "@web3modal/ethereum";
 import { Web3Button, Web3Modal } from "@web3modal/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { signMessage } from "@wagmi/core";
 import {
   configureChains,
@@ -31,14 +31,20 @@ const wagmiConfig = createConfig({
 export const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 export default function Page() {
-  const account = useAccount();
+  const { address } = useAccount();
+  const [account, setAccount] = useState("");
+
+  useEffect(() => {
+    setAccount(address);
+  }, [address, setAccount]);
+
   return (
     <>
       <WagmiConfig config={wagmiConfig}>
         <W3iContext>
           <W3iWidget
-            web3inboxUrl="https://merely-introductory-tooth-inns.trycloudflare.com"
-            account={account.address}
+            web3inboxUrl="https://web3inbox-dev-hidden.vercel.app"
+            account={account}
             signMessage={async (message) => {
               const rs = await signMessage({ message });
               return rs as string;
