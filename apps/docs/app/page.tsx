@@ -40,7 +40,6 @@ export default function Page() {
             web3inboxUrl="https://merely-introductory-tooth-inns.trycloudflare.com"
             account={account.address}
             signMessage={async (message) => {
-              console.log("WE ARE DOING IT LOW IT");
               const rs = await signMessage({ message });
               return rs as string;
             }}

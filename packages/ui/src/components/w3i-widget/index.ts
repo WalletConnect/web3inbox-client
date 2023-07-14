@@ -56,12 +56,10 @@ export class W3iWidget extends LitElement {
   ): void {
     const iframe = this.iframeRef.value;
     window.addEventListener("message", (message) => {
-      console.log("LAW IT!! LAW IT", message);
       const mData: { id: number; method: string; params: { message: string } } =
         message.data;
       if (mData.method === "external_sign_message" && this.signMessage) {
         this.signMessage(mData.params.message).then((signature) => {
-          console.log("MESSAGE SOURCE >>>", message.source);
           message.source?.postMessage(
             {
               id: mData.id,
