@@ -17,6 +17,7 @@ import {
   WagmiConfig,
 } from "wagmi";
 import { mainnet, polygon, optimism, arbitrum } from "wagmi/chains";
+import "./style.css";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
@@ -43,12 +44,18 @@ export default function Page() {
       <WagmiConfig config={wagmiConfig}>
         <W3iContext>
           <W3iWidget
-            web3inboxUrl="https://web3inbox-dev-hidden.vercel.app"
+            web3inboxUrl="https://grid-glucose-suitable-ht.trycloudflare.com"
             account={account}
             signMessage={async (message) => {
               const rs = await signMessage({ message });
               return rs as string;
             }}
+            dappIcon={
+              "https://icons.iconarchive.com/icons/hopstarter/gloss-mac/512/Get-Info-icon.png"
+            }
+            dappName={"Test dapp"}
+            dappNotificationsDescription={"Subscribe to get the latest info"}
+            settingsEnabled={false}
             chatEnabled={false}
           />
         </W3iContext>

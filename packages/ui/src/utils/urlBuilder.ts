@@ -1,5 +1,10 @@
 export const buildW3iUrl = (
   base: string,
+  dappInfo: {
+    name: string;
+    icon: string;
+    description: string;
+  },
   account?: string,
   uiEnabled?: { chat?: string; push?: string; settings?: string }
 ) => {
@@ -10,6 +15,9 @@ export const buildW3iUrl = (
   }
 
   searchParams.append("dappContext", window.location.origin);
+  searchParams.append("dappName", dappInfo.name);
+  searchParams.append("dappIcon", dappInfo.icon);
+  searchParams.append("dappNotificationDescription", dappInfo.description);
 
   if (uiEnabled) {
     for (const [key, value] of Object.entries(uiEnabled)) {

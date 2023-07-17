@@ -23,6 +23,9 @@ export class W3iWidget extends LitElement {
   @property() public width? = 400;
   @property() public height? = 600;
   @property() public web3inboxUrl = WEB3INBOX_DEFAULT_URL;
+  @property() public dappName: string = "";
+  @property() public dappIcon: string = "";
+  @property() public dappNotificationsDescription: string = "";
   @property() public account?: string;
   @property() public chatEnabled = "true";
   @property() public pushEnabled = "true";
@@ -33,11 +36,20 @@ export class W3iWidget extends LitElement {
 
   // -- render ------------------------------------------------------- //
   protected render() {
-    const url = buildW3iUrl(this.web3inboxUrl, this.account, {
-      chat: this.chatEnabled,
-      push: this.pushEnabled,
-      settings: this.settingsEnabled,
-    });
+    const url = buildW3iUrl(
+      this.web3inboxUrl,
+      {
+        name: this.dappName,
+        icon: this.dappIcon,
+        description: this.dappNotificationsDescription,
+      },
+      this.account,
+      {
+        chat: this.chatEnabled,
+        push: this.pushEnabled,
+        settings: this.settingsEnabled,
+      }
+    );
 
     return html`
       <iframe

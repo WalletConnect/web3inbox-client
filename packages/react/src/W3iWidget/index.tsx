@@ -12,6 +12,9 @@ interface W3iWidgetProps {
   pushEnabled?: boolean;
   settingsEnabled?: boolean;
   signMessage: (message: string) => Promise<string>;
+  dappName: string;
+  dappIcon: string;
+  dappNotificationsDescription: string;
 }
 
 const htmlifyParams = (
