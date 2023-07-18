@@ -1,8 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-	"globalEnv": ["NEXT_PUBLIC_PROJECT_ID"],
-	"globalPassThroughEnv": ["NEXT_PUBLIC_PROJECT_ID"],
+  "globalEnv": ["NEXT_PUBLIC_PROJECT_ID"],
+  "globalPassThroughEnv": ["NEXT_PUBLIC_PROJECT_ID"],
   "pipeline": {
     "build": {
       "env": ["NEXT_PUBLIC_PROJECT_ID"],
