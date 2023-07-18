@@ -1,5 +1,7 @@
-import React from "react";
-import type { W3iWidget as HtmlW3iWidget } from "@web3inbox/ui";
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import { W3iWidget as HtmlW3iWidget } from "@web3inbox/ui";
 
 interface W3iWidgetProps {
   width?: number;
@@ -9,6 +11,10 @@ interface W3iWidgetProps {
   chatEnabled?: boolean;
   pushEnabled?: boolean;
   settingsEnabled?: boolean;
+  signMessage: (message: string) => Promise<string>;
+  dappName: string;
+  dappIcon: string;
+  dappNotificationsDescription: string;
 }
 
 const htmlifyParams = (
@@ -25,7 +31,25 @@ const htmlifyParams = (
 };
 
 const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
-  return <w3i-widget {...htmlifyParams(props)} />;
+  const { signMessage } = props;
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!spanRef.current) return;
+
+    const w3iWidget: any = spanRef.current.firstChild;
+
+    if (!w3iWidget) return;
+
+    // Since functions can't be encoded or "stringified", they have to injected directly into widget
+    w3iWidget.signMessage = signMessage;
+  }, [signMessage, spanRef]);
+
+  return (
+    <span ref={spanRef}>
+      <w3i-widget id="w3i-widget" {...htmlifyParams(props)} />;
+    </span>
+  );
 };
 
 /**
