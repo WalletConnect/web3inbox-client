@@ -5,7 +5,7 @@
 	"globalPassThroughEnv": ["NEXT_PUBLIC_PROJECT_ID"],
   "pipeline": {
     "build": {
-			"env": ["NEXT_PUBLIC_PROJECT_ID"],
+      "env": ["NEXT_PUBLIC_PROJECT_ID"],
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },

@@ -41,6 +41,7 @@ const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
 
     if (!w3iWidget) return;
 
+    // Since functions can't be encoded or "stringified", they have to injected directly into widget
     w3iWidget.signMessage = signMessage;
   }, [signMessage, spanRef]);
 
