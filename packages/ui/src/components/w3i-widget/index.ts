@@ -74,7 +74,7 @@ export class W3iWidget extends LitElement {
       const mData: { id: number; method: string; params: { message: string } } =
         message.data;
       if (mData.method === "external_sign_message" && this.signMessage) {
-        // Use the signMessage stored to sign the message, agnostic to how the parent dapp will
+        // Use the externally provided `signMessage` to sign. We are agnostic to how the parent dapp will
         // sign.
         this.signMessage(mData.params.message).then((signature) => {
           message.source?.postMessage(
