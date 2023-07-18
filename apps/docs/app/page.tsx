@@ -44,7 +44,7 @@ export default function Page() {
       <WagmiConfig config={wagmiConfig}>
         <W3iContext>
           <W3iWidget
-            web3inboxUrl="https://grid-glucose-suitable-ht.trycloudflare.com"
+            web3inboxUrl="https://third-adjustments-mint-purchase.trycloudflare.com"
             account={account}
             signMessage={async (message) => {
               const rs = await signMessage({ message });
