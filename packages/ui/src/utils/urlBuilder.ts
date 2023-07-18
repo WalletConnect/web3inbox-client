@@ -14,7 +14,7 @@ export const buildW3iUrl = (
     searchParams.append("account", account);
   }
 
-  searchParams.append("dappContext", window.location.origin);
+  searchParams.append("dappOrigin", window.location.origin);
   searchParams.append("dappName", dappInfo.name);
   searchParams.append("dappIcon", dappInfo.icon);
   searchParams.append("dappNotificationDescription", dappInfo.description);
