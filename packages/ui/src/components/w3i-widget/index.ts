@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, PropertyValueMap } from "lit";
 import { ref, createRef, Ref } from "lit/directives/ref.js";
 import { customElement, property } from "lit/decorators.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
@@ -68,7 +68,6 @@ export class W3iWidget extends LitElement {
   // onMount to ensure the iframe is mounted)
   protected firstUpdated(): void {
     // This will be used in the future to enable communication from the window to the iframe
-    const iframe = this.iframeRef.value;
 
     window.addEventListener("message", (message) => {
       const mData: { id: number; method: string; params: { message: string } } =

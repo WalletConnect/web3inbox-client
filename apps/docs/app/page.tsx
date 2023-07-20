@@ -32,6 +32,7 @@ const wagmiConfig = createConfig({
 export const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 export default function Page() {
+  "use client";
   const { address } = useAccount();
   const [account, setAccount] = useState("");
 
@@ -44,7 +45,7 @@ export default function Page() {
       <WagmiConfig config={wagmiConfig}>
         <W3iContext>
           <W3iWidget
-            web3inboxUrl="https://third-adjustments-mint-purchase.trycloudflare.com"
+            web3inboxUrl="https://exterior-families-profiles-yourself.trycloudflare.com"
             account={account}
             signMessage={async (message) => {
               const rs = await signMessage({ message });
