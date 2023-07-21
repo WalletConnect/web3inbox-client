@@ -1,10 +1,16 @@
 {
   "name": "@web3inbox/ui",
   "version": "0.0.0",
-  "main": "./index.tsx",
-  "types": "./index.tsx",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+	"type": "module",
+	"module": "./dist/index.js",
+	"files": [
+    "dist"
+  ],
   "license": "MIT",
   "scripts": {
+		"build": "tsc",
     "lint": "eslint \"**/*.ts*\"",
     "generate:component": "turbo gen react-component"
   },

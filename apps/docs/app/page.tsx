@@ -6,7 +6,7 @@ import {
   w3mConnectors,
   w3mProvider,
 } from "@web3modal/ethereum";
-import { Web3Button, Web3Modal } from "@web3modal/react";
+import { useWeb3Modal, Web3Button, Web3Modal } from "@web3modal/react";
 import React, { useEffect, useState } from "react";
 import { signMessage } from "@wagmi/core";
 import {
@@ -29,11 +29,12 @@ const wagmiConfig = createConfig({
   publicClient,
 });
 
-export const ethereumClient = new EthereumClient(wagmiConfig, chains);
+const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 export default function Page() {
   "use client";
   const { address } = useAccount();
+  const { open } = useWeb3Modal();
   const [account, setAccount] = useState("");
 
   useEffect(() => {
@@ -45,15 +46,16 @@ export default function Page() {
       <WagmiConfig config={wagmiConfig}>
         <W3iContext>
           <W3iWidget
-            web3inboxUrl="https://exterior-families-profiles-yourself.trycloudflare.com"
+            web3inboxUrl="https://charming-focusing-playing-sunglasses.trycloudflare.com/"
             account={account}
             signMessage={async (message) => {
               const rs = await signMessage({ message });
               return rs as string;
             }}
             dappIcon={
-              "https://icons.iconarchive.com/icons/hopstarter/gloss-mac/512/Get-Info-icon.png"
+              "https://www.freeiconspng.com/uploads/purple-bird-clip-art-at-clker-com-vector-clip-art-online-royalty--10.png"
             }
+            connect={open}
             dappName={"Test dapp"}
             dappNotificationsDescription={"Subscribe to get the latest info"}
             settingsEnabled={false}

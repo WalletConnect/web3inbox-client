@@ -30,9 +30,23 @@ export class W3iWidget extends LitElement {
   @property() public chatEnabled = "true";
   @property() public pushEnabled = "true";
   @property() public settingsEnabled = "true";
-  @property({ type: Function }) signMessage:
-    | ((message: string) => Promise<string>)
-    | undefined = undefined;
+
+  protected signMessage(message: string) {
+    return new Promise<string>((resolve) => {
+      const event = new CustomEvent("signMessage", {
+        detail: {
+          message,
+          sendSignature: resolve,
+        },
+      });
+      this.dispatchEvent(event);
+    });
+  }
+
+  protected connectRequest() {
+    const event = new CustomEvent("connectRequest");
+    this.dispatchEvent(event);
+  }
 
   // -- render ------------------------------------------------------- //
   protected render() {
@@ -69,23 +83,31 @@ export class W3iWidget extends LitElement {
   protected firstUpdated(): void {
     // This will be used in the future to enable communication from the window to the iframe
 
+    console.log("Adding event listener");
     window.addEventListener("message", (message) => {
       const mData: { id: number; method: string; params: { message: string } } =
         message.data;
-      if (mData.method === "external_sign_message" && this.signMessage) {
-        // Use the externally provided `signMessage` to sign. We are agnostic to how the parent dapp will
-        // sign.
-        this.signMessage(mData.params.message).then((signature) => {
-          message.source?.postMessage(
-            {
-              id: mData.id,
-              result: signature,
-            },
-            {
-              targetOrigin: this.web3inboxUrl,
-            }
-          );
-        });
+      console.log("ui", { message: JSON.stringify(mData) });
+
+      switch (mData.method) {
+        case "connect_request":
+          this.connectRequest();
+          break;
+        case "external_sign_message":
+          // Use the externally provided `signMessage` to sign. We are agnostic to how the parent dapp will
+          // sign.
+          this.signMessage(mData.params.message).then((signature) => {
+            message.source?.postMessage(
+              {
+                id: mData.id,
+                result: signature,
+              },
+              {
+                targetOrigin: this.web3inboxUrl,
+              }
+            );
+          });
+          break;
       }
     });
   }

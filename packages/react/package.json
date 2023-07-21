@@ -1,12 +1,17 @@
 {
   "name": "@web3inbox/react-widget",
   "version": "0.0.0",
-  "main": "./index.tsx",
-  "types": "./index.tsx",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+	"module": "dist/index.js",
+	"type": "module",
+	"files": [
+    "dist"
+  ],
   "license": "MIT",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\"",
-    "generate:component": "turbo gen react-component"
+		"build": "tsc",
+    "lint": "eslint \"**/*.ts*\""
   },
 	"dependencies": {
 		"@web3inbox/ui": "*"

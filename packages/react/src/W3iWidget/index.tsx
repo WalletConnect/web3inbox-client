@@ -12,6 +12,7 @@ interface W3iWidgetProps {
   pushEnabled?: boolean;
   settingsEnabled?: boolean;
   signMessage: (message: string) => Promise<string>;
+  connect: () => void;
   dappName: string;
   dappIcon: string;
   dappNotificationsDescription: string;
@@ -21,29 +22,46 @@ const htmlifyParams = (
   params: W3iWidgetProps
 ): { [k: string]: number | string } => {
   return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      if (typeof value === "boolean") {
-        return [key, JSON.stringify(value)];
-      }
-      return [key, value];
-    })
+    Object.entries(params)
+      .filter(([_, v]) => typeof v !== "function")
+      .map(([key, value]) => {
+        if (typeof value === "boolean") {
+          return [key, JSON.stringify(value)];
+        }
+        return [key, value];
+      })
   );
 };
 
 const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
-  const { signMessage } = props;
+  const { signMessage, connect } = props;
   const spanRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (!spanRef.current) return;
 
-    const w3iWidget: any = spanRef.current.firstChild;
+    const w3iWidget = spanRef.current.firstChild;
 
     if (!w3iWidget) return;
 
+    const sign = (e: Event) => {
+      const { detail } = e as CustomEvent;
+      signMessage(detail.message).then(detail.sendSignature);
+    };
+
+    const connectWallet = () => {
+      connect();
+    };
+
     // Since functions can't be encoded or "stringified", they have to injected directly into widget
-    w3iWidget.signMessage = signMessage;
-  }, [signMessage, spanRef]);
+    w3iWidget.addEventListener("signMessage", sign);
+    w3iWidget.addEventListener("connectRequest", connectWallet);
+
+    return () => {
+      w3iWidget.removeEventListener("signMessage", sign);
+      w3iWidget.removeEventListener("connectRequest", connectWallet);
+    };
+  }, [signMessage, connect, spanRef]);
 
   return (
     <span ref={spanRef}>

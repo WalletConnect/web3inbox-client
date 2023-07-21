@@ -7,7 +7,7 @@
     "build": {
       "env": ["NEXT_PUBLIC_PROJECT_ID"],
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist"]
     },
     "lint": {},
     "dev": {
