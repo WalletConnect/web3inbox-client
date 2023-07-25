@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { W3iWidget as HtmlW3iWidget } from "@web3inbox/ui";
+import { W3iWidget as HtmlW3iWidget } from "@web3inbox/widget-html";
 
 interface W3iWidgetProps {
   width?: number;

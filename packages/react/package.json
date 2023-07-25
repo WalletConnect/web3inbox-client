@@ -1,5 +1,5 @@
 {
-  "name": "@web3inbox/react-widget",
+  "name": "@web3inbox/widget-react",
   "version": "0.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "lint": "eslint \"**/*.ts*\""
   },
 	"dependencies": {
-		"@web3inbox/ui": "*"
+		"@web3inbox/widget-html": "*"
 	},
   "devDependencies": {
     "@types/react": "^18.2.0",

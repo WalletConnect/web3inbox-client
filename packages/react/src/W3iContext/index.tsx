@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 
 const W3iContext: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const configure = useCallback(async () => {
-    await import("@web3inbox/ui");
+    await import("@web3inbox/widget-html");
   }, []);
 
   useEffect(() => {
