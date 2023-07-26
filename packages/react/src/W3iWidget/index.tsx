@@ -65,7 +65,7 @@ const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
 
   return (
     <span ref={spanRef}>
-      <w3i-widget id="w3i-widget" {...htmlifyParams(props)} />;
+      <w3i-widget id="w3i-widget" {...htmlifyParams(props)} />
     </span>
   );
 };

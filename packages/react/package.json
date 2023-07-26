@@ -11,10 +11,12 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "yarn build:cjs &&yarn build:esm && yarn build:types",
+    "build": "yarn build:clean && yarn build:cjs &&yarn build:esm && yarn build:types",
+		"build:clean": "rm -rf dist",
     "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && echo > ./dist/cjs/package.json '{\"type\":\"commonjs\"}'",
     "build:esm": "tsc --project tsconfig.json --module es2022 --outDir ./dist/esm && echo > ./dist/esm/package.json '{\"type\":\"module\",\"sideEffects\":false}'",
     "build:types": "tsc --project tsconfig.json --module esnext --declarationDir ./dist/types --emitDeclarationOnly --declaration --declarationMap",
+		"prepublishOnly": "yarn build",
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
