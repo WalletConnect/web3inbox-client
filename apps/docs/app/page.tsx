@@ -46,7 +46,7 @@ export default function Page() {
       <WagmiConfig config={wagmiConfig}>
         <W3iContext>
           <W3iWidget
-            web3inboxUrl="https://charming-focusing-playing-sunglasses.trycloudflare.com/"
+            web3inboxUrl={"https://web3inbox-dev-hidden.vercel.app/"}
             account={account}
             signMessage={async (message) => {
               const rs = await signMessage({ message });
