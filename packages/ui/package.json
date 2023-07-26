@@ -1,18 +1,21 @@
 {
   "name": "@web3inbox/widget-html",
   "version": "0.1.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-	"type": "module",
-	"module": "./dist/index.js",
-	"files": [
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+	"typings": "./dist/types/index.d.ts",
+  "files": [
     "dist"
   ],
   "license": "MIT",
   "scripts": {
-		"build": "tsc",
-    "lint": "eslint \"**/*.ts*\"",
-    "generate:component": "turbo gen react-component"
+    "build": "yarn build:cjs &&yarn build:esm && yarn build:types",
+    "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && echo > ./dist/cjs/package.json '{\"type\":\"commonjs\"}'",
+    "build:esm": "tsc --project tsconfig.json --module es2015 --outDir ./dist/esm && echo > ./dist/esm/package.json '{\"type\":\"module\",\"sideEffects\":false}'",
+    "build:types": "tsc --project tsconfig.json --module esnext --declarationDir ./dist/types --emitDeclarationOnly --declaration --declarationMap",
+    "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
@@ -21,6 +24,6 @@
     "eslint-config-custom": "*",
     "react": "^18.2.0",
     "tsconfig": "*",
-    "typescript": "^4.5.2"
+    "typescript": "^5.1.6"
   }
 }
