@@ -6,6 +6,7 @@ import { W3iWidget as HtmlW3iWidget } from "@web3inbox/widget-html";
 interface W3iWidgetProps {
   width?: number;
   height?: number;
+  style?: React.CSSProperties;
   web3inboxUrl?: string;
   account?: string;
   chatEnabled?: boolean;
@@ -23,7 +24,7 @@ const htmlifyParams = (
 ): { [k: string]: number | string } => {
   return Object.fromEntries(
     Object.entries(params)
-      .filter(([_, v]) => typeof v !== "function")
+      .filter(([_, v]) => typeof v !== "function" && typeof v !== "object")
       .map(([key, value]) => {
         if (typeof value === "boolean") {
           return [key, JSON.stringify(value)];
@@ -34,14 +35,12 @@ const htmlifyParams = (
 };
 
 const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
-  const { signMessage, connect } = props;
-  const spanRef = useRef<HTMLSpanElement>(null);
+  const { signMessage, connect, style } = props;
+  const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!spanRef.current) return;
-
-    const w3iWidget = spanRef.current.firstChild;
-
+    if (!divRef.current) return;
+    const w3iWidget = divRef.current.firstChild;
     if (!w3iWidget) return;
 
     const sign = (e: Event) => {
@@ -61,12 +60,12 @@ const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
       w3iWidget.removeEventListener("signMessage", sign);
       w3iWidget.removeEventListener("connectRequest", connectWallet);
     };
-  }, [signMessage, connect, spanRef]);
+  }, [signMessage, connect, divRef]);
 
   return (
-    <span ref={spanRef}>
+    <div ref={divRef} style={style}>
       <w3i-widget id="w3i-widget" {...htmlifyParams(props)} />
-    </span>
+    </div>
   );
 };
 

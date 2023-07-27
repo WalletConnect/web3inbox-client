@@ -1,6 +1,6 @@
 "use client";
 
-import { W3iWidget, W3iContext } from "@web3inbox/widget-react";
+import { W3iWidget, W3iContext, W3iButton } from "@web3inbox/widget-react";
 import {
   EthereumClient,
   w3mConnectors,
@@ -49,24 +49,43 @@ export default function Page() {
     <>
       <WagmiConfig config={wagmiConfig}>
         <W3iContext>
-          <W3iWidget
-            web3inboxUrl={"https://web3inbox-dev-hidden.vercel.app/"}
-            account={account}
-            signMessage={async (message) => {
-              const rs = await signMessage({ message });
-              return rs as string;
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 5,
             }}
-            dappIcon={
-              "https://www.freeiconspng.com/uploads/purple-bird-clip-art-at-clker-com-vector-clip-art-online-royalty--10.png"
-            }
-            connect={open}
-            dappName={"Test dapp"}
-            dappNotificationsDescription={"Subscribe to get the latest info"}
-            settingsEnabled={false}
-            chatEnabled={false}
-          />
+          >
+            <div className="W3i" style={{ position: "relative" }}>
+              <W3iButton />
+              <W3iWidget
+                style={{
+                  position: "absolute",
+                  zIndex: 1,
+                }}
+                web3inboxUrl={"https://web3inbox-dev-hidden.vercel.app/"}
+                account={account}
+                signMessage={async (message) => {
+                  const rs = await signMessage({ message });
+                  return rs as string;
+                }}
+                dappIcon={
+                  "https://www.freeiconspng.com/uploads/purple-bird-clip-art-at-clker-com-vector-clip-art-online-royalty--10.png"
+                }
+                connect={open}
+                dappName={"Test dapp"}
+                dappNotificationsDescription={
+                  "Subscribe to get the latest info"
+                }
+                settingsEnabled={false}
+                chatEnabled={false}
+              />
+            </div>
+            <Web3Button />
+          </div>
         </W3iContext>
-        <Web3Button />
+
         <Web3Modal
           ethereumClient={ethereumClient}
           projectId={projectId!}

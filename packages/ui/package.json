@@ -12,18 +12,29 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn build:cjs &&yarn build:esm && yarn build:types",
+    "build:clean": "rm -rf dist",
     "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && echo > ./dist/cjs/package.json '{\"type\":\"commonjs\"}'",
-    "build:esm": "tsc --project tsconfig.json --module es2015 --outDir ./dist/esm && echo > ./dist/esm/package.json '{\"type\":\"module\",\"sideEffects\":false}'",
+    "build:esm": "tsc --project tsconfig.json --module es2022 --outDir ./dist/esm && echo > ./dist/esm/package.json '{\"type\":\"module\",\"sideEffects\":false}'",
     "build:types": "tsc --project tsconfig.json --module esnext --declarationDir ./dist/types --emitDeclarationOnly --declaration --declarationMap",
+    "--------": "-----------------------------------------------------------------------------------------------------",
+    "dev": "yarn build:clean && concurrently \"npm:dev:*\" ",
+    "dev:cjs": "tsc --watch --project tsconfig.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && echo > ./dist/cjs/package.json '{\"type\":\"commonjs\"}'",
+    "dev:esm": "tsc --watch --project tsconfig.json --module es2022 --outDir ./dist/esm && echo > ./dist/esm/package.json '{\"type\":\"module\",\"sideEffects\":false}'",
+    "dev:types": "tsc --watch --project tsconfig.json --module esnext --declarationDir ./dist/types --emitDeclarationOnly --declaration --declarationMap",
+    "-------": "-----------------------------------------------------------------------------------------------------",
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "concurrently": "^8.2.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "react": "^18.2.0",
     "tsconfig": "*",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.1"
   }
 }

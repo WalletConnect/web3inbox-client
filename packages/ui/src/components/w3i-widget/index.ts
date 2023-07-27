@@ -3,6 +3,7 @@ import { ref, createRef, Ref } from "lit/directives/ref.js";
 import { customElement, property } from "lit/decorators.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
 import { buildW3iUrl } from "../../utils/urlBuilder";
+import { widgetVisibilitySubject } from "../../utils/events";
 
 @customElement("w3i-widget")
 export class W3iWidget extends LitElement {
@@ -83,7 +84,31 @@ export class W3iWidget extends LitElement {
   protected firstUpdated(): void {
     // This will be used in the future to enable communication from the window to the iframe
 
-    console.log("Adding event listener");
+    widgetVisibilitySubject.subscribe((val) => {
+      if (!this.iframeRef.value) return;
+
+      if (val) {
+        this.iframeRef.value.style.setProperty("display", "block");
+      } else {
+        this.iframeRef.value.style.setProperty("display", "none");
+      }
+    });
+
+    this.addEventListener("toggleWidget", () => {
+      if (!this.iframeRef.value) return;
+
+      const currentStyle = this.iframeRef.value.style.display;
+
+      const set = this.iframeRef.value.style.setProperty;
+
+      switch (currentStyle) {
+        case "none":
+          set("display", "block");
+        case "block":
+          set("display", "none");
+      }
+    });
+
     window.addEventListener("message", (message) => {
       const mData: { id: number; method: string; params: { message: string } } =
         message.data;
