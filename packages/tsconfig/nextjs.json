@@ -4,9 +4,11 @@
   "extends": "./base.json",
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
+		"moduleResolution": "node",
     "allowJs": true,
     "declaration": false,
     "declarationMap": false,
+    "esModuleInterop": true,
     "incremental": true,
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],

@@ -2,8 +2,11 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  transpilePackages: ["ui"],
+    swcMinify: true,
+  transpilePackages: ["@web3inbox/widget-html", "@web3inbox/widget-react"],
+  experimental: {
+    esmExternals: 'loose',
+  },
     async headers() {
         return [
             {

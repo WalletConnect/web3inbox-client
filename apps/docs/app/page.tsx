@@ -1,6 +1,6 @@
 "use client";
 
-import { W3iWidget, W3iContext } from "@web3inbox/react-widget";
+import { W3iWidget, W3iContext } from "@web3inbox/widget-react";
 import {
   EthereumClient,
   w3mConnectors,
@@ -21,6 +21,10 @@ import "./style.css";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
+if (!projectId) {
+  throw new Error("NEXT_PUBLIC_PROJECT_ID needs to be provided");
+}
+
 const chains = [mainnet, polygon, optimism, arbitrum];
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({
@@ -35,7 +39,7 @@ export default function Page() {
   "use client";
   const { address } = useAccount();
   const { open } = useWeb3Modal();
-  const [account, setAccount] = useState("");
+  const [account, setAccount] = useState<string | undefined>("");
 
   useEffect(() => {
     setAccount(address);
@@ -65,7 +69,7 @@ export default function Page() {
         <Web3Button />
         <Web3Modal
           ethereumClient={ethereumClient}
-          projectId={projectId}
+          projectId={projectId!}
         ></Web3Modal>
       </WagmiConfig>
     </>
