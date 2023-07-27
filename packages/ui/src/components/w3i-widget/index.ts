@@ -94,21 +94,6 @@ export class W3iWidget extends LitElement {
       }
     });
 
-    this.addEventListener("toggleWidget", () => {
-      if (!this.iframeRef.value) return;
-
-      const currentStyle = this.iframeRef.value.style.display;
-
-      const set = this.iframeRef.value.style.setProperty;
-
-      switch (currentStyle) {
-        case "none":
-          set("display", "block");
-        case "block":
-          set("display", "none");
-      }
-    });
-
     window.addEventListener("message", (message) => {
       const mData: { id: number; method: string; params: { message: string } } =
         message.data;
