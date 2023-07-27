@@ -9,7 +9,7 @@
   "files": [
     "dist"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "yarn build:clean && yarn build:cjs &&yarn build:esm && yarn build:types",
     "build:clean": "rm -rf dist",
