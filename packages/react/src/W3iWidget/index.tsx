@@ -24,7 +24,9 @@ const htmlifyParams = (
 ): { [k: string]: number | string } => {
   return Object.fromEntries(
     Object.entries(params)
+      // Only pass props that can be safely serialized into attributes
       .filter(([_, v]) => typeof v !== "function" && typeof v !== "object")
+      // Map values to strings so they can be easily read
       .map(([key, value]) => {
         if (typeof value === "boolean") {
           return [key, JSON.stringify(value)];
