@@ -92,6 +92,7 @@ export class W3iWidget extends LitElement {
 
       if (val) {
         this.iframeRef.value.style.setProperty("display", "block");
+        // Once user opens widget, there is no need to display a badge
         widgetRecentNotificationsSubject.next(0);
       } else {
         this.iframeRef.value.style.setProperty("display", "none");
