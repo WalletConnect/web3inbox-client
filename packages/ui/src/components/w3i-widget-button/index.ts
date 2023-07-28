@@ -1,10 +1,14 @@
-import { css, html, svg, LitElement } from "lit";
-import { ref, createRef, Ref } from "lit/directives/ref.js";
-import { customElement, property, state } from "lit/decorators.js";
-import { widgetVisibilitySubject } from "../../utils/events";
+import { css, html, svg, LitElement, nothing } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import {
+  widgetRecentNotificationsSubject,
+  widgetVisibilitySubject,
+} from "../../utils/events";
 
 @customElement("w3i-widget-button")
 export class W3iWidgetButton extends LitElement {
+  @state() protected recentNotifications = 0;
+
   public static styles = [
     css`
       button {
@@ -14,6 +18,23 @@ export class W3iWidgetButton extends LitElement {
         padding: 0.5em;
         outline: none;
         border: none;
+      }
+
+      .w3i-trigger-button {
+        position: relative;
+      }
+
+      .w3i-trigger-button .badge {
+        width: 0.75em;
+        height: 0.75em;
+        border-radius: 50%;
+        background-color: #3396ff;
+        text-align: center;
+        color: white;
+        z-index: 2;
+        position: absolute;
+        right: -5%;
+        top: -10%;
       }
     `,
   ];
@@ -50,10 +71,23 @@ export class W3iWidgetButton extends LitElement {
 
   // -- render ------------------------------------------------------- //
   protected render() {
-    return html`<button @click=${this.onClick}>${this.bellIcon()}</button>`;
+    console.log({ recent: this.recentNotifications });
+    return html`
+      <div class="w3i-trigger-button">
+        ${this.recentNotifications > 0
+          ? html`<div class="badge"></div>`
+          : nothing}
+        <button @click=${this.onClick}>${this.bellIcon()}</button>
+      </div>
+    `;
   }
 
-  protected firstUpdated(): void {}
+  protected firstUpdated(): void {
+    widgetRecentNotificationsSubject.subscribe((recentNotifications) => {
+      console.log({ recentNotifications });
+      this.recentNotifications = recentNotifications;
+    });
+  }
 }
 
 declare global {
