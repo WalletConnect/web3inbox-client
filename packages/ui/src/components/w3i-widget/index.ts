@@ -3,7 +3,10 @@ import { ref, createRef, Ref } from "lit/directives/ref.js";
 import { customElement, property } from "lit/decorators.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
 import { buildW3iUrl } from "../../utils/urlBuilder";
-import { widgetVisibilitySubject } from "../../utils/events";
+import {
+  widgetRecentNotificationsSubject,
+  widgetVisibilitySubject,
+} from "../../utils/events";
 
 @customElement("w3i-widget")
 export class W3iWidget extends LitElement {
@@ -89,6 +92,8 @@ export class W3iWidget extends LitElement {
 
       if (val) {
         this.iframeRef.value.style.setProperty("display", "block");
+        // Once user opens widget, there is no need to display a badge
+        widgetRecentNotificationsSubject.next(0);
       } else {
         this.iframeRef.value.style.setProperty("display", "none");
       }
@@ -97,7 +102,6 @@ export class W3iWidget extends LitElement {
     window.addEventListener("message", (message) => {
       const mData: { id: number; method: string; params: { message: string } } =
         message.data;
-      console.log("ui", { message: JSON.stringify(mData) });
 
       switch (mData.method) {
         case "connect_request":
@@ -117,6 +121,11 @@ export class W3iWidget extends LitElement {
               }
             );
           });
+          break;
+        case "dapp_push_notification":
+          widgetRecentNotificationsSubject.next(
+            widgetRecentNotificationsSubject.value + 1
+          );
           break;
       }
     });
