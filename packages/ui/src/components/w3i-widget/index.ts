@@ -146,7 +146,7 @@ export class W3iWidget extends LitElement {
           );
           this.notifyMessage(message.data);
           break;
-        case "subscription_settled":
+        case "dapp_subscription_settled":
           this.subscriptionSettled();
           break;
       }
