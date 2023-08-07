@@ -12,6 +12,52 @@ import {
 export class W3iWidget extends LitElement {
   public static styles = [
     css`
+      .w3i-widget {
+        position: relative;
+      }
+
+      .w3i-close-button {
+        display: grid;
+        place-items: center;
+        position: absolute;
+        right: 5%;
+        top: 5%;
+        width: 2em;
+        height: 2em;
+        z-index: 5;
+        border: 0;
+        outline: 0;
+        cursor: pointer;
+        padding: 0;
+        border-radius: 50%;
+        background-color: hsla(5, 85%, 60%, 1);
+        transition: all 0.25s ease-in-out;
+      }
+
+      .w3i-close-button:hover {
+        transform: scaleX(150%) scaleY(150%);
+      }
+
+      .w3i-close-button-foreground {
+        background-color: white;
+        width: 35%;
+        height: 35%;
+        clip-path: polygon(
+          20% 0%,
+          0% 20%,
+          30% 50%,
+          0% 80%,
+          20% 100%,
+          50% 70%,
+          80% 100%,
+          100% 80%,
+          70% 50%,
+          100% 20%,
+          80% 0%,
+          50% 30%
+        );
+      }
+
       iframe {
         position: relative;
         overflow: scroll;
@@ -34,6 +80,13 @@ export class W3iWidget extends LitElement {
   @property() public chatEnabled = "true";
   @property() public pushEnabled = "true";
   @property() public settingsEnabled = "true";
+
+  // -- event handlers ------------------------------------------- //
+  protected onCloseClick() {
+    widgetVisibilitySubject.next(false);
+  }
+
+  // -- event dispatchers ------------------------------------------- //
 
   protected signMessage(message: string) {
     return new Promise<string>((resolve) => {
@@ -70,14 +123,19 @@ export class W3iWidget extends LitElement {
     );
 
     return html`
-      <iframe
-        ${ref(this.iframeRef)}
-        src=${url}
-        width=${this.width}
-        height=${this.height}
-        loading="lazy"
-        referrerpolicy="none"
-      />
+      <div ${ref(this.iframeRef)} class="w3i-widget">
+        <button class="w3i-close-button" @click=${this.onCloseClick}>
+          <div class="w3i-close-button-foreground"></div>
+        </button>
+        <iframe
+          id="w3i"
+          src=${url}
+          width=${this.width}
+          height=${this.height}
+          loading="lazy"
+          referrerpolicy="none"
+        />
+      </div>
     `;
   }
 
