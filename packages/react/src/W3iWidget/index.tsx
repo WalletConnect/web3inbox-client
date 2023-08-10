@@ -14,6 +14,8 @@ interface W3iWidgetProps {
   settingsEnabled?: boolean;
   signMessage: (message: string) => Promise<string>;
   connect: () => void;
+  onMessage: (message: { body: string; title: string; icon: string }) => void;
+  onSubscriptionSettled: () => void;
   dappName: string;
   dappIcon: string;
   dappNotificationsDescription: string;
@@ -37,7 +39,8 @@ const htmlifyParams = (
 };
 
 const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
-  const { signMessage, connect, style } = props;
+  const { signMessage, connect, style, onMessage, onSubscriptionSettled } =
+    props;
   const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,19 +53,30 @@ const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
       signMessage(detail.message).then(detail.sendSignature);
     };
 
+    const message = (e: Event) => {
+      const { detail } = e as CustomEvent;
+      onMessage(detail.message);
+    };
+
     const connectWallet = () => {
       connect();
     };
 
-    // Since functions can't be encoded or "stringified", they have to injected directly into widget
     w3iWidget.addEventListener("signMessage", sign);
     w3iWidget.addEventListener("connectRequest", connectWallet);
+    w3iWidget.addEventListener("subscriptionSettled", onSubscriptionSettled);
+    w3iWidget.addEventListener("notifyMessage", message);
 
     return () => {
       w3iWidget.removeEventListener("signMessage", sign);
       w3iWidget.removeEventListener("connectRequest", connectWallet);
+      w3iWidget.removeEventListener(
+        "subscriptionSettled",
+        onSubscriptionSettled
+      );
+      w3iWidget.removeEventListener("notifyMessage", message);
     };
-  }, [signMessage, connect, divRef]);
+  }, [signMessage, connect, divRef, onMessage, onSubscriptionSettled]);
 
   return (
     <div ref={divRef} style={style}>

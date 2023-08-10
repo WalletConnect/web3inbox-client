@@ -105,6 +105,24 @@ export class W3iWidget extends LitElement {
     this.dispatchEvent(event);
   }
 
+  protected subscriptionSettled() {
+    const event = new CustomEvent("subscriptionSettled");
+    this.dispatchEvent(event);
+  }
+
+  protected notifyMessage(message: {
+    body: string;
+    title: string;
+    icon: string;
+  }) {
+    const event = new CustomEvent("notifyMessage", {
+      detail: {
+        message,
+      },
+    });
+    this.dispatchEvent(event);
+  }
+
   // -- render ------------------------------------------------------- //
   protected render() {
     const url = buildW3iUrl(
@@ -184,6 +202,10 @@ export class W3iWidget extends LitElement {
           widgetRecentNotificationsSubject.next(
             widgetRecentNotificationsSubject.value + 1
           );
+          this.notifyMessage(message.data);
+          break;
+        case "dapp_subscription_settled":
+          this.subscriptionSettled();
           break;
       }
     });
