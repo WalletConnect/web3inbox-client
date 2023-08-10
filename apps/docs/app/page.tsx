@@ -60,6 +60,8 @@ export default function Page() {
             <div className="W3i" style={{ position: "relative" }}>
               <W3iButton />
               <W3iWidget
+                onMessage={() => console.log("Got message")}
+                onSubscriptionSettled={() => console.log("Subscribed")}
                 style={{
                   position: "absolute",
                   zIndex: 1,
