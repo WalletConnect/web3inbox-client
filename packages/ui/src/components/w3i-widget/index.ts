@@ -1,12 +1,12 @@
-import { css, html, LitElement, PropertyValueMap } from "lit";
-import { ref, createRef, Ref } from "lit/directives/ref.js";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
-import { buildW3iUrl } from "../../utils/urlBuilder";
 import {
   widgetRecentNotificationsSubject,
   widgetVisibilitySubject,
 } from "../../utils/events";
+import { buildW3iUrl } from "../../utils/urlBuilder";
 
 @customElement("w3i-widget")
 export class W3iWidget extends LitElement {
@@ -16,50 +16,9 @@ export class W3iWidget extends LitElement {
         position: relative;
       }
 
-      .w3i-close-button {
-        display: grid;
-        place-items: center;
-        position: absolute;
-        right: 5%;
-        top: 5%;
-        width: 2em;
-        height: 2em;
-        z-index: 5;
-        border: 0;
-        outline: 0;
-        cursor: pointer;
-        padding: 0;
-        border-radius: 50%;
-        background-color: hsla(5, 85%, 60%, 1);
-        transition: all 0.25s ease-in-out;
-      }
-
-      .w3i-close-button:hover {
-        transform: scaleX(150%) scaleY(150%);
-      }
-
-      .w3i-close-button-foreground {
-        background-color: white;
-        width: 35%;
-        height: 35%;
-        clip-path: polygon(
-          20% 0%,
-          0% 20%,
-          30% 50%,
-          0% 80%,
-          20% 100%,
-          50% 70%,
-          80% 100%,
-          100% 80%,
-          70% 50%,
-          100% 20%,
-          80% 0%,
-          50% 30%
-        );
-      }
-
       iframe {
-        position: relative;
+        position: absolute;
+        z-index: 99999;
         overflow: scroll;
         border: none;
         border-radius: 25px;
@@ -70,7 +29,7 @@ export class W3iWidget extends LitElement {
   iframeRef: Ref<HTMLIFrameElement> = createRef();
 
   // -- state & properties ------------------------------------------- //
-  @property() public width? = 400;
+  @property() public width? = 360;
   @property() public height? = 600;
   @property() public web3inboxUrl = WEB3INBOX_DEFAULT_URL;
   @property() public dappName: string = "";
@@ -142,9 +101,6 @@ export class W3iWidget extends LitElement {
 
     return html`
       <div ${ref(this.iframeRef)} class="w3i-widget">
-        <button class="w3i-close-button" @click=${this.onCloseClick}>
-          <div class="w3i-close-button-foreground"></div>
-        </button>
         <iframe
           id="w3i"
           src=${url}

@@ -2,8 +2,9 @@
   "extends": "tsconfig/react-library.json",
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"],
-	"compilerOptions": {
-		"outDir": "dist",
-		"experimentalDecorators": true
-	}
+  "compilerOptions": {
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "esModuleInterop": true
+  }
 }
