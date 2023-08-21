@@ -1,10 +1,12 @@
 import React from "react";
 import { W3iWidgetButton as HtmlW3iWidgetButton } from "@web3inbox/widget-html";
 
-interface W3iButtonProps {}
+interface W3iButtonProps {
+  theme?: "light" | "dark";
+}
 
-const W3iButton: React.FC<W3iButtonProps> = (props) => {
-  return <w3i-widget-button></w3i-widget-button>;
+const W3iButton: React.FC<W3iButtonProps> = ({ theme }) => {
+  return <w3i-widget-button theme={theme}></w3i-widget-button>;
 };
 
 /**

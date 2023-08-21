@@ -5,10 +5,8 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "module": "ESNext",
-    "target": "ES2021", 
-    "lib": [
-      "ES2022", 
-      "DOM" 
-    ]
+    "target": "ES2021",
+    "lib": ["ES2022", "DOM"],
+    "esModuleInterop": true
   }
 }
