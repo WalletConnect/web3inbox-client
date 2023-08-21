@@ -124,6 +124,15 @@ export class W3iWidget extends LitElement {
     this.dispatchEvent(event);
   }
 
+  protected updated(
+    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    // We can't know if a new account is subscribed
+    if (changedProperties.has("account")) {
+      widgetAccountSubject.next({ isSubscribed: false });
+    }
+  }
+
   // -- render ------------------------------------------------------- //
   protected render() {
     const url = buildW3iUrl(
