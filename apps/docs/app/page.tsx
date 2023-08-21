@@ -1,6 +1,12 @@
 "use client";
 
-import { W3iWidget, W3iContext, W3iButton } from "@web3inbox/widget-react";
+import {
+  W3iWidget,
+  W3iContext,
+  W3iButton,
+  useManageW3iWidget,
+  useIsSubscribed,
+} from "@web3inbox/widget-react";
 import {
   EthereumClient,
   w3mConnectors,
@@ -38,8 +44,12 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 export default function Page() {
   "use client";
   const { address } = useAccount();
-  const { open } = useWeb3Modal();
+  const { open: openW3m } = useWeb3Modal();
   const [account, setAccount] = useState<string | undefined>("");
+
+  const { toggle: toggleW3i } = useManageW3iWidget();
+
+  const isSubbed = useIsSubscribed();
 
   useEffect(() => {
     setAccount(address);
@@ -59,6 +69,8 @@ export default function Page() {
           >
             <div className="W3i" style={{ position: "relative" }}>
               <W3iButton />
+              <button onClick={toggleW3i}>Custom Button</button>
+              <span>Is Subscribed: {isSubbed ? "yes" : "no"}</span>
               <W3iWidget
                 onMessage={() => console.log("Got message")}
                 onSubscriptionSettled={() => console.log("Subscribed")}
@@ -75,7 +87,7 @@ export default function Page() {
                 dappIcon={
                   "https://www.freeiconspng.com/uploads/purple-bird-clip-art-at-clker-com-vector-clip-art-online-royalty--10.png"
                 }
-                connect={open}
+                connect={openW3m}
                 dappName={"Test dapp"}
                 dappNotificationsDescription={
                   "Subscribe to get the latest info"

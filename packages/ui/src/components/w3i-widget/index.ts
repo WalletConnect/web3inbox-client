@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
 import { buildW3iUrl } from "../../utils/urlBuilder";
 import {
+  widgetAccountSubject,
   widgetRecentNotificationsSubject,
   widgetVisibilitySubject,
 } from "../../utils/events";
@@ -181,6 +182,8 @@ export class W3iWidget extends LitElement {
 
       switch (mData.method) {
         case "connect_request":
+          // On new connection, reset subscription state
+          widgetAccountSubject.next({ isSubscribed: false });
           this.connectRequest();
           break;
         case "external_sign_message":
@@ -206,6 +209,7 @@ export class W3iWidget extends LitElement {
           break;
         case "dapp_subscription_settled":
           this.subscriptionSettled();
+          widgetAccountSubject.next({ isSubscribed: true });
           break;
       }
     });
