@@ -1,5 +1,16 @@
 # @web3inbox/widget-react
 
+## 0.5.0
+
+### Minor Changes
+
+- Add widget and account management hooks
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/widget-html@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.0
+
+### Minor Changes
+
+- Add widget and account management hooks
+
 ## 0.4.0
 
 ### Minor Changes
