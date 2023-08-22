@@ -1,5 +1,21 @@
 # @web3inbox/widget-react
 
+## 0.5.5
+
+### Patch Changes
+
+- use tsup
+- Updated dependencies
+  - @web3inbox/widget-html@0.5.5
+
+## 0.5.4
+
+### Patch Changes
+
+- fix es module build issue
+- Updated dependencies
+  - @web3inbox/widget-html@0.5.4
+
 ## 0.5.3
 
 ### Patch Changes
