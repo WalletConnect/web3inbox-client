@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.3
+
+### Patch Changes
+
+- Update build files
+
 ## 0.5.2
 
 ### Patch Changes

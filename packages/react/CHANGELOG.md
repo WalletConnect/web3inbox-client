@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.5.3
+
+### Patch Changes
+
+- Update build files
+- Updated dependencies
+  - @web3inbox/widget-html@0.5.3
+
 ## 0.5.2
 
 ### Patch Changes
