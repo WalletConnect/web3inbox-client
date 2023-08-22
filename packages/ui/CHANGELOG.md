@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.2
+
+### Patch Changes
+
+- Specify exports
+
 ## 0.5.1
 
 ### Patch Changes
