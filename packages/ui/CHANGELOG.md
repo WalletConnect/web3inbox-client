@@ -1,5 +1,17 @@
 # @web3inbox/widget-html
 
+## 0.5.5
+
+### Patch Changes
+
+- use tsup
+
+## 0.5.4
+
+### Patch Changes
+
+- fix es module build issue
+
 ## 0.5.3
 
 ### Patch Changes

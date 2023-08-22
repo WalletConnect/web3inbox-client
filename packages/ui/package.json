@@ -1,27 +1,19 @@
 {
   "name": "@web3inbox/widget-html",
-  "version": "0.5.3",
-  "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
-  "typings": "./dist/types/index.d.ts",
+  "version": "0.5.5",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn build:cjs &&yarn build:esm && yarn build:types",
-    "build:clean": "rm -rf dist",
-    "build:cjs": "tsc --project tsconfig.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && echo > ./dist/cjs/package.json '{\"type\":\"commonjs\"}'",
-    "build:esm": "tsc --project tsconfig.json --module es2022 --outDir ./dist/esm && echo > ./dist/esm/package.json '{\"type\":\"module\",\"sideEffects\":false}'",
-    "build:types": "tsc --project tsconfig.json --module esnext --declarationDir ./dist/types --emitDeclarationOnly --declaration --declarationMap",
-    "--------": "-----------------------------------------------------------------------------------------------------",
-    "dev": "yarn build:clean && concurrently \"npm:dev:*\" ",
-    "dev:cjs": "tsc --watch --project tsconfig.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && echo > ./dist/cjs/package.json '{\"type\":\"commonjs\"}'",
-    "dev:esm": "tsc --watch --project tsconfig.json --module es2022 --outDir ./dist/esm && echo > ./dist/esm/package.json '{\"type\":\"module\",\"sideEffects\":false}'",
-    "dev:types": "tsc --watch --project tsconfig.json --module esnext --declarationDir ./dist/types --emitDeclarationOnly --declaration --declarationMap",
-    "-------": "-----------------------------------------------------------------------------------------------------",
+    "build": "tsup ",
+    "build:cjs": "tsup src/index.ts --format cjs --dts",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
@@ -32,6 +24,7 @@
     "eslint-config-custom": "*",
     "react": "^18.2.0",
     "tsconfig": "*",
+    "tsup": "^7.2.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
