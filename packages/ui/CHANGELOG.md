@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.1
+
+### Patch Changes
+
+- Remove es module interop
+
 ## 0.5.0
 
 ### Minor Changes
