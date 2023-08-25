@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.5.7
+
+### Patch Changes
+
+- Prevent eager loading
+- Updated dependencies
+  - @web3inbox/widget-html@0.5.7
+
 ## 0.5.6
 
 ### Patch Changes

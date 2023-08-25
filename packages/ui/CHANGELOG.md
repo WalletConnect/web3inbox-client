@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.7
+
+### Patch Changes
+
+- Prevent eager loading
+
 ## 0.5.6
 
 ### Patch Changes
