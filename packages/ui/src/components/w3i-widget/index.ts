@@ -1,5 +1,5 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { css, html, nothing, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
 import {
@@ -40,6 +40,8 @@ export class W3iWidget extends LitElement {
   @property() public chatEnabled = "true";
   @property() public pushEnabled = "true";
   @property() public settingsEnabled = "true";
+
+  @state() private isVisible = false;
 
   // -- event handlers ------------------------------------------- //
   protected onCloseClick() {
@@ -127,14 +129,18 @@ export class W3iWidget extends LitElement {
 
     return html`
       <div ${ref(this.iframeRef)} class="w3i-widget">
-        <iframe
-          id="w3i"
-          src=${url}
-          width=${this.width}
-          height=${this.height}
-          loading="lazy"
-          referrerpolicy="none"
-        />
+        ${this.isVisible
+          ? html`
+              <iframe
+                id="w3i"
+                src=${url}
+                width=${this.width}
+                height=${this.height}
+                loading="lazy"
+                referrerpolicy="none"
+              />
+            `
+          : nothing}
       </div>
     `;
   }
@@ -146,15 +152,7 @@ export class W3iWidget extends LitElement {
     // This will be used in the future to enable communication from the window to the iframe
 
     widgetVisibilitySubject.subscribe((val) => {
-      if (!this.iframeRef.value) return;
-
-      if (val) {
-        this.iframeRef.value.style.setProperty("display", "block");
-        // Once user opens widget, there is no need to display a badge
-        widgetRecentNotificationsSubject.next(0);
-      } else {
-        this.iframeRef.value.style.setProperty("display", "none");
-      }
+      this.isVisible = val;
     });
 
     window.addEventListener("message", (message) => {
