@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.8
+
+### Patch Changes
+
+- isOpen is now reactive
+
 ## 0.5.7
 
 ### Patch Changes

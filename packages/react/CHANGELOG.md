@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.5.8
+
+### Patch Changes
+
+- isOpen is now reactive
+- Updated dependencies
+  - @web3inbox/widget-html@0.5.8
+
 ## 0.5.7
 
 ### Patch Changes
