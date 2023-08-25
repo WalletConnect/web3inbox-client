@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.6
+
+### Patch Changes
+
+- Reload iframe on account change
+
 ## 0.5.5
 
 ### Patch Changes

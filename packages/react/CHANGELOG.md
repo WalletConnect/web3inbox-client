@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.5.6
+
+### Patch Changes
+
+- Reload iframe on account change
+- Updated dependencies
+  - @web3inbox/widget-html@0.5.6
+
 ## 0.5.5
 
 ### Patch Changes
