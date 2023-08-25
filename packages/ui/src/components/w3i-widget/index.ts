@@ -87,6 +87,24 @@ export class W3iWidget extends LitElement {
     // We can't know if a new account is subscribed
     if (changedProperties.has("account")) {
       widgetAccountSubject.next({ isSubscribed: false });
+
+      if (this.iframeRef.value) {
+        const url = buildW3iUrl(
+          this.web3inboxUrl,
+          {
+            name: this.dappName,
+            icon: this.dappIcon,
+            description: this.dappNotificationsDescription,
+          },
+          this.account,
+          {
+            chat: this.chatEnabled,
+            push: this.pushEnabled,
+            settings: this.settingsEnabled,
+          }
+        );
+        this.iframeRef.value.src = url;
+      }
     }
   }
 
