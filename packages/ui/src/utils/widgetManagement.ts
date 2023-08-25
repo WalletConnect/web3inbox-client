@@ -13,3 +13,11 @@ export const toggleW3iWidget = () => {
 };
 
 export const w3iWidgetIsOpen = widgetVisibilitySubject.value;
+
+export const watchWidgetVisibility = (
+  callback: (isVisible: boolean) => void
+) => {
+  const subscription = widgetVisibilitySubject.subscribe(callback);
+
+  return subscription;
+};
