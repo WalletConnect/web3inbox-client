@@ -44,7 +44,6 @@ export default function Page() {
 
   const { toggle: toggleW3i, isOpen, isLoaded } = useManageW3iWidget();
 
-  console.log({ isLoaded });
 
   const isSubbed = useIsSubscribed();
 
