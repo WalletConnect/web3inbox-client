@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.9
+
+### Patch Changes
+
+- Expose isLoad state
+
 ## 0.5.8
 
 ### Patch Changes

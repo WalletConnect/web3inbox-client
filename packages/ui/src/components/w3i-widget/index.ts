@@ -4,6 +4,7 @@ import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { WEB3INBOX_DEFAULT_URL } from "../../constants/web3inbox";
 import {
   widgetAccountSubject,
+  widgetLoadSubject,
   widgetRecentNotificationsSubject,
   widgetVisibilitySubject,
 } from "../../utils/events";
@@ -62,7 +63,7 @@ export class W3iWidget extends LitElement {
     });
   }
 
-  protected connectRequest() {
+  protected connectionRequested() {
     const event = new CustomEvent("connectRequest");
     this.dispatchEvent(event);
   }
@@ -70,6 +71,12 @@ export class W3iWidget extends LitElement {
   protected subscriptionSettled() {
     const event = new CustomEvent("subscriptionSettled");
     this.dispatchEvent(event);
+  }
+
+  protected iframeLoaded() {
+    const event = new CustomEvent("load");
+    this.dispatchEvent(event);
+    widgetLoadSubject.next(true);
   }
 
   protected notifyMessage(message: {
@@ -137,6 +144,7 @@ export class W3iWidget extends LitElement {
                 width=${this.width}
                 height=${this.height}
                 loading="lazy"
+                @load=${this.iframeLoaded}
                 referrerpolicy="none"
               />
             `
@@ -153,6 +161,9 @@ export class W3iWidget extends LitElement {
 
     widgetVisibilitySubject.subscribe((val) => {
       this.isVisible = val;
+      if (!val) {
+        widgetLoadSubject.next(false);
+      }
     });
 
     window.addEventListener("message", (message) => {
@@ -163,7 +174,7 @@ export class W3iWidget extends LitElement {
         case "connect_request":
           // On new connection, reset subscription state
           widgetAccountSubject.next({ isSubscribed: false });
-          this.connectRequest();
+          this.connectionRequested();
           break;
         case "external_sign_message":
           // Use the externally provided `signMessage` to sign. We are agnostic to how the parent dapp will
