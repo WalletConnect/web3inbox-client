@@ -1,5 +1,5 @@
 {
-  "name": "@web3inbox/widget-react",
+  "name": "@web3inbox/core",
   "version": "0.5.9",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -11,25 +11,20 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "tsup ",
-    "build:cjs": "tsup src/index.tsx --format cjs --dts",
+    "build:cjs": "tsup src/index.ts --format cjs --dts",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "-------": "-----------------------------------------------------------------------------------------------------",
-    "prepublishOnly": "yarn build",
     "lint": "eslint \"**/*.ts*\""
   },
-  "dependencies": {
-    "@web3inbox/widget-html": "*",
-    "@web3inbox/core": "*"
-  },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
-    "react": "^18.2.0",
     "tsconfig": "*",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@walletconnect/notify-client": "^0.12.0",
+    "valtio": "^1.11.2"
   }
 }

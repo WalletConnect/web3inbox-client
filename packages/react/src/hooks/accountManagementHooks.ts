@@ -1,7 +1,8 @@
-import { watchSubscription } from "@web3inbox/widget-html";
 import { useEffect, useState } from "react";
+import { useWeb3InboxClient } from "./web3inboxClient";
 
 export const useIsSubscribed = () => {
+  const client = useWeb3InboxClient();
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   useEffect(() => {
