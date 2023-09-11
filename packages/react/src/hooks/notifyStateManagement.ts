@@ -9,7 +9,7 @@ export const useWatchMessages = (params: { account: string }) => {
   >(client?.getMessageHistory(params) ?? []);
 
   useEffect(() => {
-    if (!client) return () => {};
+    if (!client) return;
 
     const msgWatch = client.watchMessages(params.account, setMessages);
 
@@ -28,7 +28,7 @@ export const useManageSubscription = (params: { account: string }) => {
   );
 
   useEffect(() => {
-    if (!client) return () => {};
+    if (!client) return;
 
     const subWatch = client.watchIsSubscribed(params.account, setIsSubscribed);
 

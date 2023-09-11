@@ -16,7 +16,7 @@ export default class Web3InboxClient {
     isOpenning: false,
   });
   private static clientState = proxy({
-    ready: false,
+    isReady: false,
   });
 
   public constructor(
@@ -51,7 +51,7 @@ export default class Web3InboxClient {
   }
 
   public static getInstance(): Web3InboxClient {
-    if (Web3InboxClient.clientState.ready && Web3InboxClient.instance) {
+    if (Web3InboxClient.clientState.isReady && Web3InboxClient.instance) {
       return Web3InboxClient.instance;
     } else {
       throw new Error(
@@ -61,12 +61,12 @@ export default class Web3InboxClient {
   }
 
   public static getIsReady(): boolean {
-    return Web3InboxClient.clientState.ready;
+    return Web3InboxClient.clientState.isReady;
   }
 
   public static watchIsReady(cb: (isReady: boolean) => void) {
     return subscribe(Web3InboxClient.clientState, () => {
-      cb(Web3InboxClient.clientState.ready);
+      cb(Web3InboxClient.clientState.isReady);
     });
   }
 
@@ -98,12 +98,12 @@ export default class Web3InboxClient {
       notifyParams
     );
 
-    this.clientState.ready = true;
+    this.clientState.isReady = true;
 
     return Web3InboxClient.instance;
   }
 
-  protected getSub(account: string) {
+  protected getSubscription(account: string) {
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({ account })
     );
@@ -112,7 +112,7 @@ export default class Web3InboxClient {
     return sub;
   }
 
-  protected getSubWithThrow(account: string) {
+  protected getSubscriptionOrThrow(account: string) {
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({ account })
     );
@@ -132,7 +132,7 @@ export default class Web3InboxClient {
     account: string;
     scope: string[];
   }): Promise<boolean> {
-    const sub = this.getSubWithThrow(params.account);
+    const sub = this.getSubscriptionOrThrow(params.account);
 
     return this.notifyClient.update({ topic: sub.topic, scope: params.scope });
   }
@@ -141,7 +141,7 @@ export default class Web3InboxClient {
   public getNotificationTypes(params: {
     account: string;
   }): NotifyClientTypes.ScopeMap {
-    const sub = this.getSubWithThrow(params.account);
+    const sub = this.getSubscriptionOrThrow(params.account);
 
     return sub.scope;
   }
@@ -150,7 +150,7 @@ export default class Web3InboxClient {
   public getMessageHistory(params: {
     account: string;
   }): NotifyClientTypes.NotifyMessageRecord[] {
-    const sub = this.getSubWithThrow(params.account);
+    const sub = this.getSubscriptionOrThrow(params.account);
 
     const msgHistory = this.notifyClient.getMessageHistory({
       topic: sub.topic,
@@ -176,7 +176,7 @@ export default class Web3InboxClient {
   // Using `window.location.origin` it will check if the user is subscribed
   // to current dapp
   public isSubscribedToCurrentDapp(params: { account: string }): boolean {
-    const sub = this.getSub(params.account);
+    const sub = this.getSubscription(params.account);
 
     return Boolean(sub);
   }
@@ -185,7 +185,7 @@ export default class Web3InboxClient {
   public async subscribeToCurrentDapp(params: {
     account: string;
   }): Promise<void> {
-    const existingSub = this.getSub(params.account);
+    const existingSub = this.getSubscription(params.account);
     if (existingSub) {
       return;
     }
@@ -205,7 +205,7 @@ export default class Web3InboxClient {
 
   // unsubscribe from dapp
   public async unsubscribeFromCurrentDapp(params: { account: string }) {
-    const sub = this.getSubWithThrow(params.account);
+    const sub = this.getSubscriptionOrThrow(params.account);
 
     await this.notifyClient.deleteSubscription({ topic: sub.topic });
   }
@@ -221,7 +221,7 @@ export default class Web3InboxClient {
     cb: (scopeMap: NotifyClientTypes.ScopeMap) => void
   ) {
     return subscribe(this.subscriptions, () => {
-      cb(this.getSub(account)?.scope ?? {});
+      cb(this.getSubscription(account)?.scope ?? {});
     });
   }
 
