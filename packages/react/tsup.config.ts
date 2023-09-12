@@ -7,6 +7,9 @@ export default defineConfig((options: Options) => ({
   banner: {
     js: "'use client'",
   },
+  loader: {
+    ".scss": "css",
+  },
   clean: true,
   format: ["cjs", "esm"],
   external: ["react"],

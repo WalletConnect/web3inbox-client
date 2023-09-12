@@ -1,0 +1,71 @@
+@import '../../../styles/mixins.scss';
+
+.Sidebar {
+  position: fixed;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 1em;
+  height: 3em;
+
+  @include padding-y(2em);
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+
+  transition: all 0.15s linear;
+
+  &__Item {
+    cursor: pointer;
+
+    .wc-icon {
+      width: 40px;
+      height: 28px;
+    }
+  }
+
+  &__Navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--bg-color-1);
+    outline: solid 1px var(--bg-color-2);
+    padding: 0.5em;
+    border-radius: 44px;
+    gap: 1em;
+    &__Link {
+      width: 4em;
+      display: flex;
+      justify-content: center;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+@media only screen and (min-width: 700px) {
+  .Sidebar {
+    background-color: var(--bg-color-1);
+    transform: unset;
+    position: relative;
+
+    top: 0;
+    left: 0;
+    height: 100vh;
+    flex-direction: column;
+
+    &__Navigation {
+      border-radius: unset;
+      flex-direction: column;
+      background-color: unset;
+      outline: unset;
+      padding: unset;
+      outline: unset;
+      gap: 2rem;
+    }
+  }
+}

@@ -17,6 +17,7 @@ export default class Web3InboxClient {
   });
   private static clientState = proxy({
     isReady: false,
+    account: "",
   });
 
   public constructor(
@@ -70,6 +71,20 @@ export default class Web3InboxClient {
     });
   }
 
+  public setAccount(account: string) {
+    Web3InboxClient.clientState.account = account;
+  }
+
+  public getAccount() {
+    return Web3InboxClient.clientState.account;
+  }
+
+  public watchAccount(cb: (acc: string) => void) {
+    return subscribe(Web3InboxClient.clientState, () => {
+      return cb(Web3InboxClient.clientState.account);
+    });
+  }
+
   // initializes the client with persisted storage and a network connection
   public static async init(params: {
     projectId: string;
@@ -103,7 +118,7 @@ export default class Web3InboxClient {
     return Web3InboxClient.instance;
   }
 
-  protected getSubscription(account: string) {
+  public getSubscription(account: string) {
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({ account })
     );

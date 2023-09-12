@@ -1,5 +1,5 @@
 import { Web3InboxClient } from "@web3inbox/core";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useInitWeb3InboxClient = (params: {
   projectId: string;
@@ -31,4 +31,29 @@ export const useWeb3InboxClient = () => {
   }, [isReady, setClient]);
 
   return client;
+};
+
+export const useAccount = () => {
+  const client = useWeb3InboxClient();
+
+  const [account, setAcc] = useState(client?.getAccount() ?? "");
+
+  useEffect(() => {
+    if (client) {
+      const unsub = client.watchAccount(setAcc);
+
+      return () => unsub();
+    }
+  }, [client, setAcc]);
+
+  const setAccount = useCallback(
+    (account: string) => {
+      if (client) {
+        client.setAccount(account);
+      }
+    },
+    [client]
+  );
+
+  return { account, setAccount };
 };

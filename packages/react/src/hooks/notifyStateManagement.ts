@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useWeb3InboxClient } from "./web3inboxClient";
 
-export const useWatchMessages = (params: { account: string }) => {
+export const useMessages = (params: { account: string }) => {
   const client = useWeb3InboxClient();
   const [messages, setMessages] = useState<
     NotifyClientTypes.NotifyMessageRecord[]
@@ -18,7 +18,16 @@ export const useWatchMessages = (params: { account: string }) => {
     };
   }, [client, setMessages, params]);
 
-  return messages;
+  const deleteMessage = useCallback(
+    async (id: number) => {
+      if (client) {
+        await client.deleteNotifyMessage({ id });
+      }
+    },
+    [client]
+  );
+
+  return { messages, deleteMessage };
 };
 
 export const useManageSubscription = (params: { account: string }) => {
@@ -56,6 +65,25 @@ export const useManageSubscription = (params: { account: string }) => {
   return { subscribe, unsubscribe, isSubscribed };
 };
 
+export const useSubscription = (params: { account: string }) => {
+  const client = useWeb3InboxClient();
+  const [subscription, setSubscription] =
+    useState<NotifyClientTypes.NotifySubscription | null>(
+      client?.getSubscription(params.account) ?? null
+    );
+
+  useEffect(() => {
+    if (client && client.isSubscribedToCurrentDapp(params)) {
+      const sub = client.getSubscription(params.account);
+      if (sub) {
+        setSubscription(sub);
+      }
+    }
+  }, [setSubscription, params, client]);
+
+  return { subscription };
+};
+
 export const useSubscriptionScopes = (params: { account: string }) => {
   const client = useWeb3InboxClient();
   const [subScopes, setSubScopes] = useState<NotifyClientTypes.ScopeMap>(
@@ -85,5 +113,5 @@ export const useSubscriptionScopes = (params: { account: string }) => {
     [client, params]
   );
 
-  return [subScopes, updateScopes];
+  return { scopes: subScopes, updateScopes };
 };

@@ -1,0 +1,43 @@
+.UnsubscribeModal {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  &__header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__close {
+    position: absolute;
+    right: 1em;
+  }
+  &__hero {
+    display: flex;
+    justify-content: center;
+    padding-top: 1.25em;
+    padding-bottom: 0.75em;
+    img {
+      height: 5em;
+      width: 5em;
+      border-radius: 50%;
+    }
+  }
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4375em;
+    &__title {
+      color: var(--fg-color-1);
+    }
+    &__helper-text {
+      color: var(--fg-color-2);
+      text-align: center;
+    }
+  }
+  &__action {
+    margin: 3.125em 0.25em 0.25em 0.25em;
+    border-radius: 10px;
+  }
+}
