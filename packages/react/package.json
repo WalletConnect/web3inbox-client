@@ -2,9 +2,7 @@
   "name": "@web3inbox/widget-react",
   "version": "0.6.0-71661",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "typings": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
