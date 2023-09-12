@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@web3inbox/widget-html": "*",
+    "@web3inbox/core": "*",
     "@web3inbox/widget-react": "*",
     "@web3modal/ethereum": "^2.6.2",
     "@web3modal/react": "^2.6.2",
