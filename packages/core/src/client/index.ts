@@ -1,13 +1,13 @@
-import { ICore } from "@walletconnect/types";
 import { Core } from "@walletconnect/core";
 import {
   DEFAULT_KEYSERVER_URL,
   NotifyClient,
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
+import { ICore } from "@walletconnect/types";
 import { proxy, subscribe } from "valtio";
 
-export default class Web3InboxClient {
+export class Web3InboxClient {
   private subscriptions: NotifyClientTypes.NotifySubscription[] = proxy([]);
   private messages: NotifyClientTypes.NotifyMessageRecord[] = proxy([]);
   private static instance: Web3InboxClient | null = null;

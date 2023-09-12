@@ -2,38 +2,18 @@
 
 import * as W3iCore from "@web3inbox/core";
 import { W3iWidget } from "@web3inbox/widget-react";
-import {
-  EthereumClient,
-  w3mConnectors,
-  w3mProvider,
-} from "@web3modal/ethereum";
-import { useWeb3Modal, Web3Modal } from "@web3modal/react";
-import "events";
-import React, { useEffect, useState } from "react";
-import { configureChains, createConfig, useAccount, WagmiConfig } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum } from "wagmi/chains";
+
+import { useWeb3Modal, Web3Button, Web3Modal } from "@web3modal/react";
+import React, { useCallback, useEffect, useState } from "react";
+import { useAccount, useSignMessage } from "wagmi";
+
 import "./style.css";
 
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
-
-if (!projectId) {
-  throw new Error("NEXT_PUBLIC_PROJECT_ID needs to be provided");
-}
-
-const chains = [mainnet, polygon, optimism, arbitrum];
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains }),
-  publicClient,
-});
-
-const ethereumClient = new EthereumClient(wagmiConfig, chains);
-
 export default function Page() {
-  const { address } = useAccount();
+  const { address, connector } = useAccount();
   const { open: openW3m } = useWeb3Modal();
   const [account, setAccount] = useState<string | undefined>("");
+  const { signMessageAsync } = useSignMessage();
 
   const isSSR = () => typeof window === "undefined";
 
@@ -41,17 +21,48 @@ export default function Page() {
     setAccount(address);
   }, [address, setAccount]);
 
-  return isSSR() ? (
+  const signMessage = useCallback(
+    async (message: string) => {
+      const res = await signMessageAsync({
+        message,
+      });
+
+      return res as string;
+    },
+    [signMessageAsync]
+  );
+
+  const connect = useCallback(async () => {
+    console.log({ signingIn: true, connector });
+    if (!connector) return openW3m();
+    try {
+      const connected = await connector.connect({
+        chainId: 1,
+      });
+      console.log({ connected });
+    } catch (error) {
+      console.log({ error });
+    }
+  }, [connector, openW3m]);
+
+  return !account ? (
     <></>
   ) : (
     <>
-      <W3iWidget />
-      <WagmiConfig config={wagmiConfig}>
-        <Web3Modal
-          ethereumClient={ethereumClient}
-          projectId={projectId!}
-        ></Web3Modal>
-      </WagmiConfig>
+      {account && (
+        <W3iWidget
+          onMessage={console.log}
+          onSubscriptionSettled={console.log}
+          web3inboxUrl="https://web3inbox-dev-hidden.vercel.app"
+          connect={connect}
+          dappName={"Dogfood Dapp"}
+          dappNotificationsDescription={"Subscribe to get notifications!"}
+          dappIcon=""
+          signMessage={signMessage}
+          account={account}
+        />
+      )}
+      <Web3Button />
     </>
   );
 }

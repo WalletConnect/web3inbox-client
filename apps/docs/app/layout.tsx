@@ -1,4 +1,9 @@
 "use client";
+
+import { Providers } from "./providers";
+import { configureChains, createConfig, useAccount, WagmiConfig } from "wagmi";
+import { mainnet, polygon, optimism, arbitrum } from "wagmi/chains";
+
 export default function RootLayout({
   children,
 }: {
@@ -6,7 +11,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

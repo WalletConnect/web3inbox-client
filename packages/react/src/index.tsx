@@ -1,4 +1,1 @@
-import * as events from "events";
-import * as React from "react";
-
-export { default as W3iWidget } from "./WidgetController";
+export { W3iWidget, type W3iWidgetProps } from "./WidgetController";
