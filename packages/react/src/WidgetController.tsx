@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, BrowserRouter as Router } from "react-router-dom";
+import { Route, Routes, Navigate, MemoryRouter } from "react-router-dom";
 import { AppNotifications } from "./components";
 import { useAccount, useInitWeb3InboxClient } from "./hooks";
 import WidgetConnect from "./views/Connect";
@@ -16,8 +16,18 @@ export const W3iWidget: React.FC<W3iWidgetProps> = (props) => {
   const { account, setAccount } = useAccount();
 
   return (
-    <div className="W3iWidget" onClick={() => setAccount("A")}>
-      {account}B
+    <div className="W3iWidget">
+      <MemoryRouter>
+        <Routes>
+          <Route
+            path="/sign-in"
+            element={<WidgetConnect onConnect={() => setAccount("a")} />}
+          />
+          <Route path="/subscribe" element={<WidgetSubscribe />} />
+          <Route path="/notifications" element={<AppNotifications />} />
+          <Route index element={<Navigate to="/sign-in" />} />
+        </Routes>
+      </MemoryRouter>
     </div>
   );
 };

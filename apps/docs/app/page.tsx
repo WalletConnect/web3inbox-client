@@ -45,11 +45,11 @@ export default function Page() {
     }
   }, [connector, openW3m]);
 
-  return !account ? (
+  return isSSR() ? (
     <></>
   ) : (
     <>
-      {account && <W3iWidget />}
+      <W3iWidget />
       <Web3Button />
     </>
   );
