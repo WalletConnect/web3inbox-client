@@ -49,19 +49,7 @@ export default function Page() {
     <></>
   ) : (
     <>
-      {account && (
-        <W3iWidget
-          onMessage={console.log}
-          onSubscriptionSettled={console.log}
-          web3inboxUrl="https://web3inbox-dev-hidden.vercel.app"
-          connect={connect}
-          dappName={"Dogfood Dapp"}
-          dappNotificationsDescription={"Subscribe to get notifications!"}
-          dappIcon=""
-          signMessage={signMessage}
-          account={account}
-        />
-      )}
+      {account && <W3iWidget />}
       <Web3Button />
     </>
   );
