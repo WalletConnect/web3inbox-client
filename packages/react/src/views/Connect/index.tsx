@@ -9,6 +9,7 @@ const WidgetConnect: React.FC<{ onConnect: () => void }> = ({ onConnect }) => {
   const { icons, name } = useMetadata();
   const { account } = useAccount();
 
+  console.log({ "UI>>": account });
   if (account) {
     return <Navigate to="/subscribe" />;
   }

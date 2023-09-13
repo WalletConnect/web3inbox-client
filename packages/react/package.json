@@ -8,10 +8,10 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "tsup ",
+    "build": "tsup && cp src/compiled.css dist",
     "build:cjs": "tsup src/index.tsx --format cjs --dts",
-    "dev": "tsup --watch",
-    "clean": "rm -rf dist",
+    "dev": "tsup --watch && cp src/compiled.css dist",
+    "clean": "",
     "-------": "-----------------------------------------------------------------------------------------------------",
     "prepublishOnly": "yarn build",
     "lint": "eslint \"**/*.ts*\""

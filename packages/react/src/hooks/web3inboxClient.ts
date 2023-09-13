@@ -5,9 +5,21 @@ export const useInitWeb3InboxClient = (params: {
   projectId: string;
   domain?: string;
 }) => {
+  const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
+
   useEffect(() => {
     Web3InboxClient.init(params);
   }, [params]);
+
+  useEffect(() => {
+    const unsub = Web3InboxClient.watchIsReady(setIsReady);
+
+    return () => {
+      unsub();
+    };
+  }, [setIsReady]);
+
+  return isReady;
 };
 
 export const useWeb3InboxClient = () => {
@@ -33,14 +45,17 @@ export const useWeb3InboxClient = () => {
   return client;
 };
 
-export const useAccount = () => {
+export const useAccount = (onSign?: (m: string) => Promise<string>) => {
   const client = useWeb3InboxClient();
 
   const [account, setAcc] = useState(client?.getAccount() ?? "");
 
   useEffect(() => {
     if (client) {
-      const unsub = client.watchAccount(setAcc);
+      const unsub = client.watchAccount((a) => {
+        console.log("GOT SOMETHING", a);
+        setAcc(a);
+      });
 
       return () => unsub();
     }
@@ -48,12 +63,24 @@ export const useAccount = () => {
 
   const setAccount = useCallback(
     (account: string) => {
+      console.log("Attempting to Setting the account to the client");
       if (client) {
+        console.log("Setting the account to the client");
         client.setAccount(account);
       }
     },
     [client]
   );
+
+  useEffect(() => {
+    if (client && account && onSign) {
+      client.register({
+        account,
+        domain: window.location.hostname,
+        onSign,
+      });
+    }
+  }, [onSign, client, account]);
 
   return { account, setAccount };
 };

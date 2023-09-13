@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Button from "../../components/general/Button";
 import W3iBellIcon from "../../assets/W3iBell.svg";
 import "./Subscribe.scss";
@@ -20,7 +20,9 @@ const WidgetSubscribe: React.FC = () => {
   const { isSubscribed, subscribe } = useManageSubscription({
     account,
   });
-  const { subscription } = useSubscription({ account });
+
+  console.log({ isSubscribed });
+
   const metadata = useMetadata();
 
   const handleOnSubscribe = useCallback(async () => {
@@ -40,17 +42,20 @@ const WidgetSubscribe: React.FC = () => {
 
   useEffect(() => {
     if (isSubscribed) {
-      setTimeout(() => {
-        nav(`/notifications/${subscription?.topic}`);
-      }, 0);
+      console.log("Going to");
+      nav(`/notifications`);
     }
-  }, [isSubscribed, nav, subscription]);
+  }, [isSubscribed, nav]);
+
+  if (!account) {
+    return <Navigate to="/sign-in" />;
+  }
 
   return (
     <div className="WidgetSubscribe">
       <div className="WidgetSubscribe__container">
         <div className="WidgetSubscribe__icon">
-          <img src={W3iBellIcon} />
+          <img src={metadata.icons[0]} alt={metadata.name} />
         </div>
         <h1 className="WidgetSubscribe__title">
           Notifications from {metadata.name}

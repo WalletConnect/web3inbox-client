@@ -1,11 +1,12 @@
 "use client";
 
-import * as W3iCore from "@web3inbox/core";
 import { W3iWidget } from "@web3inbox/widget-react";
 
 import { useWeb3Modal, Web3Button, Web3Modal } from "@web3modal/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
+
+import "@web3inbox/widget-react/dist/compiled.css";
 
 import "./style.css";
 
@@ -33,23 +34,29 @@ export default function Page() {
   );
 
   const connect = useCallback(async () => {
-    console.log({ signingIn: true, connector });
-    if (!connector) return openW3m();
-    try {
-      const connected = await connector.connect({
-        chainId: 1,
-      });
-      console.log({ connected });
-    } catch (error) {
-      console.log({ error });
+    if (!connector) {
+      openW3m();
+      return;
     }
+
+    const connected = await connector.connect({
+      chainId: 1,
+    });
+
+    return Promise.resolve(connected.account!);
   }, [connector, openW3m]);
+
+  console.log({ address });
 
   return isSSR() ? (
     <></>
   ) : (
     <>
-      <W3iWidget />
+      <W3iWidget
+        account={address ? `eip155:1:${address}` : null}
+        onConnect={connect}
+        onSign={signMessage}
+      />
       <Web3Button />
     </>
   );

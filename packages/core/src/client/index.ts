@@ -8,8 +8,10 @@ import { ICore } from "@walletconnect/types";
 import { proxy, subscribe } from "valtio";
 
 export class Web3InboxClient {
-  private subscriptions: NotifyClientTypes.NotifySubscription[] = proxy([]);
-  private messages: NotifyClientTypes.NotifyMessageRecord[] = proxy([]);
+  private subscriptionState: {
+    subscriptions: NotifyClientTypes.NotifySubscription[];
+    messages: NotifyClientTypes.NotifyMessageRecord[];
+  } = proxy({ subscriptions: [], messages: [] });
   private static instance: Web3InboxClient | null = null;
   private view: { isOpen: boolean; isOpenning: boolean } = proxy({
     isOpen: false,
@@ -28,12 +30,13 @@ export class Web3InboxClient {
 
   protected attachEventListeners(): void {
     const updateInternalSubscriptions = () => {
-      this.subscriptions = this.notifyClient.subscriptions.getAll();
+      this.subscriptionState.subscriptions =
+        this.notifyClient.subscriptions.getAll();
     };
 
     //TODO: Make more efficient - this is very slow.
     const updateMessages = () => {
-      this.messages = this.notifyClient.messages
+      this.subscriptionState.messages = this.notifyClient.messages
         .getAll()
         .map((m) => Object.values(m.messages))
         .flat()
@@ -44,6 +47,10 @@ export class Web3InboxClient {
     this.notifyClient.on("notify_update", updateInternalSubscriptions);
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
+    this.notifyClient.on(
+      "notify_subscriptions_changed",
+      updateInternalSubscriptions
+    );
     this.notifyClient.on(
       // @ts-ignore
       "notify_subscriptions_changed",
@@ -72,10 +79,12 @@ export class Web3InboxClient {
   }
 
   public setAccount(account: string) {
+    console.log("acc << Setting acc");
     Web3InboxClient.clientState.account = account;
   }
 
   public getAccount() {
+    console.log("acc << Getting acc", Web3InboxClient.clientState.account);
     return Web3InboxClient.clientState.account;
   }
 
@@ -101,7 +110,7 @@ export class Web3InboxClient {
       logger: "debug",
     };
 
-    const notifyClient = new NotifyClient(notifyParams);
+    const notifyClient = await NotifyClient.init(notifyParams);
 
     Web3InboxClient.instance = new Web3InboxClient(
       core,
@@ -109,9 +118,10 @@ export class Web3InboxClient {
       params.domain ?? window.location.origin
     );
 
-    Web3InboxClient.instance.notifyClient = await NotifyClient.init(
-      notifyParams
-    );
+    Web3InboxClient.instance.subscriptionState.subscriptions =
+      notifyClient.subscriptions.getAll();
+
+    Web3InboxClient.instance.attachEventListeners();
 
     this.clientState.isReady = true;
 
@@ -122,7 +132,7 @@ export class Web3InboxClient {
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({ account })
     );
-    const sub = subs.find((sub) => sub.metadata.url === this.domain);
+    const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
 
     return sub;
   }
@@ -131,12 +141,11 @@ export class Web3InboxClient {
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({ account })
     );
-    const sub = subs.find((sub) => sub.metadata.url === this.domain);
+    const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
 
     if (!sub) {
       const errMsg = `No subscription for user ${account} found.`;
       this.core.logger.error(errMsg);
-      throw new Error(errMsg);
     }
 
     return sub;
@@ -149,7 +158,14 @@ export class Web3InboxClient {
   }): Promise<boolean> {
     const sub = this.getSubscriptionOrThrow(params.account);
 
-    return this.notifyClient.update({ topic: sub.topic, scope: params.scope });
+    if (sub) {
+      return this.notifyClient.update({
+        topic: sub.topic,
+        scope: params.scope,
+      });
+    }
+
+    return false;
   }
 
   // query notification types available for a dapp domain
@@ -158,7 +174,10 @@ export class Web3InboxClient {
   }): NotifyClientTypes.ScopeMap {
     const sub = this.getSubscriptionOrThrow(params.account);
 
-    return sub.scope;
+    if (sub) {
+      return sub.scope;
+    }
+    return {};
   }
 
   // get all messages for a subscription
@@ -167,11 +186,15 @@ export class Web3InboxClient {
   }): NotifyClientTypes.NotifyMessageRecord[] {
     const sub = this.getSubscriptionOrThrow(params.account);
 
-    const msgHistory = this.notifyClient.getMessageHistory({
-      topic: sub.topic,
-    });
+    if (sub) {
+      const msgHistory = this.notifyClient.getMessageHistory({
+        topic: sub.topic,
+      });
 
-    return Object.values(msgHistory);
+      return Object.values(msgHistory);
+    }
+
+    return [];
   }
 
   // delete notify message
@@ -182,10 +205,17 @@ export class Web3InboxClient {
   // registers a blockchain account with an identity key if not yet registered on this client
   // additionally register sync keys
   // returns the public identity key.
-  public register(
-    params: Parameters<typeof this.notifyClient.register>[0]
-  ): Promise<string> {
-    return this.notifyClient.register(params);
+  public register(params: {
+    account: string;
+    domain: string;
+    onSign: (m: string) => Promise<string>;
+  }): Promise<string> {
+    return this.notifyClient.register({
+      account: params.account,
+      onSign: params.onSign,
+      domain: params.domain,
+      isLimited: true,
+    });
   }
 
   // Using `window.location.origin` it will check if the user is subscribed
@@ -207,12 +237,7 @@ export class Web3InboxClient {
 
     await this.notifyClient.subscribe({
       account: params.account,
-      metadata: {
-        url: this.domain,
-        description: "",
-        icons: [""],
-        name: "",
-      },
+      appDomain: this.domain,
     });
 
     return;
@@ -222,11 +247,19 @@ export class Web3InboxClient {
   public async unsubscribeFromCurrentDapp(params: { account: string }) {
     const sub = this.getSubscriptionOrThrow(params.account);
 
-    await this.notifyClient.deleteSubscription({ topic: sub.topic });
+    console.log("UNSUBSCR .>>>>>");
+
+    if (sub) {
+      await this.notifyClient.deleteSubscription({ topic: sub.topic });
+    }
   }
 
   public watchIsSubscribed(account: string, cb: (isSubbed: boolean) => void) {
-    return subscribe(this.subscriptions, () => {
+    return subscribe(this.subscriptionState, () => {
+      console.log(
+        "Watching subscription!, isSubscribed: ",
+        cb(this.isSubscribedToCurrentDapp({ account }))
+      );
       cb(this.isSubscribedToCurrentDapp({ account }));
     });
   }
@@ -235,7 +268,7 @@ export class Web3InboxClient {
     account: string,
     cb: (scopeMap: NotifyClientTypes.ScopeMap) => void
   ) {
-    return subscribe(this.subscriptions, () => {
+    return subscribe(this.subscriptionState, () => {
       cb(this.getSubscription(account)?.scope ?? {});
     });
   }
@@ -244,7 +277,7 @@ export class Web3InboxClient {
     account: string,
     cb: (messages: NotifyClientTypes.NotifyMessageRecord[]) => void
   ) {
-    return subscribe(this.messages, () => {
+    return subscribe(this.subscriptionState, () => {
       cb(Object.values(this.getMessageHistory({ account })));
     });
   }
