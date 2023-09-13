@@ -132,6 +132,8 @@ export class Web3InboxClient {
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({ account })
     );
+
+    console.log({ subs, dom: this.domain });
     const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
 
     return sub;
@@ -205,17 +207,22 @@ export class Web3InboxClient {
   // registers a blockchain account with an identity key if not yet registered on this client
   // additionally register sync keys
   // returns the public identity key.
-  public register(params: {
+  public async register(params: {
     account: string;
-    domain: string;
     onSign: (m: string) => Promise<string>;
   }): Promise<string> {
-    return this.notifyClient.register({
-      account: params.account,
-      onSign: params.onSign,
-      domain: params.domain,
-      isLimited: true,
-    });
+    try {
+      const regRs = await this.notifyClient.register({
+        account: params.account,
+        onSign: params.onSign,
+        domain: this.domain,
+        isLimited: true,
+      });
+
+      return regRs;
+    } catch (e) {
+      throw new Error("Failed to register");
+    }
   }
 
   // Using `window.location.origin` it will check if the user is subscribed
@@ -258,8 +265,9 @@ export class Web3InboxClient {
     return subscribe(this.subscriptionState, () => {
       console.log(
         "Watching subscription!, isSubscribed: ",
-        cb(this.isSubscribedToCurrentDapp({ account }))
+        this.isSubscribedToCurrentDapp({ account })
       );
+
       cb(this.isSubscribedToCurrentDapp({ account }));
     });
   }
@@ -296,5 +304,25 @@ export class Web3InboxClient {
 
   public setViewIsLoading(isLoading: boolean) {
     this.view.isOpenning = isLoading;
+  }
+
+  public on<E extends NotifyClientTypes.Event>(
+    e: E,
+    listener: (param: NotifyClientTypes.EventArguments[E]) => void
+  ) {
+    this.notifyClient.on(e, listener);
+  }
+
+  public off<E extends NotifyClientTypes.Event>(
+    e: E,
+    listener: (param: NotifyClientTypes.EventArguments[E]) => void
+  ) {
+    this.notifyClient.off(e, listener);
+  }
+  public once<E extends NotifyClientTypes.Event>(
+    e: E,
+    listener: (param: NotifyClientTypes.EventArguments[E]) => void
+  ) {
+    this.notifyClient.once(e, listener);
   }
 }

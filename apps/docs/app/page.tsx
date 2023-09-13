@@ -54,6 +54,7 @@ export default function Page() {
     <>
       <W3iWidget
         account={address ? `eip155:1:${address}` : null}
+        domain="dev.gm.walletconnect.com"
         onConnect={connect}
         onSign={signMessage}
       />

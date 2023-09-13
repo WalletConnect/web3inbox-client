@@ -76,7 +76,6 @@ export const useAccount = (onSign?: (m: string) => Promise<string>) => {
     if (client && account && onSign) {
       client.register({
         account,
-        domain: window.location.hostname,
         onSign,
       });
     }

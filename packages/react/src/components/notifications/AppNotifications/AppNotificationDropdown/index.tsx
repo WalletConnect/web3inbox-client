@@ -1,8 +1,6 @@
-import { useCallback, useContext } from "react";
-import {
-  preferencesModalService,
-  unsubscribeModalService,
-} from "../../../../utils/store";
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAccount, useManageSubscription } from "../../../../hooks";
 import Dropdown from "../../../general/Dropdown/Dropdown";
 import NotificationMuteIcon from "../../../general/Icon/NotificationMuteIcon";
 import SettingIcon from "../../../general/Icon/SettingIcon";
@@ -23,15 +21,19 @@ const AppNotificationDropdown: React.FC<IAppNotificationDropdownProps> = ({
   h,
   closeDropdown,
 }) => {
+  const { account } = useAccount();
+  const nav = useNavigate();
+  const { unsubscribe } = useManageSubscription({ account });
+
   const handleUnsubscribe = useCallback(() => {
     closeDropdown();
-    unsubscribeModalService.toggleModal(notificationId);
-  }, [notificationId, closeDropdown, unsubscribeModalService]);
+    unsubscribe();
+  }, [closeDropdown, unsubscribe]);
 
   const handleOpenNotificationPreferencesModal = useCallback(() => {
-    preferencesModalService.toggleModal(notificationId);
+    nav("/preferences");
     closeDropdown();
-  }, [closeDropdown]);
+  }, [closeDropdown, nav]);
 
   return (
     <Dropdown

@@ -3,6 +3,7 @@ import { Route, Routes, Navigate, MemoryRouter } from "react-router-dom";
 import { AppNotifications } from "./components";
 import { useAccount, useInitWeb3InboxClient } from "./hooks";
 import WidgetConnect from "./views/Connect";
+import { PreferencesView } from "./views/Preferences";
 import WidgetSubscribe from "./views/Subscribe";
 
 export interface W3iWidgetProps {
@@ -11,6 +12,7 @@ export interface W3iWidgetProps {
   /* Signs message */
   onSign: (message: string) => Promise<string>;
   account: string | null;
+  domain?: string;
 }
 
 export const useColorModeValue = (ref: React.RefObject<HTMLDivElement>) => {
@@ -123,10 +125,11 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
   onConnect,
   onSign,
   account,
+  domain,
 }) => {
   const ready = useInitWeb3InboxClient({
     projectId: "547aafa48826c4d76f492efecde4843d",
-    domain: window.location.host,
+    domain: domain ?? window.location.host,
   });
 
   const ref = useRef<HTMLDivElement>(null);
@@ -160,6 +163,7 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
           />
           <Route path="/subscribe" element={<WidgetSubscribe />} />
           <Route path="/notifications" element={<AppNotifications />} />
+          <Route path="/preferences" element={<PreferencesView />} />
           <Route index element={<Navigate to="/sign-in" />} />
         </Routes>
       </MemoryRouter>
