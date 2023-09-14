@@ -6,6 +6,7 @@ import { useManageView } from "./hooks/viewHooks";
 import WidgetConnect from "./views/Connect";
 import { PreferencesView } from "./views/Preferences";
 import WidgetSubscribe from "./views/Subscribe";
+import W3iRouter from "./W3iRouter";
 
 export interface W3iWidgetProps {
   /* Connect Account Trigger */
@@ -160,22 +161,24 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
     >
       {isOpen ? (
         <MemoryRouter>
-          <Routes>
-            <Route
-              path="/sign-in"
-              element={
-                <WidgetConnect
-                  onConnect={() => {
-                    onConnect();
-                  }}
-                />
-              }
-            />
-            <Route path="/subscribe" element={<WidgetSubscribe />} />
-            <Route path="/notifications" element={<AppNotifications />} />
-            <Route path="/preferences" element={<PreferencesView />} />
-            <Route index element={<Navigate to="/sign-in" />} />
-          </Routes>
+          <W3iRouter>
+            <Routes>
+              <Route
+                path="/sign-in"
+                element={
+                  <WidgetConnect
+                    onConnect={() => {
+                      onConnect();
+                    }}
+                  />
+                }
+              />
+              <Route path="/subscribe" element={<WidgetSubscribe />} />
+              <Route path="/notifications" element={<AppNotifications />} />
+              <Route path="/preferences" element={<PreferencesView />} />
+              <Route index element={<Navigate to="/sign-in" />} />
+            </Routes>
+          </W3iRouter>
         </MemoryRouter>
       ) : null}
     </div>

@@ -73,11 +73,10 @@ export const useSubscription = (params: { account: string }) => {
     );
 
   useEffect(() => {
-    if (client && client.isSubscribedToCurrentDapp(params)) {
-      const sub = client.getSubscription(params.account);
-      if (sub) {
-        setSubscription(sub);
-      }
+    if (client) {
+      const sub = client.watchSubscriptions(params.account, setSubscription);
+
+      return sub();
     }
   }, [setSubscription, params, client]);
 
@@ -98,7 +97,9 @@ export const useSubscriptionScopes = (params: { account: string }) => {
 
   useEffect(() => {
     if (client) {
-      client.watchScopeMap(params.account, setSubScopes);
+      const sub = client.watchScopeMap(params.account, setSubScopes);
+
+      return sub();
     }
   }, [client, params, setSubScopes]);
 

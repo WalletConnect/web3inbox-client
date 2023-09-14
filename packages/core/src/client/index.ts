@@ -116,7 +116,6 @@ export class Web3InboxClient {
       notifyClient,
       params.domain ?? window.location.origin
     );
-
     Web3InboxClient.instance.subscriptionState.subscriptions =
       notifyClient.subscriptions.getAll();
 
@@ -132,10 +131,18 @@ export class Web3InboxClient {
       this.notifyClient.getActiveSubscriptions({ account })
     );
 
-    console.log({ subs, dom: this.domain });
     const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
 
-    return sub;
+    return sub ?? null;
+  }
+
+  public watchSubscriptions(
+    account: string,
+    cb: (subscription: NotifyClientTypes.NotifySubscription | null) => void
+  ) {
+    return subscribe(this.subscriptionState, () => {
+      cb(this.getSubscription(account));
+    });
   }
 
   protected getSubscriptionOrThrow(account: string) {

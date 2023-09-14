@@ -7,7 +7,7 @@ import { useWeb3Modal, Web3Button, Web3Modal } from "@web3modal/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 
-import "@web3inbox/widget-react/dist/compiled.css";
+// import "@web3inbox/widget-react/dist/compiled.css";
 
 import "./style.css";
 import dynamic from "next/dynamic";

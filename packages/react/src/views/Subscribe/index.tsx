@@ -40,13 +40,6 @@ const WidgetSubscribe: React.FC = () => {
     }
   }, [subscribe]);
 
-  useEffect(() => {
-    if (isSubscribed) {
-      console.log("Going to");
-      nav(`/notifications`);
-    }
-  }, [isSubscribed, nav]);
-
   if (!account) {
     return <Navigate to="/sign-in" />;
   }

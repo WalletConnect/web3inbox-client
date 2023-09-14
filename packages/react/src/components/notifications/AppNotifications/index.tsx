@@ -8,6 +8,7 @@ import AppNotificationsHeader from "./AppNotificationsHeader";
 import AppNotificationsEmpty from "./AppNotificationsEmpty";
 import Label from "../../general/Label";
 import { useW3iAccount, useMessages, useSubscription } from "../../../hooks";
+import { useMetadata } from "../../../utils/metadata";
 
 export interface AppNotificationsDragProps {
   id: number;
@@ -31,6 +32,8 @@ const AppNotifications = () => {
   const { subscription: app } = useSubscription({ account });
   const { messages: notifications } = useMessages({ account });
 
+  const metadata = useMetadata();
+
   if (!account) {
     return <Navigate to="/sign-in" />;
   }
@@ -42,9 +45,9 @@ const AppNotifications = () => {
       <div className="AppNotifications">
         <div className="AppNotifications__border"></div>
         <AppNotificationsHeader
-          id={app?.topic}
-          name={app?.metadata.name}
-          logo={app?.metadata.icons[0]}
+          id={app?.topic ?? ""}
+          name={metadata.name}
+          logo={metadata.icons[0]}
         />
         {notifications.length > 0 ? (
           <>
@@ -67,7 +70,7 @@ const AppNotifications = () => {
                         image: notification.message.icon,
                         url: notification.message.url,
                       }}
-                      appLogo={app?.metadata.icons[0]}
+                      appLogo={metadata.icons[0]}
                     />
                   ))}
               </>
