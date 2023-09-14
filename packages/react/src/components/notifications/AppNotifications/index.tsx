@@ -7,7 +7,7 @@ import "./AppNotifications.scss";
 import AppNotificationsHeader from "./AppNotificationsHeader";
 import AppNotificationsEmpty from "./AppNotificationsEmpty";
 import Label from "../../general/Label";
-import { useAccount, useMessages, useSubscription } from "../../../hooks";
+import { useW3iAccount, useMessages, useSubscription } from "../../../hooks";
 
 export interface AppNotificationsDragProps {
   id: number;
@@ -27,7 +27,7 @@ const AppNotifications = () => {
     AppNotificationsDragProps[] | undefined
   >();
 
-  const { account } = useAccount();
+  const { account } = useW3iAccount();
   const { subscription: app } = useSubscription({ account });
   const { messages: notifications } = useMessages({ account });
 

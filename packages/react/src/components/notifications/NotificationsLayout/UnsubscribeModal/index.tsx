@@ -8,7 +8,7 @@ import { Modal } from "../../../general/Modal/Modal";
 import "./UnsubscribeModal.scss";
 import Text from "../../../general/Text";
 import {
-  useAccount,
+  useW3iAccount,
   useManageSubscription,
   useSubscription,
 } from "../../../../hooks";
@@ -16,7 +16,7 @@ import {
 export const UnsubscribeModal: React.FC = () => {
   const { mode } = useContext(SettingsContext);
   const themeColors = useColorModeValue(mode);
-  const { account } = useAccount();
+  const { account } = useW3iAccount();
   const { unsubscribe } = useManageSubscription({ account });
 
   const { subscription: app } = useSubscription({ account });

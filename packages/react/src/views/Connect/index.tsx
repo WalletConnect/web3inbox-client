@@ -2,12 +2,12 @@ import React, { useCallback, useState } from "react";
 import Button from "../../components/general/Button";
 import "./Connect.scss";
 import { useMetadata } from "../../utils/metadata";
-import { useAccount } from "../../hooks";
+import { useW3iAccount } from "../../hooks";
 import { Navigate } from "react-router-dom";
 
 const WidgetConnect: React.FC<{ onConnect: () => void }> = ({ onConnect }) => {
   const { icons, name } = useMetadata();
-  const { account } = useAccount();
+  const { account } = useW3iAccount();
 
   console.log({ "UI>>": account });
   if (account) {

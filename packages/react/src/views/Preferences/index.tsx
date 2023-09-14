@@ -6,14 +6,14 @@ import CrossIcon from "../../components/general/Icon/CrossIcon";
 import Toggle from "../../components/general/Toggle";
 import Text from "../../components/general/Text";
 import {
-  useAccount,
+  useW3iAccount,
   useSubscriptionScopes,
   useWeb3InboxClient,
 } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 
 export const PreferencesView: React.FC = () => {
-  const { account } = useAccount();
+  const { account } = useW3iAccount();
   const client = useWeb3InboxClient();
   const nav = useNavigate();
   const { scopes, updateScopes } = useSubscriptionScopes({ account });

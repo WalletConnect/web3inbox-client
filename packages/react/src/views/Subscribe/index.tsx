@@ -6,7 +6,7 @@ import "./Subscribe.scss";
 import { showErrorMessageToast } from "../../utils/toasts";
 import Spinner from "../../components/general/Spinner";
 import {
-  useAccount,
+  useW3iAccount,
   useManageSubscription,
   useSubscription,
 } from "../../hooks";
@@ -16,7 +16,7 @@ const WidgetSubscribe: React.FC = () => {
   const nav = useNavigate();
 
   const [isSubscribing, setIsSubscribing] = useState(false);
-  const { account } = useAccount();
+  const { account } = useW3iAccount();
   const { isSubscribed, subscribe } = useManageSubscription({
     account,
   });

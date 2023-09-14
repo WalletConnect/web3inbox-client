@@ -14,13 +14,13 @@ import {
   showSuccessMessageToast,
 } from "../../../../utils/toasts";
 import Text from "../../../general/Text";
-import { useAccount, useSubscriptionScopes } from "../../../../hooks";
+import { useW3iAccount, useSubscriptionScopes } from "../../../../hooks";
 
 export const PreferencesModal: React.FC = () => {
   const { mode } = useContext(SettingsContext);
   const themeColors = useColorModeValue(mode);
   const { preferencesModalAppId } = useModals();
-  const { account } = useAccount();
+  const { account } = useW3iAccount();
   const { scopes, updateScopes } = useSubscriptionScopes({ account });
   const [internalScopes, setInternalScopes] =
     useState<NotifyClientTypes.NotifySubscription["scope"]>(scopes);

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { Route, Routes, Navigate, MemoryRouter } from "react-router-dom";
 import { AppNotifications } from "./components";
-import { useAccount, useInitWeb3InboxClient } from "./hooks";
+import { useW3iAccount, useInitWeb3InboxClient } from "./hooks";
 import { useManageView } from "./hooks/viewHooks";
 import WidgetConnect from "./views/Connect";
 import { PreferencesView } from "./views/Preferences";
@@ -136,7 +136,7 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
   const ref = useRef<HTMLDivElement>(null);
   useColorModeValue(ref);
 
-  const { setAccount } = useAccount(onSign);
+  const { setAccount } = useW3iAccount(onSign);
 
   useEffect(() => {
     if (ready) {

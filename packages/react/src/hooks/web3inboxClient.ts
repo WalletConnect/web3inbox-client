@@ -45,7 +45,7 @@ export const useWeb3InboxClient = () => {
   return client;
 };
 
-export const useAccount = (onSign?: (m: string) => Promise<string>) => {
+export const useW3iAccount = () => {
   const client = useWeb3InboxClient();
 
   const [account, setAcc] = useState(client?.getAccount() ?? "");
@@ -72,14 +72,17 @@ export const useAccount = (onSign?: (m: string) => Promise<string>) => {
     [client]
   );
 
-  useEffect(() => {
-    if (client && account && onSign) {
-      client.register({
-        account,
-        onSign,
-      });
-    }
-  }, [onSign, client, account]);
+  const register = useCallback(
+    (onSign: (m: string) => Promise<string>) => {
+      if (client && account) {
+        client.register({
+          account,
+          onSign,
+        });
+      }
+    },
+    [client, account]
+  );
 
-  return { account, setAccount };
+  return { account, setAccount, register };
 };
