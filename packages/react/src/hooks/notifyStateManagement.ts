@@ -21,7 +21,7 @@ export const useMessages = (params: { account: string }) => {
   const deleteMessage = useCallback(
     async (id: number) => {
       if (client) {
-        await client.deleteNotifyMessage({ id });
+        client.deleteNotifyMessage({ id });
       }
     },
     [client]
