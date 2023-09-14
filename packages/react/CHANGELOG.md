@@ -1,5 +1,42 @@
 # @web3inbox/widget-react
 
+## 0.6.0
+
+### Patch Changes
+
+- remove peer-dep
+
+## 0.6.1
+
+### Patch Changes
+
+- rebuild using cjs
+
+## 0.6.0
+
+### Patch Changes
+
+- remove prepublish and use cjs
+
+## 0.6.0
+
+### Patch Changes
+
+- use cjs
+
+## 0.6.0
+
+### Minor Changes
+
+- 59b18ac: Use core
+
+### Patch Changes
+
+- Use cjs build
+- Updated dependencies
+- Updated dependencies [59b18ac]
+  - @web3inbox/core@0.6.0
+
 ## 0.5.9
 
 ### Patch Changes
