@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.3
+
+### Patch Changes
+
+- Add centralized router
+
 ## 0.0.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.3
+
+### Patch Changes
+
+- Add centralized router
+- Updated dependencies
+  - @web3inbox/core@0.0.3
+
 ## 0.6.0
 
 ### Patch Changes
