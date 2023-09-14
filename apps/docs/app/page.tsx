@@ -1,15 +1,23 @@
 "use client";
 
 import { useManageView } from "@web3inbox/widget-react";
-import { W3iWidget } from "@web3inbox/widget-react";
+// import { W3iWidget } from "@web3inbox/widget-react";
 
 import { useWeb3Modal, Web3Button, Web3Modal } from "@web3modal/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 
-// import "@web3inbox/widget-react/dist/compiled.css";
+import "@web3inbox/widget-react/dist/compiled.css";
 
 import "./style.css";
+import dynamic from "next/dynamic";
+
+const W3iWidget = dynamic(
+  () => import("@web3inbox/widget-react").then((w3i) => w3i.W3iWidget),
+  {
+    ssr: false,
+  }
+);
 
 export default function Page() {
   const { address, connector } = useAccount();
@@ -18,13 +26,14 @@ export default function Page() {
   const [account, setAccount] = useState<string | undefined>("");
   const { signMessageAsync } = useSignMessage();
 
-  openW3i();
-
   const isSSR = () => typeof window === "undefined";
 
   useEffect(() => {
     setAccount(address);
-  }, [address, setAccount]);
+    if (address) {
+      openW3i();
+    }
+  }, [address, setAccount, openW3i]);
 
   const signMessage = useCallback(
     async (message: string) => {
@@ -50,9 +59,7 @@ export default function Page() {
     return Promise.resolve(connected.account!);
   }, [connector, openW3m]);
 
-  return isSSR() ? (
-    <></>
-  ) : (
+  return (
     <>
       <W3iWidget
         account={address ? `eip155:1:${address}` : null}
@@ -60,6 +67,7 @@ export default function Page() {
         onConnect={connect}
         onSign={signMessage}
       />
+      <div>Hello World</div>
       <Web3Button />
     </>
   );
