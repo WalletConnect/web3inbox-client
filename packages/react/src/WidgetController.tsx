@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { Route, Routes, Navigate, MemoryRouter } from "react-router-dom";
 import { AppNotifications } from "./components";
 import { useAccount, useInitWeb3InboxClient } from "./hooks";
+import { useManageView } from "./hooks/viewHooks";
 import WidgetConnect from "./views/Connect";
 import { PreferencesView } from "./views/Preferences";
 import WidgetSubscribe from "./views/Subscribe";
@@ -143,30 +144,34 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
     }
   }, [setAccount, account, ready]);
 
+  const { isOpen } = useManageView();
+
   return (
     <div
       className="W3iWidget"
       style={{ background: "var(--bg-color-1)", color: "var(--fg-color-1)" }}
       ref={ref}
     >
-      <MemoryRouter>
-        <Routes>
-          <Route
-            path="/sign-in"
-            element={
-              <WidgetConnect
-                onConnect={() => {
-                  onConnect();
-                }}
-              />
-            }
-          />
-          <Route path="/subscribe" element={<WidgetSubscribe />} />
-          <Route path="/notifications" element={<AppNotifications />} />
-          <Route path="/preferences" element={<PreferencesView />} />
-          <Route index element={<Navigate to="/sign-in" />} />
-        </Routes>
-      </MemoryRouter>
+      {isOpen ? (
+        <MemoryRouter>
+          <Routes>
+            <Route
+              path="/sign-in"
+              element={
+                <WidgetConnect
+                  onConnect={() => {
+                    onConnect();
+                  }}
+                />
+              }
+            />
+            <Route path="/subscribe" element={<WidgetSubscribe />} />
+            <Route path="/notifications" element={<AppNotifications />} />
+            <Route path="/preferences" element={<PreferencesView />} />
+            <Route index element={<Navigate to="/sign-in" />} />
+          </Routes>
+        </MemoryRouter>
+      ) : null}
     </div>
   );
 };

@@ -13,9 +13,8 @@ export class Web3InboxClient {
     messages: NotifyClientTypes.NotifyMessageRecord[];
   } = proxy({ subscriptions: [], messages: [] });
   private static instance: Web3InboxClient | null = null;
-  private view: { isOpen: boolean; isOpenning: boolean } = proxy({
+  private view: { isOpen: boolean } = proxy({
     isOpen: false,
-    isOpenning: false,
   });
   private static clientState = proxy({
     isReady: false,
@@ -302,8 +301,14 @@ export class Web3InboxClient {
     this.view.isOpen = !this.view.isOpen;
   }
 
-  public setViewIsLoading(isLoading: boolean) {
-    this.view.isOpenning = isLoading;
+  public getViewIsOpen() {
+    return this.view.isOpen;
+  }
+
+  public watchViewIsOpen(cb: (isOpen: boolean) => void) {
+    return subscribe(this.view, () => {
+      cb(this.view.isOpen);
+    });
   }
 
   public on<E extends NotifyClientTypes.Event>(
