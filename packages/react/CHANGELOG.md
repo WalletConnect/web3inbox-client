@@ -4,6 +4,19 @@
 
 ### Patch Changes
 
+- use latest deps
+
+## 0.6.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/core@0.6.0
+
+## 0.6.0
+
+### Patch Changes
+
 - remove peer-dep
 
 ## 0.6.1
