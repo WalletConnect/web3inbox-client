@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.4
+
+### Patch Changes
+
+- Refactor state management
+- Updated dependencies
+  - @web3inbox/core@0.0.4
+
 ## 0.6.3
 
 ### Patch Changes

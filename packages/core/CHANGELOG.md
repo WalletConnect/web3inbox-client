@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.4
+
+### Patch Changes
+
+- Refactor state management
+
 ## 0.0.3
 
 ### Patch Changes
