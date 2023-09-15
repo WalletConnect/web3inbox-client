@@ -217,11 +217,16 @@ export class Web3InboxClient {
     );
 
     if (sub) {
-      const msgHistory = this.notifyClient.getMessageHistory({
-        topic: sub.topic,
-      });
+      try {
+        const msgHistory = this.notifyClient.getMessageHistory({
+          topic: sub.topic,
+        });
 
-      return Object.values(msgHistory);
+        return Object.values(msgHistory);
+      } catch (e) {
+        console.error("Failed to fetch messages", e);
+        return [];
+      }
     }
 
     return [];

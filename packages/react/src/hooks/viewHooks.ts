@@ -1,10 +1,9 @@
-import { Web3InboxClient, useViewState } from "@web3inbox/core";
+import { useViewState } from "@web3inbox/core";
 import { useCallback } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 
 export const useManageView = () => {
   const client = useWeb3InboxClient();
-  console.log("VIEWSTATE", Web3InboxClient.view);
   const { isOpen } = useViewState();
 
   const open = useCallback(() => {
