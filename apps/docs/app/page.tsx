@@ -62,6 +62,7 @@ export default function Page() {
   return (
     <>
       <W3iWidget
+        projectId="bd957d557fbce8c94ee111632cf9f58f"
         account={address ? `eip155:1:${address}` : null}
         domain="dev.gm.walletconnect.com"
         onConnect={connect}
