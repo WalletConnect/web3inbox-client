@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.5
+
+### Patch Changes
+
+- Fix double init"
+- Updated dependencies
+  - @web3inbox/core@0.0.5
+
 ## 0.6.4
 
 ### Patch Changes
