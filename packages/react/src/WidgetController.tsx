@@ -14,6 +14,7 @@ export interface W3iWidgetProps {
   /* Signs message */
   onSign: (message: string) => Promise<string>;
   account: string | null;
+  projectId: string;
   domain?: string;
 }
 
@@ -128,9 +129,10 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
   onSign,
   account,
   domain,
+  projectId,
 }) => {
   const ready = useInitWeb3InboxClient({
-    projectId: "547aafa48826c4d76f492efecde4843d",
+    projectId,
     domain: domain ?? window.location.host,
   });
 

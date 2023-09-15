@@ -1,4 +1,5 @@
 import { Core } from "@walletconnect/core";
+import { IdentityKeys } from "@walletconnect/identity-keys";
 import {
   DEFAULT_KEYSERVER_URL,
   NotifyClient,
@@ -95,14 +96,18 @@ export class Web3InboxClient {
 
     const core = new Core(params);
 
+    const identityKeys = new IdentityKeys(core, DEFAULT_KEYSERVER_URL);
     const notifyParams = {
       core,
+      identityKeys,
       keyserverUrl: DEFAULT_KEYSERVER_URL,
       projectId: params.projectId,
       logger: "debug",
     };
 
-    const notifyClient = await NotifyClient.init(notifyParams);
+    const notifyClient = await NotifyClient.init({
+      ...notifyParams,
+    });
 
     Web3InboxClient.instance = new Web3InboxClient(
       core,
