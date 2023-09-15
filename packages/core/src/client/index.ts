@@ -17,8 +17,10 @@ export class Web3InboxClient {
   public static view: { isOpen: boolean } = proxy({
     isOpen: false,
   });
+  public static initting = false;
   public static clientState = proxy({
     isReady: false,
+    initting: false,
     account: "",
   });
 
@@ -92,7 +94,19 @@ export class Web3InboxClient {
     projectId: string;
     domain?: string;
   }): Promise<Web3InboxClient> {
+    if (Web3InboxClient.clientState.initting) {
+      return new Promise<Web3InboxClient>((res) => {
+        subscribe(Web3InboxClient.clientState, () => {
+          if (!Web3InboxClient.clientState.isReady) {
+            res(Web3InboxClient.instance!);
+          }
+        });
+      });
+    }
+
     if (Web3InboxClient.instance) return Web3InboxClient.instance;
+
+    Web3InboxClient.clientState.initting = true;
 
     const core = new Core(params);
 
