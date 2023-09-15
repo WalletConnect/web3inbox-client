@@ -5,18 +5,18 @@ import {
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
 import { ICore } from "@walletconnect/types";
-import { proxy, subscribe } from "valtio";
+import { proxy, subscribe, useSnapshot } from "valtio";
 
 export class Web3InboxClient {
-  private subscriptionState: {
+  private static instance: Web3InboxClient | null = null;
+  public static subscriptionState: {
     subscriptions: NotifyClientTypes.NotifySubscription[];
     messages: NotifyClientTypes.NotifyMessageRecord[];
   } = proxy({ subscriptions: [], messages: [] });
-  private static instance: Web3InboxClient | null = null;
-  private view: { isOpen: boolean } = proxy({
+  public static view: { isOpen: boolean } = proxy({
     isOpen: false,
   });
-  private static clientState = proxy({
+  public static clientState = proxy({
     isReady: false,
     account: "",
   });
@@ -29,13 +29,13 @@ export class Web3InboxClient {
 
   protected attachEventListeners(): void {
     const updateInternalSubscriptions = () => {
-      this.subscriptionState.subscriptions =
+      Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
     };
 
     //TODO: Make more efficient - this is very slow.
     const updateMessages = () => {
-      this.subscriptionState.messages = this.notifyClient.messages
+      Web3InboxClient.subscriptionState.messages = this.notifyClient.messages
         .getAll()
         .map((m) => Object.values(m.messages))
         .flat()
@@ -43,15 +43,8 @@ export class Web3InboxClient {
     };
 
     this.notifyClient.on("notify_message", updateMessages);
-    this.notifyClient.on("notify_update", updateInternalSubscriptions);
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
-    this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
     this.notifyClient.on(
-      "notify_subscriptions_changed",
-      updateInternalSubscriptions
-    );
-    this.notifyClient.on(
-      // @ts-ignore
       "notify_subscriptions_changed",
       updateInternalSubscriptions
     );
@@ -116,7 +109,8 @@ export class Web3InboxClient {
       notifyClient,
       params.domain ?? window.location.origin
     );
-    Web3InboxClient.instance.subscriptionState.subscriptions =
+
+    Web3InboxClient.subscriptionState.subscriptions =
       notifyClient.subscriptions.getAll();
 
     Web3InboxClient.instance.attachEventListeners();
@@ -140,19 +134,22 @@ export class Web3InboxClient {
     account: string,
     cb: (subscription: NotifyClientTypes.NotifySubscription | null) => void
   ) {
-    return subscribe(this.subscriptionState, () => {
+    return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account));
     });
   }
 
-  protected getSubscriptionOrThrow(account: string) {
+  protected getSubscriptionOrThrow(account: string, func: string) {
     const subs = Object.values(
-      this.notifyClient.getActiveSubscriptions({ account })
+      this.notifyClient.getActiveSubscriptions({
+        account: Web3InboxClient.clientState.account,
+      })
     );
+
     const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
 
     if (!sub) {
-      const errMsg = `No subscription for user ${account} found.`;
+      const errMsg = `No subscription for user ${account} found ::::  ${func}, currentSubs: ${subs.length} ;;; this.account : ${Web3InboxClient.clientState.account}`;
       this.core.logger.error(errMsg);
     }
 
@@ -164,7 +161,7 @@ export class Web3InboxClient {
     account: string;
     scope: string[];
   }): Promise<boolean> {
-    const sub = this.getSubscriptionOrThrow(params.account);
+    const sub = this.getSubscriptionOrThrow(params.account, "update");
 
     if (sub) {
       return this.notifyClient.update({
@@ -180,7 +177,10 @@ export class Web3InboxClient {
   public getNotificationTypes(params: {
     account: string;
   }): NotifyClientTypes.ScopeMap {
-    const sub = this.getSubscriptionOrThrow(params.account);
+    const sub = this.getSubscriptionOrThrow(
+      params.account,
+      "getNotificationTypes"
+    );
 
     if (sub) {
       return sub.scope;
@@ -192,7 +192,10 @@ export class Web3InboxClient {
   public getMessageHistory(params: {
     account: string;
   }): NotifyClientTypes.NotifyMessageRecord[] {
-    const sub = this.getSubscriptionOrThrow(params.account);
+    const sub = this.getSubscriptionOrThrow(
+      params.account,
+      "getMessageHistory"
+    );
 
     if (sub) {
       const msgHistory = this.notifyClient.getMessageHistory({
@@ -258,9 +261,7 @@ export class Web3InboxClient {
 
   // unsubscribe from dapp
   public async unsubscribeFromCurrentDapp(params: { account: string }) {
-    const sub = this.getSubscriptionOrThrow(params.account);
-
-    console.log("UNSUBSCR .>>>>>");
+    const sub = this.getSubscriptionOrThrow(params.account, "unsubscribe");
 
     if (sub) {
       await this.notifyClient.deleteSubscription({ topic: sub.topic });
@@ -268,7 +269,7 @@ export class Web3InboxClient {
   }
 
   public watchIsSubscribed(account: string, cb: (isSubbed: boolean) => void) {
-    return subscribe(this.subscriptionState, () => {
+    return subscribe(Web3InboxClient.subscriptionState, () => {
       console.log(
         "Watching subscription!, isSubscribed: ",
         this.isSubscribedToCurrentDapp({ account })
@@ -282,7 +283,7 @@ export class Web3InboxClient {
     account: string,
     cb: (scopeMap: NotifyClientTypes.ScopeMap) => void
   ) {
-    return subscribe(this.subscriptionState, () => {
+    return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account)?.scope ?? {});
     });
   }
@@ -291,30 +292,30 @@ export class Web3InboxClient {
     account: string,
     cb: (messages: NotifyClientTypes.NotifyMessageRecord[]) => void
   ) {
-    return subscribe(this.subscriptionState, () => {
+    return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(Object.values(this.getMessageHistory({ account })));
     });
   }
 
   public openView() {
-    this.view.isOpen = true;
+    Web3InboxClient.view.isOpen = true;
   }
 
   public closeView() {
-    this.view.isOpen = false;
+    Web3InboxClient.view.isOpen = false;
   }
 
   public toggle() {
-    this.view.isOpen = !this.view.isOpen;
+    Web3InboxClient.view.isOpen = !Web3InboxClient.view.isOpen;
   }
 
   public getViewIsOpen() {
-    return this.view.isOpen;
+    return Web3InboxClient.view.isOpen;
   }
 
   public watchViewIsOpen(cb: (isOpen: boolean) => void) {
-    return subscribe(this.view, () => {
-      cb(this.view.isOpen);
+    return subscribe(Web3InboxClient.view, () => {
+      cb(Web3InboxClient.view.isOpen);
     });
   }
 

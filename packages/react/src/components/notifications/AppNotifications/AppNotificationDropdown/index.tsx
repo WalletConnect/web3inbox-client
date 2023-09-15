@@ -1,6 +1,10 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useW3iAccount, useManageSubscription } from "../../../../hooks";
+import {
+  useW3iAccount,
+  useManageSubscription,
+  useWeb3InboxClient,
+} from "../../../../hooks";
 import Dropdown from "../../../general/Dropdown/Dropdown";
 import NotificationMuteIcon from "../../../general/Icon/NotificationMuteIcon";
 import SettingIcon from "../../../general/Icon/SettingIcon";
@@ -22,6 +26,7 @@ const AppNotificationDropdown: React.FC<IAppNotificationDropdownProps> = ({
   closeDropdown,
 }) => {
   const { account } = useW3iAccount();
+  const client = useWeb3InboxClient();
   const nav = useNavigate();
   const { unsubscribe } = useManageSubscription({ account });
 

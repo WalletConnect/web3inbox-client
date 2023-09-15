@@ -23,10 +23,15 @@ export const PreferencesView: React.FC = () => {
       .map(([s]) => s)
   );
 
-  const handleUpdatePreferences = useCallback(async () => {
-    updateScopes(enabledScopes);
-    nav("/notifications");
-  }, [updateScopes, nav, enabledScopes]);
+  const handleUpdatePreferences = useCallback(
+    async (newScopes: string[]) => {
+      client?.once("notify_update", () => {
+        nav("/notifications");
+      });
+      updateScopes(newScopes);
+    },
+    [updateScopes, nav, client]
+  );
 
   console.log({ enabledScopes, scopes });
 
@@ -76,7 +81,7 @@ export const PreferencesView: React.FC = () => {
       <div className="PreferencesModal__action">
         <Button
           className="PreferencesModal__action__btn"
-          onClick={handleUpdatePreferences}
+          onClick={() => handleUpdatePreferences(enabledScopes)}
         >
           Update
         </Button>
