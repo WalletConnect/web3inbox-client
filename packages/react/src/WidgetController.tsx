@@ -142,8 +142,8 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
   const { setAccount, register } = useW3iAccount();
 
   useEffect(() => {
-    if (ready) {
-      setAccount(account ?? "");
+    if (ready && account) {
+      setAccount(account);
     }
   }, [setAccount, account, ready]);
 

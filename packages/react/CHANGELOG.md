@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.8
+
+### Patch Changes
+
+- Add checks on account
+- Updated dependencies
+  - @web3inbox/core@0.0.7
+
 ## 0.6.7
 
 ### Patch Changes

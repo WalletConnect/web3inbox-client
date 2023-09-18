@@ -6,8 +6,13 @@ import {
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
 import { ICore } from "@walletconnect/types";
-import { proxy, subscribe, useSnapshot } from "valtio";
+import { proxy, subscribe } from "valtio";
 
+interface IClientState {
+  isReady: boolean;
+  initting: boolean;
+  account?: string;
+}
 export class Web3InboxClient {
   private static instance: Web3InboxClient | null = null;
   public static subscriptionState: {
@@ -18,10 +23,10 @@ export class Web3InboxClient {
     isOpen: false,
   });
   public static initting = false;
-  public static clientState = proxy({
+  public static clientState = proxy<IClientState>({
     isReady: false,
     initting: false,
-    account: "",
+    account: undefined,
   });
 
   public constructor(
@@ -84,8 +89,10 @@ export class Web3InboxClient {
   }
 
   public watchAccount(cb: (acc: string) => void) {
+    const acc = Web3InboxClient.clientState.account;
+    if (!acc) return;
     return subscribe(Web3InboxClient.clientState, () => {
-      return cb(Web3InboxClient.clientState.account);
+      return cb(acc);
     });
   }
 
@@ -159,9 +166,13 @@ export class Web3InboxClient {
   }
 
   protected getSubscriptionOrThrow(account: string, func: string) {
+    const acc = Web3InboxClient.clientState.account;
+    if (!acc || !Boolean(acc)) {
+      return;
+    }
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({
-        account: Web3InboxClient.clientState.account,
+        account: acc,
       })
     );
 
