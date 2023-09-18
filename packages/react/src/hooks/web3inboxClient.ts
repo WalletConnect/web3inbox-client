@@ -1,15 +1,31 @@
 import { Web3InboxClient, useClientState } from "@web3inbox/core";
 import { useCallback, useEffect, useState } from "react";
 
-export const useInitWeb3InboxClient = (params: {
+export const useInitWeb3InboxClient = ({
+  projectId,
+  domain,
+}: {
   projectId: string;
   domain?: string;
 }) => {
   const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const handleInitClient = useCallback(async () => {
+    try {
+      await Web3InboxClient.init({ projectId, domain });
+      setIsInitialized(true);
+    } catch (error) {
+      console.log("Failed to initialize Web3InboxClient");
+      setIsInitialized(false);
+    }
+  }, [domain, projectId]);
 
   useEffect(() => {
-    Web3InboxClient.init(params);
-  }, [params]);
+    if (!isInitialized) {
+      handleInitClient();
+    }
+  }, [handleInitClient, isInitialized]);
 
   useEffect(() => {
     const unsub = Web3InboxClient.watchIsReady(setIsReady);
