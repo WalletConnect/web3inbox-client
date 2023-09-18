@@ -14,7 +14,7 @@ export const useMessages = (params: { account: string }) => {
     if (!client) return;
 
     setMessages(client.getMessageHistory({ account: params.account }));
-  }, [client, messagesTrigger, setMessages, params.account]);
+  }, [client, messagesTrigger, params.account]);
 
   const deleteMessage = useCallback(
     async (id: number) => {
@@ -72,7 +72,7 @@ export const useSubscription = (params: { account: string }) => {
     if (client) {
       setSubscription(client.getSubscription(params.account));
     }
-  }, [setSubscription, subscriptionsTrigger, params, client]);
+  }, [subscriptionsTrigger, params, client]);
 
   return { subscription };
 };
