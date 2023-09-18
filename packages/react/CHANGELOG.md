@@ -1,5 +1,11 @@
 # @web3inbox/widget-react
 
+## 0.6.11
+
+### Patch Changes
+
+- fix notify state hooks dependencies
+
 ## 0.6.10
 
 ### Patch Changes
