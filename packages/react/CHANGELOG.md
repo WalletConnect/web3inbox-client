@@ -1,5 +1,11 @@
 # @web3inbox/widget-react
 
+## 0.6.10
+
+### Patch Changes
+
+- Include latest build
+
 ## 0.6.9
 
 ### Patch Changes
