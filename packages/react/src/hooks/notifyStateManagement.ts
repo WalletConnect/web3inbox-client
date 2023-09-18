@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
+import { useSubscriptionState } from "@web3inbox/core";
+import { useCallback, useEffect, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
-import { Web3InboxClient, useSubscriptionState } from "@web3inbox/core";
 
 export const useMessages = (params: { account: string }) => {
   const client = useWeb3InboxClient();
@@ -87,7 +87,7 @@ export const useSubscriptionScopes = (params: { account: string }) => {
     if (client) {
       setSubScopes(client.getNotificationTypes(params));
     }
-  }, [client, params, setSubScopes]);
+  }, [client, params]);
 
   useEffect(() => {
     if (client) {
@@ -95,7 +95,7 @@ export const useSubscriptionScopes = (params: { account: string }) => {
 
       return sub();
     }
-  }, [client, params, setSubScopes]);
+  }, [client, params]);
 
   const updateScopes = useCallback(
     (scope: string[]) => {

@@ -1544,7 +1544,7 @@
     "@walletconnect/utils" "^2.7.3"
     isomorphic-unfetch "^3.1.0"
 
-"@walletconnect/identity-keys@^0.12.0-8d867":
+"@walletconnect/identity-keys@0.12.0-8d867", "@walletconnect/identity-keys@^0.12.0-8d867":
   version "0.12.0-8d867"
   resolved "https://registry.yarnpkg.com/@walletconnect/identity-keys/-/identity-keys-0.12.0-8d867.tgz#1db669fd2ecb8dd8d4cb83ca83ce3c6a8725a456"
   integrity sha512-XD5xWt2bKN83nW3hRs1YSXKHVzNLQcR5n9yNRWJcI3LmdYmVQ/s8RifEc4y23lKOmUP5gOqeXWa/JsWosh1fww==
@@ -1714,7 +1714,7 @@
     "@walletconnect/modal-core" "2.6.1"
     "@walletconnect/modal-ui" "2.6.1"
 
-"@walletconnect/notify-client@^0.12.0-434f609":
+"@walletconnect/notify-client@0.12.0-434f609":
   version "0.12.0-434f609"
   resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-0.12.0-434f609.tgz#57157f900f170389971c3726a8ffae519f7b2283"
   integrity sha512-OCbWMeHYYmUTgdOoyvJpzPYGoOM7Xv/LAGoebeQHm+JYoui4aWMqfs57gNcahsLrJVLcd2kBlGgKjokQJTl4rA==

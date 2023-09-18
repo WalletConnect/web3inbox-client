@@ -17,7 +17,7 @@ export const useInitWeb3InboxClient = (params: {
     return () => {
       unsub();
     };
-  }, [setIsReady]);
+  }, []);
 
   return isReady;
 };
@@ -34,13 +34,13 @@ export const useWeb3InboxClient = () => {
     return () => {
       unsub();
     };
-  }, [setIsReady]);
+  }, []);
 
   useEffect(() => {
     if (isReady) {
       setClient(Web3InboxClient.getInstance());
     }
-  }, [isReady, setClient]);
+  }, [isReady]);
 
   return client;
 };
