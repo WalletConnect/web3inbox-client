@@ -1,5 +1,11 @@
 # @web3inbox/widget-react
 
+## 0.6.9
+
+### Patch Changes
+
+- fix useInitWeb3InboxClient hook
+
 ## 0.6.8
 
 ### Patch Changes
