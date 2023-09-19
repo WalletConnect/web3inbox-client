@@ -35,22 +35,22 @@ export class Web3InboxClient {
     private domain: string
   ) {}
 
+  //TODO: Make more efficient - this is very slow.
+  private updateMessages() {
+    Web3InboxClient.subscriptionState.messages = this.notifyClient.messages
+      .getAll()
+      .map((m) => Object.values(m.messages))
+      .flat()
+      .flat();
+  }
+
   protected attachEventListeners(): void {
     const updateInternalSubscriptions = () => {
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
     };
 
-    //TODO: Make more efficient - this is very slow.
-    const updateMessages = () => {
-      Web3InboxClient.subscriptionState.messages = this.notifyClient.messages
-        .getAll()
-        .map((m) => Object.values(m.messages))
-        .flat()
-        .flat();
-    };
-
-    this.notifyClient.on("notify_message", updateMessages);
+    this.notifyClient.on("notify_message", this.updateMessages);
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
@@ -252,6 +252,7 @@ export class Web3InboxClient {
   // delete notify message
   public deleteNotifyMessage(params: { id: number }): void {
     this.notifyClient.deleteNotifyMessage(params);
+    this.updateMessages();
   }
 
   // registers a blockchain account with an identity key if not yet registered on this client
