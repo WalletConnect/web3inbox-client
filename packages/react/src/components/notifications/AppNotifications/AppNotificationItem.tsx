@@ -41,7 +41,7 @@ const AppNotificationItem: React.FC<IAppNotificationProps> = ({
   const [show, setShow] = useState<boolean>(false);
   const [elementHeight, setElementHeight] = useState<number>(0);
   const [animating, setAnimating] = useState<boolean>(false);
-  const { deleteMessage } = useMessages({ account: "" });
+  const { deleteMessage } = useMessages();
 
   const messageRef = useRef<HTMLSpanElement | null>(null);
 
@@ -158,7 +158,6 @@ const AppNotificationItem: React.FC<IAppNotificationProps> = ({
             onClick={handleClearClick}
             className="AppNotificationsActions__clear"
           >
-            <img src={ClearIcon} />
             <div className="AppNotificationsActions__clear--text">Clear</div>
           </button>
           <button
