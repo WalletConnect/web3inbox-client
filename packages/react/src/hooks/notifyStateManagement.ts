@@ -3,19 +3,17 @@ import { useSubscriptionState } from "@web3inbox/core";
 import { useCallback, useEffect, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 
-export const useMessages = (params?: { account: string }) => {
+export const useMessages = (account?: string) => {
   const client = useWeb3InboxClient();
   const { messages: messagesTrigger } = useSubscriptionState();
   const [messages, setMessages] = useState<
     NotifyClientTypes.NotifyMessageRecord[]
-  >(client?.getMessageHistory(params) ?? []);
-
-  const account = params ? params.account : null;
+  >(client?.getMessageHistory(account) ?? []);
 
   useEffect(() => {
     if (!client) return;
 
-    setMessages(client.getMessageHistory(account ? { account } : undefined));
+    setMessages(client.getMessageHistory(account));
   }, [client, messagesTrigger, account]);
 
   const deleteMessage = useCallback(
@@ -30,26 +28,22 @@ export const useMessages = (params?: { account: string }) => {
   return { messages, deleteMessage };
 };
 
-export const useManageSubscription = (params?: { account: string }) => {
+export const useManageSubscription = (account?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [isSubscribed, setIsSubscribed] = useState<boolean>(
-    client?.isSubscribedToCurrentDapp(params) ?? false
+    client?.isSubscribedToCurrentDapp(account) ?? false
   );
-
-  const account = params ? params.account : null;
 
   useEffect(() => {
     if (!client) return;
 
-    setIsSubscribed(
-      client.isSubscribedToCurrentDapp(account ? { account } : undefined)
-    );
+    setIsSubscribed(client.isSubscribedToCurrentDapp(account));
   }, [client, subscriptionsTrigger, account]);
 
   const subscribe = useCallback(() => {
     if (client) {
-      client.subscribeToCurrentDapp(account ? { account } : undefined);
+      client.subscribeToCurrentDapp(account);
     } else {
       console.error("Trying to subscribe before init");
     }
@@ -57,7 +51,7 @@ export const useManageSubscription = (params?: { account: string }) => {
 
   const unsubscribe = useCallback(() => {
     if (client) {
-      client.unsubscribeFromCurrentDapp(account ? { account } : undefined);
+      client.unsubscribeFromCurrentDapp(account);
     } else {
       console.error("Trying to unsubscribe before init");
     }
@@ -66,7 +60,7 @@ export const useManageSubscription = (params?: { account: string }) => {
   return { subscribe, unsubscribe, isSubscribed };
 };
 
-export const useSubscription = ({ account }: { account: string }) => {
+export const useSubscription = (account?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subscription, setSubscription] =
@@ -83,19 +77,15 @@ export const useSubscription = ({ account }: { account: string }) => {
   return { subscription };
 };
 
-export const useSubscriptionScopes = (params?: { account: string }) => {
+export const useSubscriptionScopes = (account?: string) => {
   const client = useWeb3InboxClient();
   const [subScopes, setSubScopes] = useState<NotifyClientTypes.ScopeMap>(
-    client?.getNotificationTypes(params) ?? {}
+    client?.getNotificationTypes(account) ?? {}
   );
-
-  const account = params ? params.account : undefined;
 
   useEffect(() => {
     if (client) {
-      setSubScopes(
-        client.getNotificationTypes(account ? { account } : undefined)
-      );
+      setSubScopes(client.getNotificationTypes(account));
     }
   }, [client, account]);
 
@@ -110,7 +100,7 @@ export const useSubscriptionScopes = (params?: { account: string }) => {
   const updateScopes = useCallback(
     (scope: string[]) => {
       if (client) {
-        return client.update({ account, scope });
+        return client.update(scope, account);
       } else {
         console.error("Trying to update subscribe before init");
         return Promise.resolve(false);

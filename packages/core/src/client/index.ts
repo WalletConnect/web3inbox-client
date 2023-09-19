@@ -79,12 +79,10 @@ export class Web3InboxClient {
   }
 
   public setAccount(account: string) {
-    console.log("acc << Setting acc");
     Web3InboxClient.clientState.account = account;
   }
 
   public getAccount() {
-    console.log("acc << Getting acc", Web3InboxClient.clientState.account);
     return Web3InboxClient.clientState.account;
   }
 
@@ -197,19 +195,16 @@ export class Web3InboxClient {
   }
 
   // update notify subscription
-  public async update(params: {
-    account?: string;
-    scope: string[];
-  }): Promise<boolean> {
+  public async update(scope: string[], account?: string): Promise<boolean> {
     const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(params.account),
+      this.getRequiredAccountParam(account),
       "update"
     );
 
     if (sub) {
       return this.notifyClient.update({
         topic: sub.topic,
-        scope: params.scope,
+        scope,
       });
     }
 
@@ -217,11 +212,9 @@ export class Web3InboxClient {
   }
 
   // query notification types available for a dapp domain
-  public getNotificationTypes(params?: {
-    account: string;
-  }): NotifyClientTypes.ScopeMap {
+  public getNotificationTypes(account?: string): NotifyClientTypes.ScopeMap {
     const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(params?.account),
+      this.getRequiredAccountParam(account),
       "getNotificationTypes"
     );
 
@@ -232,11 +225,11 @@ export class Web3InboxClient {
   }
 
   // get all messages for a subscription
-  public getMessageHistory(params?: {
-    account: string;
-  }): NotifyClientTypes.NotifyMessageRecord[] {
+  public getMessageHistory(
+    account?: string
+  ): NotifyClientTypes.NotifyMessageRecord[] {
     const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(params?.account),
+      this.getRequiredAccountParam(account),
       "getMessageHistory"
     );
 
@@ -284,19 +277,15 @@ export class Web3InboxClient {
 
   // Using `window.location.origin` it will check if the user is subscribed
   // to current dapp
-  public isSubscribedToCurrentDapp(params?: { account: string }): boolean {
-    const sub = this.getSubscription(
-      this.getRequiredAccountParam(params?.account)
-    );
+  public isSubscribedToCurrentDapp(account?: string): boolean {
+    const sub = this.getSubscription(this.getRequiredAccountParam(account));
 
     return Boolean(sub);
   }
 
   // Subscribe to current dapp using `window.location.origin`
-  public async subscribeToCurrentDapp(params?: {
-    account: string;
-  }): Promise<void> {
-    const acc = this.getRequiredAccountParam(params?.account);
+  public async subscribeToCurrentDapp(account?: string): Promise<void> {
+    const acc = this.getRequiredAccountParam(account);
     const existingSub = this.getSubscription(acc);
     if (existingSub) {
       return;
@@ -311,9 +300,9 @@ export class Web3InboxClient {
   }
 
   // unsubscribe from dapp
-  public async unsubscribeFromCurrentDapp(params?: { account: string }) {
+  public async unsubscribeFromCurrentDapp(account?: string) {
     const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(params?.account),
+      this.getRequiredAccountParam(account),
       "unsubscribe"
     );
 
@@ -324,11 +313,7 @@ export class Web3InboxClient {
 
   public watchIsSubscribed(cb: (isSubbed: boolean) => void, account?: string) {
     return subscribe(Web3InboxClient.subscriptionState, () => {
-      cb(
-        this.isSubscribedToCurrentDapp({
-          account: this.getRequiredAccountParam(account),
-        })
-      );
+      cb(this.isSubscribedToCurrentDapp(this.getRequiredAccountParam(account)));
     });
   }
 
@@ -348,9 +333,7 @@ export class Web3InboxClient {
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(
         Object.values(
-          this.getMessageHistory({
-            account: this.getRequiredAccountParam(account),
-          })
+          this.getMessageHistory(this.getRequiredAccountParam(account))
         )
       );
     });
