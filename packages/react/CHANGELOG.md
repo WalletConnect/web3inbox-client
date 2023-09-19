@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.13
+
+### Patch Changes
+
+- Fix not receiving messages"
+- Updated dependencies
+  - @web3inbox/core@0.0.9
+
 ## 0.6.12
 
 ### Patch Changes
