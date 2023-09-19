@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.12
+
+### Patch Changes
+
+- Make account optional
+- Updated dependencies
+  - @web3inbox/core@0.0.8
+
 ## 0.6.11
 
 ### Patch Changes

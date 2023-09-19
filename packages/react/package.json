@@ -1,6 +1,6 @@
 {
   "name": "@web3inbox/widget-react",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
