@@ -36,12 +36,14 @@ export class Web3InboxClient {
   ) {}
 
   //TODO: Make more efficient - this is very slow.
-  private updateMessages() {
-    Web3InboxClient.subscriptionState.messages = this.notifyClient.messages
-      .getAll()
-      .map((m) => Object.values(m.messages))
-      .flat()
-      .flat();
+  private static updateMessages() {
+    Web3InboxClient.subscriptionState.messages =
+      Web3InboxClient.instance?.notifyClient.messages
+        .getAll()
+        .filter((m) => m)
+        .map((m) => Object.values(m?.messages))
+        .flat()
+        .flat() ?? [];
   }
 
   protected attachEventListeners(): void {
@@ -50,7 +52,7 @@ export class Web3InboxClient {
         this.notifyClient.subscriptions.getAll();
     };
 
-    this.notifyClient.on("notify_message", this.updateMessages);
+    this.notifyClient.on("notify_message", Web3InboxClient.updateMessages);
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
@@ -148,14 +150,24 @@ export class Web3InboxClient {
     if (account) return account;
     else if (Web3InboxClient.clientState.account)
       return Web3InboxClient.clientState.account;
-    else
-      throw "An account needs to be passed, or previously set account using setAccount";
+    else {
+      console.log(
+        "An account needs to be passed, or previously set account using setAccount"
+      );
+      return;
+    }
   }
 
   public getSubscription(account?: string) {
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      return null;
+    }
+
     const subs = Object.values(
       this.notifyClient.getActiveSubscriptions({
-        account: this.getRequiredAccountParam(account),
+        account: accountOrInternalAccount,
       })
     );
 
@@ -196,10 +208,11 @@ export class Web3InboxClient {
 
   // update notify subscription
   public async update(scope: string[], account?: string): Promise<boolean> {
-    const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(account),
-      "update"
-    );
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+    if (!accountOrInternalAccount) {
+      return false;
+    }
+    const sub = this.getSubscriptionOrThrow(accountOrInternalAccount, "update");
 
     if (sub) {
       return this.notifyClient.update({
@@ -213,8 +226,14 @@ export class Web3InboxClient {
 
   // query notification types available for a dapp domain
   public getNotificationTypes(account?: string): NotifyClientTypes.ScopeMap {
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      return {};
+    }
+
     const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(account),
+      accountOrInternalAccount,
       "getNotificationTypes"
     );
 
@@ -228,8 +247,14 @@ export class Web3InboxClient {
   public getMessageHistory(
     account?: string
   ): NotifyClientTypes.NotifyMessageRecord[] {
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      return [];
+    }
+
     const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(account),
+      accountOrInternalAccount,
       "getMessageHistory"
     );
 
@@ -252,7 +277,7 @@ export class Web3InboxClient {
   // delete notify message
   public deleteNotifyMessage(params: { id: number }): void {
     this.notifyClient.deleteNotifyMessage(params);
-    this.updateMessages();
+    Web3InboxClient.updateMessages();
   }
 
   // registers a blockchain account with an identity key if not yet registered on this client
@@ -270,6 +295,8 @@ export class Web3InboxClient {
         isLimited: true,
       });
 
+      console.log({ regRs });
+
       return regRs;
     } catch (e) {
       throw new Error("Failed to register");
@@ -286,14 +313,20 @@ export class Web3InboxClient {
 
   // Subscribe to current dapp using `window.location.origin`
   public async subscribeToCurrentDapp(account?: string): Promise<void> {
-    const acc = this.getRequiredAccountParam(account);
-    const existingSub = this.getSubscription(acc);
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      console.error("Failed to subscribe since no account has been set");
+      return;
+    }
+
+    const existingSub = this.getSubscription(account);
     if (existingSub) {
       return;
     }
 
     await this.notifyClient.subscribe({
-      account: acc,
+      account: accountOrInternalAccount,
       appDomain: this.domain,
     });
 
@@ -302,8 +335,15 @@ export class Web3InboxClient {
 
   // unsubscribe from dapp
   public async unsubscribeFromCurrentDapp(account?: string) {
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      console.error("Failed to unsubscribe since no account has been set");
+      return;
+    }
+
     const sub = this.getSubscriptionOrThrow(
-      this.getRequiredAccountParam(account),
+      accountOrInternalAccount,
       "unsubscribe"
     );
 
