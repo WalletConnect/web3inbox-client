@@ -155,6 +155,12 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
 
   const { isOpen } = useManageView();
 
+  useEffect(() => {
+    console.warn(
+      "The use of this widget is not recommended as it is in extremely early stages of development"
+    );
+  }, []);
+
   return (
     <div
       className="W3iWidget"
