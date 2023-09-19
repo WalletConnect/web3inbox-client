@@ -7,7 +7,6 @@ import { Navigate } from "react-router-dom";
 
 const WidgetConnect: React.FC<{ onConnect: () => void }> = ({ onConnect }) => {
   const { icons, name } = useMetadata();
-  const { account } = useW3iAccount();
 
   return (
     <div className="WidgetConnect">

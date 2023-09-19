@@ -13,10 +13,9 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export const PreferencesView: React.FC = () => {
-  const { account } = useW3iAccount();
   const client = useWeb3InboxClient();
   const nav = useNavigate();
-  const { scopes, updateScopes } = useSubscriptionScopes({ account });
+  const { scopes, updateScopes } = useSubscriptionScopes();
   const [enabledScopes, setEnabledScopes] = useState(
     Object.entries(scopes)
       .filter(([_, s]) => s.enabled)
@@ -32,8 +31,6 @@ export const PreferencesView: React.FC = () => {
     },
     [updateScopes, nav, client]
   );
-
-  console.log({ enabledScopes, scopes });
 
   return (
     <div className="PreferencesModal">

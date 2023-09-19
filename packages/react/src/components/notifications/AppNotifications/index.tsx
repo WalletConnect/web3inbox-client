@@ -29,8 +29,8 @@ const AppNotifications = () => {
   >();
 
   const { account } = useW3iAccount();
-  const { subscription: app } = useSubscription({ account });
-  const { messages: notifications } = useMessages({ account });
+  const { subscription: app } = useSubscription();
+  const { messages: notifications } = useMessages();
 
   const metadata = useMetadata();
 

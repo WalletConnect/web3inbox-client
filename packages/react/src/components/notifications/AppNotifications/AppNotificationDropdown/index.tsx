@@ -25,10 +25,8 @@ const AppNotificationDropdown: React.FC<IAppNotificationDropdownProps> = ({
   h,
   closeDropdown,
 }) => {
-  const { account } = useW3iAccount();
-  const client = useWeb3InboxClient();
   const nav = useNavigate();
-  const { unsubscribe } = useManageSubscription({ account });
+  const { unsubscribe } = useManageSubscription();
 
   const handleUnsubscribe = useCallback(() => {
     closeDropdown();

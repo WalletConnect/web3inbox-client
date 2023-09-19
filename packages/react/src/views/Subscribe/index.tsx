@@ -17,9 +17,7 @@ const WidgetSubscribe: React.FC = () => {
 
   const [isSubscribing, setIsSubscribing] = useState(false);
   const { account } = useW3iAccount();
-  const { isSubscribed, subscribe } = useManageSubscription({
-    account,
-  });
+  const { isSubscribed, subscribe } = useManageSubscription();
 
   console.log({ isSubscribed });
 
