@@ -187,7 +187,7 @@ export class Web3InboxClient {
     const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
 
     if (!sub) {
-      const errMsg = `No subscription for user ${account} found ::::  ${func}, currentSubs: ${subs.length} ;;; this.account : ${Web3InboxClient.clientState.account}`;
+      const errMsg = `No subscription for user ${account} found, running ${func}, currentSubs: ${subs.length} with this.account : ${Web3InboxClient.clientState.account}`;
       this.core.logger.error(errMsg);
     }
 

@@ -6,8 +6,8 @@ const W3iRouter: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const nav = useNavigate();
   const { pathname } = useLocation();
   const { account } = useW3iAccount();
-  const { isSubscribed } = useManageSubscription({ account });
-  const { subscription } = useSubscription({ account });
+  const { isSubscribed } = useManageSubscription();
+  const { subscription } = useSubscription();
 
   useEffect(() => {
     switch (pathname) {
