@@ -185,7 +185,7 @@ export class Web3InboxClient {
     });
   }
 
-  protected getSubscriptionOrThrow(account: string, func: string) {
+  protected getSubscriptionOrThrow() {
     const acc = Web3InboxClient.clientState.account;
     if (!acc || !Boolean(acc)) {
       return;
@@ -198,10 +198,8 @@ export class Web3InboxClient {
 
     const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
 
-    if (!sub) {
-      const errMsg = `No subscription for user ${account} found, running ${func}, currentSubs: ${subs.length} with this.account : ${Web3InboxClient.clientState.account}`;
-      this.core.logger.error(errMsg);
-    }
+    // TODO: Create more sophisticated error handling
+    // https://github.com/WalletConnect/web3inbox-widget/issues/28
 
     return sub;
   }
@@ -212,7 +210,7 @@ export class Web3InboxClient {
     if (!accountOrInternalAccount) {
       return false;
     }
-    const sub = this.getSubscriptionOrThrow(accountOrInternalAccount, "update");
+    const sub = this.getSubscriptionOrThrow();
 
     if (sub) {
       return this.notifyClient.update({
@@ -232,10 +230,7 @@ export class Web3InboxClient {
       return {};
     }
 
-    const sub = this.getSubscriptionOrThrow(
-      accountOrInternalAccount,
-      "getNotificationTypes"
-    );
+    const sub = this.getSubscriptionOrThrow();
 
     if (sub) {
       return sub.scope;
@@ -253,10 +248,7 @@ export class Web3InboxClient {
       return [];
     }
 
-    const sub = this.getSubscriptionOrThrow(
-      accountOrInternalAccount,
-      "getMessageHistory"
-    );
+    const sub = this.getSubscriptionOrThrow();
 
     if (sub) {
       try {
@@ -342,10 +334,7 @@ export class Web3InboxClient {
       return;
     }
 
-    const sub = this.getSubscriptionOrThrow(
-      accountOrInternalAccount,
-      "unsubscribe"
-    );
+    const sub = this.getSubscriptionOrThrow();
 
     if (sub) {
       await this.notifyClient.deleteSubscription({ topic: sub.topic });

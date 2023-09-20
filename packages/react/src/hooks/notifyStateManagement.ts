@@ -79,6 +79,7 @@ export const useSubscription = (account?: string) => {
 
 export const useSubscriptionScopes = (account?: string) => {
   const client = useWeb3InboxClient();
+  const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subScopes, setSubScopes] = useState<NotifyClientTypes.ScopeMap>(
     client?.getNotificationTypes(account) ?? {}
   );
@@ -87,22 +88,14 @@ export const useSubscriptionScopes = (account?: string) => {
     if (client) {
       setSubScopes(client.getNotificationTypes(account));
     }
-  }, [client, account]);
-
-  useEffect(() => {
-    if (client) {
-      const sub = client.watchScopeMap(setSubScopes);
-
-      return sub();
-    }
-  }, [client, account]);
+  }, [client, account, subscriptionsTrigger]);
 
   const updateScopes = useCallback(
     (scope: string[]) => {
       if (client) {
         return client.update(scope, account);
       } else {
-        console.error("Trying to update subscribe before init");
+        console.error("Trying to update scope before init");
         return Promise.resolve(false);
       }
     },
