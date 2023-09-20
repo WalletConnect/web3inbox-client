@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.10
+
+### Patch Changes
+
+- Fix scope map returning empty
+
 ## 0.0.9
 
 ### Patch Changes
