@@ -115,7 +115,10 @@ export class Web3InboxClient {
 
     Web3InboxClient.clientState.initting = true;
 
-    const core = new Core(params);
+    const core = new Core({
+      customStoragePrefix: ":web3inbox-core",
+      projectId: params.projectId,
+    });
 
     const identityKeys = new IdentityKeys(core, DEFAULT_KEYSERVER_URL);
     const notifyParams = {
