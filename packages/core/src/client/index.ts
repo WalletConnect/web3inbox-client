@@ -48,6 +48,7 @@ export class Web3InboxClient {
     const updateInternalSubscriptions = () => {
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
+      Web3InboxClient.updateMessages();
     };
 
     this.notifyClient.on("notify_message", Web3InboxClient.updateMessages);
