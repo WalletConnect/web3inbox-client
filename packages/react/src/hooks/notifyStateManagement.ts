@@ -63,7 +63,8 @@ export const useManageSubscription = (account?: string) => {
       setIsUnsubscribing(true);
       client
         .unsubscribeFromCurrentDapp(account)
-        .then(() => setIsUnsubscribing(false));
+        .then(() => setIsUnsubscribing(false))
+        .catch(() => setIsUnsubscribing(false));
     } else {
       console.error(
         "Trying to unsubscribe before Web3Inbox Client was initialized"
