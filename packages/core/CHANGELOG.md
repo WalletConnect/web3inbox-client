@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.13
+
+### Patch Changes
+
+- Use async callbacks, expose identity key and subscription states
+
 ## 0.0.12
 
 ### Patch Changes
