@@ -32,7 +32,7 @@ export const useManageSubscription = (account?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [isSubscribed, setIsSubscribed] = useState<boolean>(
-    client?.isSubscribedToCurrentDapp(account) ?? false
+    () => client?.isSubscribedToCurrentDapp(account) ?? false
   );
 
   useEffect(() => {
