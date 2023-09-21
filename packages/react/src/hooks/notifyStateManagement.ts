@@ -35,6 +35,9 @@ export const useManageSubscription = (account?: string) => {
     () => client?.isSubscribedToCurrentDapp(account) ?? false
   );
 
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isUnsubscribing, setIsUnsubscribing] = useState(false);
+
   useEffect(() => {
     if (!client) return;
 
@@ -43,7 +46,11 @@ export const useManageSubscription = (account?: string) => {
 
   const subscribe = useCallback(() => {
     if (client) {
-      client.subscribeToCurrentDapp(account);
+      setIsSubscribing(true);
+      client
+        .subscribeToCurrentDapp(account)
+        .then(() => setIsSubscribing(false))
+        .catch(() => setIsSubscribing(false));
     } else {
       console.error(
         "Trying to subscribe before Web3Inbox Client was initialized"
@@ -53,7 +60,10 @@ export const useManageSubscription = (account?: string) => {
 
   const unsubscribe = useCallback(() => {
     if (client) {
-      client.unsubscribeFromCurrentDapp(account);
+      setIsUnsubscribing(true);
+      client
+        .unsubscribeFromCurrentDapp(account)
+        .then(() => setIsUnsubscribing(false));
     } else {
       console.error(
         "Trying to unsubscribe before Web3Inbox Client was initialized"
@@ -61,7 +71,13 @@ export const useManageSubscription = (account?: string) => {
     }
   }, [client, account]);
 
-  return { subscribe, unsubscribe, isSubscribed };
+  return {
+    subscribe,
+    unsubscribe,
+    isSubscribed,
+    isSubscribing,
+    isUnsubscribing,
+  };
 };
 
 export const useSubscription = (account?: string) => {

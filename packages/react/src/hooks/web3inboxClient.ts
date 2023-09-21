@@ -63,6 +63,7 @@ export const useWeb3InboxClient = () => {
 
 export const useW3iAccount = () => {
   const client = useWeb3InboxClient();
+  const [identityKey, setIdentityKey] = useState<string | null>(null);
 
   const { account } = useClientState();
 
@@ -80,14 +81,16 @@ export const useW3iAccount = () => {
   const register = useCallback(
     (onSign: (m: string) => Promise<string>) => {
       if (client && account) {
-        client.register({
-          account,
-          onSign,
-        });
+        client
+          .register({
+            account,
+            onSign,
+          })
+          .then(setIdentityKey);
       }
     },
     [client, account]
   );
 
-  return { account, setAccount, register };
+  return { account, setAccount, register, identityKey };
 };

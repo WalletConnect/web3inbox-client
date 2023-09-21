@@ -1,4 +1,4 @@
-import { Core } from "@walletconnect/core";
+i,mport { Core } from "@walletconnect/core";
 import { IdentityKeys } from "@walletconnect/identity-keys";
 import {
   DEFAULT_KEYSERVER_URL,
@@ -48,6 +48,7 @@ export class Web3InboxClient {
     const updateInternalSubscriptions = () => {
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
+      Web3InboxClient.updateMessages()
     };
 
     this.notifyClient.on("notify_message", Web3InboxClient.updateMessages);
