@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.17
+
+### Patch Changes
+
+- Use async callbacks, expose identity key and subscription states
+- Updated dependencies
+  - @web3inbox/core@0.0.13
+
 ## 0.6.16
 
 ### Patch Changes
