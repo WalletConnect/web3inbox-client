@@ -44,13 +44,16 @@ export const useManageSubscription = (account?: string) => {
     setIsSubscribed(client.isSubscribedToCurrentDapp(account));
   }, [client, subscriptionsTrigger, account]);
 
-  const subscribe = useCallback(() => {
+  const subscribe = useCallback(async () => {
     if (client) {
       setIsSubscribing(true);
-      client
-        .subscribeToCurrentDapp(account)
-        .then(() => setIsSubscribing(false))
-        .catch(() => setIsSubscribing(false));
+      try {
+        await client.subscribeToCurrentDapp(account);
+      } catch (e) {
+        console.error("Failed to subscribe", e);
+      } finally {
+        setIsSubscribing(false);
+      }
     } else {
       console.error(
         "Trying to subscribe before Web3Inbox Client was initialized"
@@ -58,13 +61,16 @@ export const useManageSubscription = (account?: string) => {
     }
   }, [client, account]);
 
-  const unsubscribe = useCallback(() => {
+  const unsubscribe = useCallback(async () => {
     if (client) {
       setIsUnsubscribing(true);
-      client
-        .unsubscribeFromCurrentDapp(account)
-        .then(() => setIsUnsubscribing(false))
-        .catch(() => setIsUnsubscribing(false));
+      try {
+        await client.unsubscribeFromCurrentDapp(account);
+      } catch (e) {
+        console.error("Failed to unsubscribe", e);
+      } finally {
+        setIsUnsubscribing(false);
+      }
     } else {
       console.error(
         "Trying to unsubscribe before Web3Inbox Client was initialized"

@@ -86,15 +86,18 @@ export const useW3iAccount = () => {
   }, [account]);
 
   const register = useCallback(
-    (onSign: (m: string) => Promise<string>) => {
+    async (onSign: (m: string) => Promise<string>) => {
       if (client && account) {
-        client
-          .register({
-            account,
-            onSign,
-          })
-          .then(setIdentityKey);
+        const identity = await client.register({
+          account,
+          onSign,
+        });
+
+        setIdentityKey(identity);
+        return identity;
       }
+
+      return null;
     },
     [client, account]
   );
