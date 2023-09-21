@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.11
+
+### Patch Changes
+
+- Improve performance and numerous bug fixes
+
 ## 0.0.10
 
 ### Patch Changes
