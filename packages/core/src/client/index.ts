@@ -41,9 +41,7 @@ export class Web3InboxClient {
       Web3InboxClient.instance?.notifyClient.messages
         .getAll()
         .filter((m) => m)
-        .map((m) => Object.values(m?.messages))
-        .flat()
-        .flat() ?? [];
+        .flatMap((m) => Object.values(m?.messages)) ?? [];
   }
 
   protected attachEventListeners(): void {
