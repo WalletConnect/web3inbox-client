@@ -45,7 +45,7 @@ export const useManageSubscription = (account?: string) => {
     if (client) {
       client.subscribeToCurrentDapp(account);
     } else {
-      console.error("Trying to subscribe before init");
+      console.error("Trying to subscribe before Web3Inbox Client was initialized");
     }
   }, [client, account]);
 
