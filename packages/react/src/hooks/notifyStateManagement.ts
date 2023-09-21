@@ -45,7 +45,9 @@ export const useManageSubscription = (account?: string) => {
     if (client) {
       client.subscribeToCurrentDapp(account);
     } else {
-      console.error("Trying to subscribe before Web3Inbox Client was initialized");
+      console.error(
+        "Trying to subscribe before Web3Inbox Client was initialized"
+      );
     }
   }, [client, account]);
 
@@ -53,7 +55,9 @@ export const useManageSubscription = (account?: string) => {
     if (client) {
       client.unsubscribeFromCurrentDapp(account);
     } else {
-      console.error("Trying to unsubscribe before init");
+      console.error(
+        "Trying to unsubscribe before Web3Inbox Client was initialized"
+      );
     }
   }, [client, account]);
 
@@ -95,7 +99,9 @@ export const useSubscriptionScopes = (account?: string) => {
       if (client) {
         return client.update(scope, account);
       } else {
-        console.error("Trying to update scope before init");
+        console.error(
+          "Trying to update scope before Web3Inbox Client was initialized "
+        );
         return Promise.resolve(false);
       }
     },
