@@ -1,5 +1,151 @@
 # @web3inbox/widget-react
 
+## 0.6.15
+
+### Patch Changes
+
+- Improve performance and numerous bug fixes
+- Updated dependencies
+  - @web3inbox/core@0.0.11
+
+## 0.6.14
+
+### Patch Changes
+
+- Fix scope map returning empty
+- Updated dependencies
+  - @web3inbox/core@0.0.10
+
+## 0.6.13
+
+### Patch Changes
+
+- Fix not receiving messages"
+- Updated dependencies
+  - @web3inbox/core@0.0.9
+
+## 0.6.12
+
+### Patch Changes
+
+- Make account optional
+- Updated dependencies
+  - @web3inbox/core@0.0.8
+
+## 0.6.11
+
+### Patch Changes
+
+- fix notify state hooks dependencies
+
+## 0.6.10
+
+### Patch Changes
+
+- Include latest build
+
+## 0.6.9
+
+### Patch Changes
+
+- fix useInitWeb3InboxClient hook
+
+## 0.6.8
+
+### Patch Changes
+
+- Add checks on account
+- Updated dependencies
+  - @web3inbox/core@0.0.7
+
+## 0.6.7
+
+### Patch Changes
+
+- fix hooks dependencies
+
+## 0.6.6
+
+### Patch Changes
+
+- Fix messages throw
+- Updated dependencies
+  - @web3inbox/core@0.0.6
+
+## 0.6.5
+
+### Patch Changes
+
+- Fix double init"
+- Updated dependencies
+  - @web3inbox/core@0.0.5
+
+## 0.6.4
+
+### Patch Changes
+
+- Refactor state management
+- Updated dependencies
+  - @web3inbox/core@0.0.4
+
+## 0.6.3
+
+### Patch Changes
+
+- Add centralized router
+- Updated dependencies
+  - @web3inbox/core@0.0.3
+
+## 0.6.0
+
+### Patch Changes
+
+- use latest deps
+
+## 0.6.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/core@0.6.0
+
+## 0.6.0
+
+### Patch Changes
+
+- remove peer-dep
+
+## 0.6.1
+
+### Patch Changes
+
+- rebuild using cjs
+
+## 0.6.0
+
+### Patch Changes
+
+- remove prepublish and use cjs
+
+## 0.6.0
+
+### Patch Changes
+
+- use cjs
+
+## 0.6.0
+
+### Minor Changes
+
+- 59b18ac: Use core
+
+### Patch Changes
+
+- Use cjs build
+- Updated dependencies
+- Updated dependencies [59b18ac]
+  - @web3inbox/core@0.6.0
+
 ## 0.5.9
 
 ### Patch Changes

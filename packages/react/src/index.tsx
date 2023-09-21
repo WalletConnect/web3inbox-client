@@ -1,9 +1,6 @@
-import * as React from "react";
+import "./views/Connect/Connect.scss";
+import "./views/Subscribe/Subscribe.scss";
 
-// component exports
-export { default as W3iWidget } from "./W3iWidget";
-export { default as W3iContext } from "./W3iContext";
-export { default as W3iButton } from "./W3iButton";
+export { W3iWidget, type W3iWidgetProps } from "./WidgetController";
 
-export { useManageW3iWidget } from "./hooks/widgetManagementHooks";
-export { useIsSubscribed } from "./hooks/accountManagementHooks";
+export * from "./hooks";

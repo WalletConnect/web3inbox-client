@@ -1,0 +1,83 @@
+@import '../../../../styles/mixins.scss';
+
+.AppNotificationsHeader {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  align-self: flex-start;
+  width: 100%;
+  @media only screen and (max-width: 700px) {
+    flex-direction: column;
+
+    padding: 0px 1.25rem 0px 0rem;
+  }
+
+  &__wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__selector {
+    @media only screen and (max-width: 700px) {
+      display: none;
+    }
+  }
+
+  &__plain {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-weight: 800;
+    @include padding-x(1em);
+
+    h2 {
+      font-weight: 1.25em;
+    }
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  &__secondary__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 10px;
+    @media only screen and (max-width: 700px) {
+      padding: 0 calc(1.25em - 0.4em);
+    }
+  }
+  &__app {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    &__logo {
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+    }
+    &__name {
+      color: var(--fg-color-1);
+
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 130%;
+      letter-spacing: -0.32px;
+    }
+  }
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    &__mobile {
+      flex-direction: column;
+    }
+  }
+}

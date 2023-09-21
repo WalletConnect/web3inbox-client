@@ -33,33 +33,14 @@ Refer to [changesets docs](https://github.com/changesets/changesets/tree/main#do
 ### Normal use case
 
 ```tsx
-import { W3iWidget, W3iContext } from "@web3inbox/react-widget";
+import { W3iWidget } from "@web3inbox/react-widget";
+import "@web3inbox/widget-react/dist/compiled.css";
 ...
 
-<W3iContext>
-  <W3iWidget
-    account="0xd7..."
-  />
+<W3iWidget
+    account="ep155:1:0xd7..."
+    onSign={() => {}}
+    onConnect={() => {}}
 </W3iContext>
 ```
-
-### Cherry-picking UI
-```tsx
-import { W3iWidget, W3iContext } from "@web3inbox/react-widget";
-...
-
-// Effectively a push only UI
-<W3iContext>
-  <W3iWidget
-    account="0xd7..."
-    chatEnabled={false}
-    settingsEnabled={false}
-  />
-</W3iContext>
-```
-
-
-
-
-
 

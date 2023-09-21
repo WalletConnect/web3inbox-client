@@ -1,3 +1,4 @@
+import { sassPlugin } from "esbuild-sass-plugin";
 import { defineConfig, Options } from "tsup";
 
 export default defineConfig((options: Options) => ({
@@ -7,6 +8,10 @@ export default defineConfig((options: Options) => ({
   banner: {
     js: "'use client'",
   },
+  loader: {
+    ".scss": "css",
+  },
+  esbuildPlugins: [sassPlugin()],
   clean: true,
   format: ["cjs", "esm"],
   external: ["react"],
