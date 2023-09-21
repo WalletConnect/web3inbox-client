@@ -78,6 +78,13 @@ export const useW3iAccount = () => {
     [client]
   );
 
+  // Account for the changing of the account
+  useEffect(() => {
+    if (!account) {
+      setIdentityKey(null);
+    }
+  }, [account]);
+
   const register = useCallback(
     (onSign: (m: string) => Promise<string>) => {
       if (client && account) {
