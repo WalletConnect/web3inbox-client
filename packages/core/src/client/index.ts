@@ -287,7 +287,6 @@ export class Web3InboxClient {
         isLimited: true,
       });
 
-      console.log({ regRs });
 
       return regRs;
     } catch (e) {
