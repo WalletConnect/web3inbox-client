@@ -129,9 +129,7 @@ export class Web3InboxClient {
       logger: "debug",
     };
 
-    const notifyClient = await NotifyClient.init({
-      ...notifyParams,
-    });
+    const notifyClient = await NotifyClient.init(notifyParams);
 
     Web3InboxClient.instance = new Web3InboxClient(
       core,
