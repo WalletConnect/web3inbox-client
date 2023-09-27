@@ -133,7 +133,7 @@ export class Web3InboxClient {
     Web3InboxClient.instance = new Web3InboxClient(
       core,
       notifyClient,
-      params.domain ?? window.location.origin
+      params.domain ?? window.location.host
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
