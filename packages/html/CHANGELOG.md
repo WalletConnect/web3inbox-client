@@ -1,5 +1,11 @@
 # @web3inbox/widget-html
 
+## 0.5.10
+
+### Patch Changes
+
+- Default to origin
+
 ## 0.5.9
 
 ### Patch Changes

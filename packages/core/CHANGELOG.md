@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.15
+
+### Patch Changes
+
+- Default to origin
+
 ## 0.0.14
 
 ### Patch Changes
