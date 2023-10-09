@@ -147,7 +147,7 @@ export class Web3InboxClient {
     Web3InboxClient.clientState.initting = true;
 
     const core = new Core({
-      customStoragePrefix: ":w3i-core",
+      customStoragePrefix: "w3i-core",
       projectId: params.projectId,
     });
 
