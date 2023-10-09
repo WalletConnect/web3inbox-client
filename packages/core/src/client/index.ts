@@ -319,6 +319,9 @@ export class Web3InboxClient {
         isLimited: true,
       });
 
+      Web3InboxClient.clientState.registration = { account: params.account, identity: regRs };
+      Web3InboxClient.clientState.account = params.account;
+
       return regRs;
     } catch (e) {
       throw new Error("Failed to register");
