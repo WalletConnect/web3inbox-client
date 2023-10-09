@@ -12,6 +12,8 @@ interface IClientState {
   isReady: boolean;
   initting: boolean;
   account?: string;
+  // state is duplicated to guard against future data races
+ registration?: { account: string, identity: string}
 }
 export class Web3InboxClient {
   private static instance: Web3InboxClient | null = null;
@@ -27,6 +29,7 @@ export class Web3InboxClient {
     isReady: false,
     initting: false,
     account: undefined,
+    registration: undefined
   });
 
   public constructor(
@@ -79,8 +82,21 @@ export class Web3InboxClient {
     });
   }
 
-  public setAccount(account: string) {
-    Web3InboxClient.clientState.account = account;
+
+  /* Sets account and identity if already registered */
+  public async setAccount(account: string) {
+    // Account setting is duplicated to ensure it only gets updated once
+    // identity state is confirmed
+    if(await this.getAccountIsRegistered(account)) {
+      const identity = await this.notifyClient.identityKeys.getIdentity({ account });
+      Web3InboxClient.clientState.registration = { account, identity };
+      Web3InboxClient.clientState.account = account;
+    }
+    else {
+      // Changing to an account that has no identity should reset identity key.
+      Web3InboxClient.clientState.registration = undefined
+      Web3InboxClient.clientState.account = account;
+    }
   }
 
   public getAccount() {
@@ -93,6 +109,22 @@ export class Web3InboxClient {
     return subscribe(Web3InboxClient.clientState, () => {
       return cb(acc);
     });
+  }
+
+  public async getAccountIsRegistered(account: string) {
+    try {
+      const identity = await this.notifyClient.identityKeys.getIdentity({account})
+      return Boolean(identity);
+    }
+    catch (e) {
+      return false;
+    }
+  }
+
+  public watchAccountIsRegistered(account: string, cb: (isRegistered: boolean) => void) {
+    return subscribe(Web3InboxClient.clientState, async () => {
+      return cb(await this.getAccountIsRegistered(account))
+    })
   }
 
   // initializes the client with persisted storage and a network connection
