@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.20
+
+### Patch Changes
+
+- Make identity keys reactive state
+- Updated dependencies
+  - @web3inbox/core@0.0.17
+
 ## 0.6.19
 
 ### Patch Changes
