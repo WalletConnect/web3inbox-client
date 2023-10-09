@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.16
+
+### Patch Changes
+
+- Switch core to peer dep of widget
+
 ## 0.0.15
 
 ### Patch Changes

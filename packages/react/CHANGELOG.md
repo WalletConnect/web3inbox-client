@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.19
+
+### Patch Changes
+
+- Switch core to peer dep of widget
+- Updated dependencies
+  - @web3inbox/core@0.0.16
+
 ## 0.6.18
 
 ### Patch Changes
