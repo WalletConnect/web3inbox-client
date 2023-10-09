@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.21
+
+### Patch Changes
+
+- Update identity key on register
+- Updated dependencies
+  - @web3inbox/core@0.0.18
+
 ## 0.6.20
 
 ### Patch Changes

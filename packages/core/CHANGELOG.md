@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.18
+
+### Patch Changes
+
+- Update identity key on register
+
 ## 0.0.17
 
 ### Patch Changes
