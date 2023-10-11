@@ -3,18 +3,18 @@ import { useSubscriptionState } from "@web3inbox/core";
 import { useCallback, useEffect, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 
-export const useMessages = (account?: string) => {
+export const useMessages = (account?: string, domain?: string) => {
   const client = useWeb3InboxClient();
   const { messages: messagesTrigger } = useSubscriptionState();
   const [messages, setMessages] = useState<
     NotifyClientTypes.NotifyMessageRecord[]
-  >(client?.getMessageHistory(account) ?? []);
+  >(client?.getMessageHistory(account, domain) ?? []);
 
   useEffect(() => {
     if (!client) return;
 
     setMessages(client.getMessageHistory(account));
-  }, [client, messagesTrigger, account]);
+  }, [client, messagesTrigger, account, domain]);
 
   const deleteMessage = useCallback(
     async (id: number) => {
