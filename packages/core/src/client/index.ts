@@ -73,6 +73,9 @@ export class Web3InboxClient {
     );
   }
 
+  /**
+   * Get singleton instance of Web3InboxClient
+   */
   public static getInstance(): Web3InboxClient {
     if (Web3InboxClient.clientState.isReady && Web3InboxClient.instance) {
       return Web3InboxClient.instance;
@@ -83,10 +86,18 @@ export class Web3InboxClient {
     }
   }
 
+  /**
+   * Get if singleton instance of Web3InboxClient is ready for use
+   */
   public static getIsReady(): boolean {
     return Web3InboxClient.clientState.isReady;
   }
 
+  /**
+   * Watch if singleton instance of Web3InboxClient is ready for use
+   *
+   * @param cb - Callback that gets called when isReady updates
+   */
   public static watchIsReady(cb: (isReady: boolean) => void) {
     return subscribe(Web3InboxClient.clientState, () => {
       cb(Web3InboxClient.clientState.isReady);
@@ -94,7 +105,11 @@ export class Web3InboxClient {
   }
 
 
-  /* Sets account and identity if already registered */
+ /**
+  * Sets account. If identity has been previously registered, it sets that too.
+  *
+  * @params {string} account
+  */
   public async setAccount(account: string) {
     // Account setting is duplicated to ensure it only gets updated once
     // identity state is confirmed
@@ -110,10 +125,20 @@ export class Web3InboxClient {
     }
   }
 
+ /**
+  * Retrieve set account.
+  *
+  * @returns {string} Set account
+  */
   public getAccount() {
     return Web3InboxClient.clientState.account;
   }
 
+  /**
+   * Watch account as it changes.
+   *
+   * @param cb - Callback that gets called when account updates
+   */
   public watchAccount(cb: (acc: string) => void) {
     const acc = Web3InboxClient.clientState.account;
     if (!acc) return;
@@ -122,7 +147,15 @@ export class Web3InboxClient {
     });
   }
 
-  public async getAccountIsRegistered(account: string) {
+  /**
+   * Get if account has a registered identity
+   *
+   * @param {string} account - account to check identity for
+   * 
+   * @returns {boolean} isRegistered
+   */
+  
+  public async getAccountIsRegistered(account: string): boolean {
     try {
       const identity = await this.notifyClient.identityKeys.getIdentity({account})
       return Boolean(identity);
@@ -132,13 +165,27 @@ export class Web3InboxClient {
     }
   }
 
+  /**
+   * Watch account's identity registration status
+   *
+   * @param {string} account - account to watch identity for
+   * @param cb - callback that gets called when isRegistered 
+   */
   public watchAccountIsRegistered(account: string, cb: (isRegistered: boolean) => void) {
     return subscribe(Web3InboxClient.clientState, async () => {
       return cb(await this.getAccountIsRegistered(account))
     })
   }
 
-  // initializes the client with persisted storage and a network connection
+  /**
+   * Init a singleton instance of the Web3InboxClient
+   * 
+   * @param {Object} params - the params needed to init the client
+   * @param {string} params.projectId - your registered WalletConnect Cloud project ID
+   * @param {string} params.domain - The domain of the default dapp to target for functions.
+   *
+   * @returns {Object} Web3InboxClient
+   */
   public static async init(params: {
     projectId: string;
     domain?: string;
@@ -215,6 +262,13 @@ export class Web3InboxClient {
     return sub ?? null;
   }
 
+  /**
+   * Retrieve the subscription object
+   *
+   * @param {string} [account] - Account to get subscriptions for, defaulted to current account
+   *
+   * @returns {Object[]} Subscription Objects
+   */
   public getSubscriptions(account?: string) {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -231,6 +285,13 @@ export class Web3InboxClient {
     return subs;
   }
 
+  /**
+   * Watch the subscription for an account and domain combination
+   * 
+   * @param cb - Callback that gets called with the subscription every time it is updated
+   * @param {string} [account] - Account to watch subscription for, defaulted to current account
+   * @param {string} [domain] - Domain to watch subscription for, defaulted to one set in init.
+   */
   public watchSubscription(
     cb: (subscription: NotifyClientTypes.NotifySubscription | null) => void,
     account?: string,
@@ -241,6 +302,12 @@ export class Web3InboxClient {
     });
   }
 
+  /**
+   * Watch the subscriptions for an account
+   * 
+   * @param cb - Callback that gets called with the subscriptions every time they are updated
+   * @param {string} [account] - Account to watch subscriptions for, defaulted to current account
+   */
   public watchSubscriptions(
     cb: (subscriptions: NotifyClientTypes.NotifySubscription[]) => void,
     account?: string
@@ -250,7 +317,13 @@ export class Web3InboxClient {
     });
   }
 
-  // update notify subscription
+  /**
+   * Update a subscriptions for an account
+   * 
+   * @param {string[]} scope  - Active scopes array
+   * @param {string} [account] - Account to update subscription for, defaulted to current account
+   * @param {string} [domain] - Domain of subscription to update, defaulted to one set in init.
+   */
   public async update(scope: string[], account?: string, domain?: string): Promise<boolean> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
     if (!accountOrInternalAccount) {
@@ -268,7 +341,14 @@ export class Web3InboxClient {
     return false;
   }
 
-  // query notification types available for a dapp domain
+  /**
+   * Get notification types for a subscription
+   * 
+   * @param {string} [account] - Account to get subscription notification types for, defaulted to current account
+   * @param {string} [domain] - Domain to get subscription notification types for, defaulted to one set in init.
+   *
+   * @returns {Object[]} scope map  - Active scopes array
+   */
   public getNotificationTypes(account?: string, domain?: string): NotifyClientTypes.ScopeMap {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -284,7 +364,14 @@ export class Web3InboxClient {
     return {};
   }
 
-  // get all messages for a subscription
+  /**
+   * Get message history for a subscription
+   * 
+   * @param {string} [account] - Account to get subscription message history for, defaulted to current account
+   * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
+   *
+   * @returns {Object[]} messages  - Message Record array
+   */
   public getMessageHistory(
     account?: string,
     domain?: string
@@ -313,15 +400,26 @@ export class Web3InboxClient {
     return [];
   }
 
-  // delete notify message
+  /**
+   * Delete message from message history 
+   * 
+   * @param {Object} params - Params to delete a message
+   * @param {number} params.id - ID of message to delete
+   */
   public deleteNotifyMessage(params: { id: number }): void {
     this.notifyClient.deleteNotifyMessage(params);
     Web3InboxClient.updateMessages();
   }
 
-  // registers a blockchain account with an identity key if not yet registered on this client
-  // additionally register sync keys
-  // returns the public identity key.
+  /**
+   * Register account on keyserver, allowing them to subscribe
+   * 
+   * @param {string} account - Account to register.
+   * @param onSign - Signing callback
+   * @param {string} [domain] - Domain to register to, defaulted to one set in init.
+   *
+   * @returns {string} identityKey  - Registered identity
+   */
   public async register(params: {
     account: string;
     onSign: (m: string) => Promise<string>;
@@ -344,21 +442,41 @@ export class Web3InboxClient {
     }
   }
 
+  /**
+   * Check if account is subscribed to a dapp
+   * 
+   * @param {string} [account] - Account to check subscription status of , defaulted to current account
+   * @param {string} [domain] - Domain to get subscription status of, defaulted to one set in init.
+   *
+   * @returns {boolean} isSubscribed
+   */
   public isSubscribedToDapp(account?: string, domain?: string) {
     const sub = this.getSubscription(account, domain);
 
     return Boolean(sub);
   }
 
-  // Using `window.location.origin` it will check if the user is subscribed
-  // to current dapp
+  /**
+   * Check if account is subscribed to current dapp
+   * 
+   * @param {string} [account] - Account to get subscription status of, defaulted to current account
+   *
+   * @returns {boolean} isSubscribed
+   */
   public isSubscribedToCurrentDapp(account?: string): boolean {
     const sub = this.getSubscription(account);
 
     return Boolean(sub);
   }
 
-  public async subscribeToDapp(domain: string, account?: string): Promise<void> {
+  /**
+   * Subscribe to a dapp
+   * 
+   * @param {string} [account] - Account to subscribe with, defaulted to current account
+   * @param {string} [domain] - Domain to subscribe to, defaulted to one set in init.
+   *
+   */
+  public async subscribeToDapp(account?: string, domain?: string): Promise<void> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
@@ -378,12 +496,24 @@ export class Web3InboxClient {
 
   }
 
-  // Subscribe to current dapp using `window.location.origin`
+  /**
+   * Subscribe to current dapp
+   * 
+   * @param {string} [account] - Account to subscribe with, defaulted to current account
+   *
+   */
   public async subscribeToCurrentDapp(account?: string): Promise<void> {
     await this.subscribeToDapp(this.domain, account);
   }
 
-  public async unsubscribeFromDapp(domain: string, account?: string) {
+  /**
+   * Unsubscribe from a dapp
+   * 
+   * @param {string} [account] - Account to unsubscribe with, defaulted to current account
+   * @param {string} [domain] - Domain to unsubscribe from, defaulted to one set in init.
+   *
+   */
+  public async unsubscribeFromDapp(account?: string, domain?: string) {
 
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -399,16 +529,38 @@ export class Web3InboxClient {
     }
   }
 
+  /**
+   * Unsubscribe from current dapp
+   * 
+   * @param {string} [account] - Account to unsubscribe with, defaulted to current account
+   *
+   */
   public async unsubscribeFromCurrentDapp(account?: string) {
     await this.unsubscribeFromDapp(this.domain, account);
   }
 
+  /**
+   * Watch if account is subscribed to a dapp
+   * 
+   * @param cb - callback that gets called every time isSubbed status changes
+   * @param {string} [account] - Account to watch subscriptions for, defaulted to current account
+   * @param {string} [domain] - Domain to watch subscriptions for, defaulted to one set in init.
+   *
+   */
   public watchIsSubscribed(cb: (isSubbed: boolean) => void, account?: string, domain?: string) {
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.isSubscribedToDapp(domain ?? this.domain, account));
     });
   }
 
+  /**
+   * Watch scope map (notification types) for a subscription
+   * 
+   * @param cb - callback that gets called every time the scope map changes
+   * @param {string} [account] - Account to watch subscription's scope map for, defaulted to current account
+   * @param {string} [domain] - Domain to watch subscription's scope map for, defaulted to one set in init.
+   *
+   */
   public watchScopeMap(
     cb: (scopeMap: NotifyClientTypes.ScopeMap) => void,
     account?: string,
@@ -419,6 +571,14 @@ export class Web3InboxClient {
     });
   }
 
+  /**
+   * Watch messagees for a subscription
+   * 
+   * @param cb - callback that gets called every time messages update
+   * @param {string} [account] - Account to watch subscription's messages for, defaulted to current account
+   * @param {string} [domain] - Domain to watch subscription's messages for, defaulted to one set in init.
+   *
+   */
   public watchMessages(
     cb: (messages: NotifyClientTypes.NotifyMessageRecord[]) => void,
     account?: string,
