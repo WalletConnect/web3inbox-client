@@ -45,6 +45,19 @@ export class Web3InboxClient {
         .flatMap((m) => Object.values(m?.messages)) ?? [];
   }
 
+  private getRequiredAccountParam(account?: string) {
+    if (account) return account;
+    else if (Web3InboxClient.clientState.account)
+      return Web3InboxClient.clientState.account;
+    else {
+      console.log(
+        "An account needs to be passed, or previously set account using setAccount"
+      );
+      return;
+    }
+  }
+
+
   protected attachEventListeners(): void {
     const updateInternalSubscriptions = () => {
       Web3InboxClient.subscriptionState.subscriptions =
@@ -175,18 +188,14 @@ export class Web3InboxClient {
     return Web3InboxClient.instance;
   }
 
-  private getRequiredAccountParam(account?: string) {
-    if (account) return account;
-    else if (Web3InboxClient.clientState.account)
-      return Web3InboxClient.clientState.account;
-    else {
-      console.log(
-        "An account needs to be passed, or previously set account using setAccount"
-      );
-      return;
-    }
-  }
-
+  /**
+   * Retrieve the subscription object
+   *
+   * @param {string} [account] - Account to get subscription for, defaulted to current account
+   * @param {string} [domain] - Domain to get subscription for, defaulted to one set in init.
+   *
+   * @returns {Object} Subscription Object
+   */
   public getSubscription(account?: string, domain?: string) {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
