@@ -1,5 +1,29 @@
 # @web3inbox/core
 
+## 0.0.19
+
+### Patch Changes
+
+- Expose isRegistering
+
+## 0.0.18
+
+### Patch Changes
+
+- Update identity key on register
+
+## 0.0.17
+
+### Patch Changes
+
+- Make identity keys reactive state
+
+## 0.0.16
+
+### Patch Changes
+
+- Switch core to peer dep of widget
+
 ## 0.0.15
 
 ### Patch Changes

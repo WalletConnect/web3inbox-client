@@ -1,6 +1,6 @@
 {
   "name": "@web3inbox/core",
-  "version": "0.0.15",
+  "version": "0.0.19",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -15,7 +15,7 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@walletconnect/types": "2.10.1-665f0a23",
+    "@walletconnect/types": "^2.10.2",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",
@@ -23,9 +23,9 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@walletconnect/core": "2.10.1-665f0a23",
+    "@walletconnect/core": "^2.10.2",
     "@walletconnect/identity-keys": "^0.2.0",
-    "@walletconnect/notify-client": "^0.13.2",
+    "@walletconnect/notify-client": "^0.13.4",
     "valtio": "^1.11.2"
   }
 }
