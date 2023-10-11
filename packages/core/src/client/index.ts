@@ -5,7 +5,6 @@ import {
   NotifyClient,
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
-import { ICore } from "@walletconnect/types";
 import { proxy, subscribe } from "valtio";
 
 interface IClientState {
@@ -33,7 +32,6 @@ export class Web3InboxClient {
   });
 
   public constructor(
-    private core: ICore,
     private notifyClient: NotifyClient,
     private domain: string
   ) {}
@@ -163,7 +161,6 @@ export class Web3InboxClient {
     const notifyClient = await NotifyClient.init(notifyParams);
 
     Web3InboxClient.instance = new Web3InboxClient(
-      core,
       notifyClient,
       params.domain ?? window.location.host
     );
