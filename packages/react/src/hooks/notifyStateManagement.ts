@@ -28,11 +28,11 @@ export const useMessages = (account?: string) => {
   return { messages, deleteMessage };
 };
 
-export const useManageSubscription = (account?: string) => {
+export const useManageSubscription = (account?: string, domain?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [isSubscribed, setIsSubscribed] = useState<boolean>(
-    () => client?.isSubscribedToCurrentDapp(account) ?? false
+    () => client?.isSubscribedToDapp(account, domain) ?? false
   );
 
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -41,14 +41,14 @@ export const useManageSubscription = (account?: string) => {
   useEffect(() => {
     if (!client) return;
 
-    setIsSubscribed(client.isSubscribedToCurrentDapp(account));
-  }, [client, subscriptionsTrigger, account]);
+    setIsSubscribed(client.isSubscribedToDapp(account, domain));
+  }, [client, subscriptionsTrigger, account, domain]);
 
   const subscribe = useCallback(async () => {
     if (client) {
       setIsSubscribing(true);
       try {
-        await client.subscribeToCurrentDapp(account);
+        await client.subscribeToDapp(account, domain);
       } catch (e) {
         console.error("Failed to subscribe", e);
       } finally {
@@ -59,13 +59,13 @@ export const useManageSubscription = (account?: string) => {
         "Trying to subscribe before Web3Inbox Client was initialized"
       );
     }
-  }, [client, account]);
+  }, [client, account, domain]);
 
   const unsubscribe = useCallback(async () => {
     if (client) {
       setIsUnsubscribing(true);
       try {
-        await client.unsubscribeFromCurrentDapp(account);
+        await client.unsubscribeFromDapp(account, domain);
       } catch (e) {
         console.error("Failed to unsubscribe", e);
       } finally {
@@ -76,7 +76,7 @@ export const useManageSubscription = (account?: string) => {
         "Trying to unsubscribe before Web3Inbox Client was initialized"
       );
     }
-  }, [client, account]);
+  }, [client, account, domain]);
 
   return {
     subscribe,
@@ -87,7 +87,7 @@ export const useManageSubscription = (account?: string) => {
   };
 };
 
-export const useAllSubscriptions = (account?: string) => {
+export const useAllSubscription = (account?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subscription, setSubscription] =
@@ -104,14 +104,24 @@ export const useAllSubscriptions = (account?: string) => {
   return { subscription };
 }
 
-export const useSubscription = (account?: string) => {
+export const useSubscriptions = (account?: string) => {
   const client = useWeb3InboxClient();
-  const { subscriptions } = useSubscriptionState();
+  const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
+  const [subscriptions, setSubscriptions] =
+    useState<NotifyClientTypes.NotifySubscription[] >(
+      []
+    );
+
+  useEffect(() => {
+    if (client) {
+      setSubscriptions(client.getSubscriptions(account));
+    }
+  }, [subscriptionsTrigger, account, client]);
 
   return { subscriptions };
 };
 
-export const useSubscriptionScopes = (account?: string) => {
+export const useSubscriptionScopes = (account?: string, domain?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subScopes, setSubScopes] = useState<NotifyClientTypes.ScopeMap>(
@@ -120,14 +130,14 @@ export const useSubscriptionScopes = (account?: string) => {
 
   useEffect(() => {
     if (client) {
-      setSubScopes(client.getNotificationTypes(account));
+      setSubScopes(client.getNotificationTypes(account, domain));
     }
-  }, [client, account, subscriptionsTrigger]);
+  }, [client, account, subscriptionsTrigger, domain]);
 
   const updateScopes = useCallback(
     (scope: string[]) => {
       if (client) {
-        return client.update(scope, account);
+        return client.update(scope, account, domain);
       } else {
         console.error(
           "Trying to update scope before Web3Inbox Client was initialized "
@@ -135,7 +145,7 @@ export const useSubscriptionScopes = (account?: string) => {
         return Promise.resolve(false);
       }
     },
-    [client, account]
+    [client, account, domain]
   );
 
   return { scopes: subScopes, updateScopes };
