@@ -64,16 +64,17 @@ export const useWeb3InboxClient = () => {
 export const useW3iAccount = () => {
   const client = useWeb3InboxClient();
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  const [isRegistering, setIsRegistering] = useState<boolean>(false);
 
   const { account, registration } = useClientState();
 
   const setAccount = useCallback(
-    (account: string) => {
+    async (account: string) => {
       if (client) {
-        client.setAccount(account);
+        return client.setAccount(account);
       }
     },
-    [client]
+    [client, account]
   );
 
   useEffect(() => {
@@ -84,11 +85,12 @@ export const useW3iAccount = () => {
   const register = useCallback(
     async (onSign: (m: string) => Promise<string>) => {
       if (client && account) {
+	setIsRegistering(true);
         const identity = await client.register({
           account,
           onSign,
         });
-
+	setIsRegistering(false)
         return identity;
       }
 
@@ -101,6 +103,7 @@ export const useW3iAccount = () => {
     account,
     setAccount,
     register,
+    isRegistering,
     isRegistered,
     identityKey: isRegistered && registration ? registration.identity : undefined
   };
