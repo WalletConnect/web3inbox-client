@@ -108,7 +108,7 @@ export class Web3InboxClient {
  /**
   * Sets account. If identity has been previously registered, it sets that too.
   *
-  * @params {string} account
+  * @param {string} account
   */
   public async setAccount(account: string) {
     // Account setting is duplicated to ensure it only gets updated once
