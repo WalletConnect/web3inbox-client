@@ -243,7 +243,7 @@ export class Web3InboxClient {
    *
    * @returns {Object} Subscription Object
    */
-  public getSubscription(account?: string, domain?: string) {
+  public getSubscription(account?: string, domain?: string): NotifyClientTypes.NotifySubscription | null {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
@@ -269,7 +269,7 @@ export class Web3InboxClient {
    *
    * @returns {Object[]} Subscription Objects
    */
-  public getSubscriptions(account?: string) {
+  public getSubscriptions(account?: string): NotifyClientTypes.NotifySubscription[] {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
@@ -414,9 +414,10 @@ export class Web3InboxClient {
   /**
    * Register account on keyserver, allowing them to subscribe
    * 
-   * @param {string} account - Account to register.
-   * @param onSign - Signing callback
-   * @param {string} [domain] - Domain to register to, defaulted to one set in init.
+   * @param {Object} params - register params
+   * @param {string} params.account - Account to register.
+   * @param params.onSign - Signing callback
+   * @param {string} params.[domain] - Domain to register to, defaulted to one set in init.
    *
    * @returns {string} identityKey  - Registered identity
    */
@@ -450,21 +451,8 @@ export class Web3InboxClient {
    *
    * @returns {boolean} isSubscribed
    */
-  public isSubscribedToDapp(account?: string, domain?: string) {
+  public isSubscribedToDapp(account?: string, domain?: string): boolean {
     const sub = this.getSubscription(account, domain);
-
-    return Boolean(sub);
-  }
-
-  /**
-   * Check if account is subscribed to current dapp
-   * 
-   * @param {string} [account] - Account to get subscription status of, defaulted to current account
-   *
-   * @returns {boolean} isSubscribed
-   */
-  public isSubscribedToCurrentDapp(account?: string): boolean {
-    const sub = this.getSubscription(account);
 
     return Boolean(sub);
   }
@@ -497,16 +485,6 @@ export class Web3InboxClient {
   }
 
   /**
-   * Subscribe to current dapp
-   * 
-   * @param {string} [account] - Account to subscribe with, defaulted to current account
-   *
-   */
-  public async subscribeToCurrentDapp(account?: string): Promise<void> {
-    await this.subscribeToDapp(this.domain, account);
-  }
-
-  /**
    * Unsubscribe from a dapp
    * 
    * @param {string} [account] - Account to unsubscribe with, defaulted to current account
@@ -527,16 +505,6 @@ export class Web3InboxClient {
     if (sub) {
       await this.notifyClient.deleteSubscription({ topic: sub.topic });
     }
-  }
-
-  /**
-   * Unsubscribe from current dapp
-   * 
-   * @param {string} [account] - Account to unsubscribe with, defaulted to current account
-   *
-   */
-  public async unsubscribeFromCurrentDapp(account?: string) {
-    await this.unsubscribeFromDapp(this.domain, account);
   }
 
   /**
