@@ -312,17 +312,17 @@ export class Web3InboxClient {
     onSign: (m: string) => Promise<string>;
   }): Promise<string> {
     try {
-      const regRs = await this.notifyClient.register({
+      const registeredIdentity = await this.notifyClient.register({
         account: params.account,
         onSign: params.onSign,
         domain: this.domain,
         isLimited: true,
       });
 
-      Web3InboxClient.clientState.registration = { account: params.account, identity: regRs };
+      Web3InboxClient.clientState.registration = { account: params.account, identity: registeredIdentity };
       Web3InboxClient.clientState.account = params.account;
 
-      return regRs;
+      return registeredIdentity;
     } catch (e) {
       throw new Error("Failed to register");
     }
