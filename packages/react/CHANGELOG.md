@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.22
+
+### Patch Changes
+
+- Expose isRegistering
+- Updated dependencies
+  - @web3inbox/core@0.0.19
+
 ## 0.6.21
 
 ### Patch Changes

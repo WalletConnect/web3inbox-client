@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.19
+
+### Patch Changes
+
+- Expose isRegistering
+
 ## 0.0.18
 
 ### Patch Changes
