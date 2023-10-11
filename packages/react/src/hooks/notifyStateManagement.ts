@@ -87,7 +87,7 @@ export const useManageSubscription = (account?: string) => {
   };
 };
 
-export const useSubscription = (account?: string) => {
+export const useAllSubscriptions = (account?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subscription, setSubscription] =
@@ -102,6 +102,13 @@ export const useSubscription = (account?: string) => {
   }, [subscriptionsTrigger, account, client]);
 
   return { subscription };
+}
+
+export const useSubscription = (account?: string) => {
+  const client = useWeb3InboxClient();
+  const { subscriptions } = useSubscriptionState();
+
+  return { subscriptions };
 };
 
 export const useSubscriptionScopes = (account?: string) => {

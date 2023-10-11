@@ -208,7 +208,32 @@ export class Web3InboxClient {
     return sub ?? null;
   }
 
+  public getSubscriptions(account?: string) {
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      return [];
+    }
+
+    const subs = Object.values(
+      this.notifyClient.getActiveSubscriptions({
+        account: accountOrInternalAccount,
+      })
+    );
+
+    return subs;
+  }
+
   public watchSubscriptions(
+    cb: (subscriptions: NotifyClientTypes.NotifySubscription[]) => void,
+    account?: string
+  ) {
+    return subscribe(Web3InboxClient.subscriptionState, () => {
+      cb(this.getSubscriptions(account));
+    });
+  }
+
+  public watchSubscription(
     cb: (subscription: NotifyClientTypes.NotifySubscription | null) => void,
     account?: string
   ) {
@@ -217,7 +242,7 @@ export class Web3InboxClient {
     });
   }
 
-  protected getSubscriptionOrThrow() {
+  protected getSubscriptionOrThrow(topic?: string) {
     const acc = Web3InboxClient.clientState.account;
     if (!acc || !Boolean(acc)) {
       return;
@@ -228,7 +253,12 @@ export class Web3InboxClient {
       })
     );
 
-    const sub = subs.find((sub) => sub.metadata.appDomain === this.domain);
+    const sub = subs.find((sub) => {
+      if(topic)
+        return sub.topic === topic;
+      else
+        return sub.metadata.appDomain === this.domain
+    });
 
     // TODO: Create more sophisticated error handling
     // https://github.com/WalletConnect/web3inbox-widget/issues/28
@@ -272,7 +302,8 @@ export class Web3InboxClient {
 
   // get all messages for a subscription
   public getMessageHistory(
-    account?: string
+    account?: string,
+    topic?: string
   ): NotifyClientTypes.NotifyMessageRecord[] {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
