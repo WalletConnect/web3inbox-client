@@ -125,7 +125,7 @@ export const useSubscription = (account?: string, domain?: string) => {
  /**
   * Hook to get all subscriptions of an account
   *
-  * @param {string} [account] - Account to get subscriptions from , defaulted to current account
+  * @param {string} [account] - Account to get subscriptions from, defaulted to current account
   */
 export const useAllSubscriptions = (account?: string) => {
   const client = useWeb3InboxClient();
