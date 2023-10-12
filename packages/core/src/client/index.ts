@@ -51,7 +51,7 @@ export class Web3InboxClient {
       return Web3InboxClient.clientState.account;
     else {
       console.log(
-        "An account needs to be passed, or previously set account using setAccount"
+        "An account needs to be passed, or have been previously set using `setAccount`"
       );
       return;
     }
