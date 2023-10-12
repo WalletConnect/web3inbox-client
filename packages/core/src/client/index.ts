@@ -180,7 +180,7 @@ export class Web3InboxClient {
    * Init a singleton instance of the Web3InboxClient
    * 
    * @param {Object} params - the params needed to init the client
-   * @param {string} params.projectId - your registered WalletConnect Cloud project ID
+   * @param {string} params.projectId - your WalletConnect Cloud project ID
    * @param {string} params.domain - The domain of the default dapp to target for functions.
    *
    * @returns {Object} Web3InboxClient
