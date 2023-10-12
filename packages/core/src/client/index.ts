@@ -46,9 +46,12 @@ export class Web3InboxClient {
   }
 
   private getRequiredAccountParam(account?: string) {
-    if (account) return account;
-    else if (Web3InboxClient.clientState.account)
+    if (account) {
+      return account;
+    }
+    else if (Web3InboxClient.clientState.account) {
       return Web3InboxClient.clientState.account;
+    }
     else {
       console.log(
         "An account needs to be passed, or have been previously set using `setAccount`"
@@ -168,7 +171,7 @@ export class Web3InboxClient {
    * Watch account's identity registration status
    *
    * @param {string} account - account to watch identity for
-   * @param cb - callback that gets called when isRegistered 
+   * @param cb - callback that gets called when registration status updates
    */
   public watchAccountIsRegistered(account: string, cb: (isRegistered: boolean) => void) {
     return subscribe(Web3InboxClient.clientState, async () => {
