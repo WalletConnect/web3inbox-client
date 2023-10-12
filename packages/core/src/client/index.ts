@@ -154,7 +154,6 @@ export class Web3InboxClient {
    * 
    * @returns {boolean} isRegistered
    */
-  
   public async getAccountIsRegistered(account: string): Promise<boolean> {
     try {
       const identity = await this.notifyClient.identityKeys.getIdentity({account})
