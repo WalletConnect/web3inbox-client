@@ -127,7 +127,7 @@ export class Web3InboxClient {
  /**
   * Retrieve set account.
   *
-  * @returns {string} Set account
+  * @params {string} Set account
   */
   public getAccount() {
     return Web3InboxClient.clientState.account;
@@ -422,7 +422,7 @@ export class Web3InboxClient {
         account: params.account,
         onSign: params.onSign,
         domain: params.domain ?? this.domain,
-        isLimited: true,
+        // isLimited: true,
       });
 
       Web3InboxClient.clientState.registration = { account: params.account, identity: registeredIdentity };
