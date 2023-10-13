@@ -1,25 +1,35 @@
 import { Web3InboxClient, useClientState } from "@web3inbox/core";
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * Init a singleton instance of the Web3InboxClient
+ * 
+ * @param {Object} params - the params needed to init the client
+ * @param {string} params.projectId - your WalletConnect Cloud project ID
+ * @param {string} params.domain - The domain of the default dapp to target for functions.
+ * @param {boolean} params.isLimited - All account's subscriptions accessable if explicitly set to false. Only param.domain's otherwise
+ */
 export const useInitWeb3InboxClient = ({
   projectId,
   domain,
+  isLimited
 }: {
   projectId: string;
   domain?: string;
+  isLimited?: boolean;
 }) => {
   const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
   const [isInitialized, setIsInitialized] = useState(false);
 
   const handleInitClient = useCallback(async () => {
     try {
-      await Web3InboxClient.init({ projectId, domain });
+      await Web3InboxClient.init({ projectId, domain, isLimited });
       setIsInitialized(true);
     } catch (error) {
       console.log("Failed to initialize Web3InboxClient");
       setIsInitialized(false);
     }
-  }, [domain, projectId]);
+  }, [domain, projectId, isLimited]);
 
   useEffect(() => {
     if (!isInitialized) {
