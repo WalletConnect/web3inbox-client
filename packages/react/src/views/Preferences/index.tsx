@@ -52,7 +52,7 @@ export const PreferencesView: React.FC = () => {
             <div className="PreferencesModal__content__setting">
               <div>
                 <h4 style={{ textTransform: "capitalize" }}>
-                  <Text variant="paragraph-500">{title} Notifications</Text>
+                  <Text variant="paragraph-500">{scope.name} Notifications</Text>
                 </h4>
                 <div className="PreferencesModal__content__setting__helper-text">
                   <Text variant="small-400"> {scope.description}</Text>
