@@ -33,7 +33,8 @@ export class Web3InboxClient {
 
   public constructor(
     private notifyClient: NotifyClient,
-    private domain: string
+    private domain: string,
+    private isLimited: boolean
   ) {}
 
   //TODO: Make more efficient - this is very slow.
@@ -185,12 +186,14 @@ export class Web3InboxClient {
    * @param {Object} params - the params needed to init the client
    * @param {string} params.projectId - your WalletConnect Cloud project ID
    * @param {string} params.domain - The domain of the default dapp to target for functions.
+   * @param {boolean} params.isLimited - All account's subscriptions accessable if explicitly set to false. Only param.domain's otherwise
    *
    * @returns {Object} Web3InboxClient
    */
   public static async init(params: {
     projectId: string;
     domain?: string;
+    isLimited?: boolean
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -224,7 +227,9 @@ export class Web3InboxClient {
 
     Web3InboxClient.instance = new Web3InboxClient(
       notifyClient,
-      params.domain ?? window.location.host
+      params.domain ?? window.location.host,
+      // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
+      params.isLimited ?? true
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -433,7 +438,7 @@ export class Web3InboxClient {
         account: params.account,
         onSign: params.onSign,
         domain: params.domain ?? this.domain,
-        // isLimited: true,
+        isLimited: this.isLimited,
       });
 
       Web3InboxClient.clientState.registration = { account: params.account, identity: registeredIdentity };
