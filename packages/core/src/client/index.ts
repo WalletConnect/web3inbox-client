@@ -52,9 +52,6 @@ export class Web3InboxClient {
       return Web3InboxClient.clientState.account;
     }
     else {
-      console.log(
-        "An account needs to be passed, or have been previously set using `setAccount`"
-      );
       return;
     }
   }
@@ -447,8 +444,6 @@ export class Web3InboxClient {
    */
   public isSubscribedToDapp(account?: string, domain?: string): boolean {
     const sub = this.getSubscription(account, domain);
-
-    console.log("is subscribed", Boolean(sub))
 
     return Boolean(sub);
   }
