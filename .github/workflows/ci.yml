@@ -6,7 +6,7 @@ name: CI Checks
 
 jobs:
   code_checks:
-    name: Typescript, ESLint, Prettier, Unit Tests
+    name: Build and Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -19,30 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - name: Get npm cache directory path
-        id: npm-cache-dir-path
-        run: echo "::set-output name=dir::$(npm config get cache)"
-
-      - name: Check npm cache
-        uses: actions/cache@v3
-        id: cache-npm-cache
-        with:
-          path: ${{ steps.npm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Check node_modules cache
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-            */*/node_modules
-          key: ${{ runner.os }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nodemodules-
 
       - name: Install NPM Dependencies
         run: yarn
