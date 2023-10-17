@@ -232,7 +232,8 @@ export class Web3InboxClient {
 
     Web3InboxClient.instance.attachEventListeners();
 
-    this.clientState.isReady = true;
+    Web3InboxClient.clientState.initting = false;
+    Web3InboxClient.clientState.isReady = true;
 
     return Web3InboxClient.instance;
   }
