@@ -65,7 +65,7 @@ const resetSingletonState = () => {
 
 // Since Web3InboxClient is a singleton, it needs to be constructed
 // specifically to allow for a "clean slate" of the instance.
-const initNormalInstanceW3i = async (withAccount: string, withDomain: string) => {
+const initNonSingletonInstanceW3i = async (withAccount: string, withDomain: string) => {
   resetSingletonState();
 
   const core = new Core({
@@ -150,14 +150,14 @@ describe("Web3Inbox Core Client", () => {
     describe("Mapping and filtering subscription state", () => {
       // current being the domain that matches the set domain & account.
       it("Correctly fetches current subscription", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub]
 	const sub = w3iClient.getSubscription();
 	expect(sub?.topic).toEqual(testSub.topic);
       })
 
       it("Correctly fetches a specific subscription", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub, testSub2]
 
 	const sub = w3iClient.getSubscription(testAccount, testDomain2);
@@ -165,23 +165,23 @@ describe("Web3Inbox Core Client", () => {
       })
 
       it("Fetches all subscriptions correctly on account", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub, testSub2, testSub3]
 	const subs = w3iClient.getSubscriptions();
 
 	expect(subs.length).toEqual(2);
 
-	expect(subs.find(sub => sub.account === testSub3.account)).toBeFalsy();
+	expect(subs.some(sub => sub.account === testSub3.account)).toEqual(false);
       })
 
       it("Reacts immediately to account changes when fetching all", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub, testSub2, testSub3]
 	const subs = w3iClient.getSubscriptions();
 	
 	expect(subs.length).toEqual(2);
 	
-	expect(subs.find(sub => sub.account === testSub3.account)).toBeFalsy();
+	expect(subs.some(sub => sub.account === testSub3.account)).toEqual(false);
 	
 	await w3iClient.setAccount(testSub3.account);
 
@@ -189,12 +189,12 @@ describe("Web3Inbox Core Client", () => {
 
 	expect(subs2.length).toEqual(1);
 	
-	expect(subs2.find(sub => sub.account === testSub3.account)).toBeTruthy();
+	expect(subs2.some(sub => sub.account === testSub3.account)).toEqual(true);
 
       })
 
       it("Reacts immediately to account changes when fetching a single subscription", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub, testSub2, testSub3]
 	const sub = w3iClient.getSubscription();
 	
@@ -211,7 +211,7 @@ describe("Web3Inbox Core Client", () => {
 
     describe("Watching state", () => {
       it("Watches current subscription", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 
         let sub: NotifyClientTypes.NotifySubscription; 
 
@@ -229,7 +229,7 @@ describe("Web3Inbox Core Client", () => {
       })
 
       it("Watches if subscribed", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 
         let isSubscribed = false;; 
 
@@ -245,7 +245,7 @@ describe("Web3Inbox Core Client", () => {
       })
 
       it("Watches a single subscriptions scope map", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 
         let scopeMap: NotifyClientTypes.NotifySubscription["scope"] = {}; 
 
@@ -262,7 +262,7 @@ describe("Web3Inbox Core Client", () => {
       })
 
       it("Watches all current subscriptions", async () => {
-	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
+	const w3iClient = await initNonSingletonInstanceW3i(testAccount, testDomain);
 
         let subs: NotifyClientTypes.NotifySubscription[] = [];
 
