@@ -195,7 +195,7 @@ describe("Web3Inbox Core Client", () => {
 
       })
 
-      it("Reacts immediately account changes when fetching single", async () => {
+      it("Reacts immediately to account changes when fetching a single subscription", async () => {
 	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub, testSub2, testSub3]
 	const sub = w3iClient.getSubscription();
