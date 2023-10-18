@@ -215,8 +215,8 @@ describe("Web3Inbox Core Client", () => {
 
         let sub: NotifyClientTypes.NotifySubscription; 
 
-	w3iClient.watchSubscription((s) => {
-	  if(s) sub = s;
+	w3iClient.watchSubscription((watchedSub) => {
+	  if(watchedSub) sub = watchedSub;
 	})
 
 	Web3InboxClient.subscriptionState.subscriptions = [testSub]
@@ -249,8 +249,8 @@ describe("Web3Inbox Core Client", () => {
 
         let scopeMap: NotifyClientTypes.NotifySubscription["scope"] = {}; 
 
-	w3iClient.watchScopeMap((sm) => {
-	  scopeMap = sm
+	w3iClient.watchScopeMap((watchedScopeMap) => {
+	  scopeMap = watchedScopeMap
 	});
 
 	Web3InboxClient.subscriptionState.subscriptions = [testSub]
@@ -266,8 +266,8 @@ describe("Web3Inbox Core Client", () => {
 
         let subs: NotifyClientTypes.NotifySubscription[] = [];
 
-	w3iClient.watchSubscriptions((s) => {
-	  if(s) subs = s;
+	w3iClient.watchSubscriptions((watchedSubscriptions) => {
+	  if(watchedSubscriptions) subs = watchedSubscriptions;
 	})
 
 	Web3InboxClient.subscriptionState.subscriptions = [testSub]
