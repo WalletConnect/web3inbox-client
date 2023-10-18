@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.25
+
+### Patch Changes
+
+- use notify client 0.14.2
+- Updated dependencies
+  - @web3inbox/core@0.0.22
+
 ## 0.6.24
 
 ### Patch Changes
