@@ -157,7 +157,7 @@ describe("Web3Inbox Core Client", () => {
 	expect(sub?.topic).toEqual(testSub.topic);
       })
 
-      it("Correctly fetches different subscriptions", async () => {
+      it("Correctly fetches a specific subscription", async () => {
 	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub, testSub2]
 
