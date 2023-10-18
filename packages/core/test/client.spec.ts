@@ -31,7 +31,6 @@ const testSub = {
   },
   symKey: "validSymKey",
   topic: "validTopic"
-	
 }
 
 const testDomain2 = testDomain.toUpperCase();
