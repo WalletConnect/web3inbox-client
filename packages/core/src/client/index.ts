@@ -15,7 +15,7 @@ interface IClientState {
  registration?: { account: string, identity: string}
 }
 export class Web3InboxClient {
-  private static instance: Web3InboxClient | null = null;
+  public static instance: Web3InboxClient | null = null;
   public static subscriptionState: {
     subscriptions: NotifyClientTypes.NotifySubscription[];
     messages: NotifyClientTypes.NotifyMessageRecord[];
@@ -23,7 +23,6 @@ export class Web3InboxClient {
   public static view: { isOpen: boolean } = proxy({
     isOpen: false,
   });
-  public static initting = false;
   public static clientState = proxy<IClientState>({
     isReady: false,
     initting: false,
@@ -42,7 +41,7 @@ export class Web3InboxClient {
       Web3InboxClient.instance?.notifyClient.messages
         .getAll()
         .filter((m) => m)
-        .flatMap((m) => Object.values(m?.messages)) ?? [];
+        .flatMap((m) => Object.values(m.messages)) ?? [];
   }
 
   private getRequiredAccountParam(account?: string) {
@@ -53,9 +52,6 @@ export class Web3InboxClient {
       return Web3InboxClient.clientState.account;
     }
     else {
-      console.log(
-        "An account needs to be passed, or have been previously set using `setAccount`"
-      );
       return;
     }
   }
@@ -232,7 +228,8 @@ export class Web3InboxClient {
 
     Web3InboxClient.instance.attachEventListeners();
 
-    this.clientState.isReady = true;
+    Web3InboxClient.clientState.initting = false;
+    Web3InboxClient.clientState.isReady = true;
 
     return Web3InboxClient.instance;
   }
@@ -247,21 +244,18 @@ export class Web3InboxClient {
    */
   public getSubscription(account?: string, domain?: string): NotifyClientTypes.NotifySubscription | null {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
+    const domainToSearch = domain ?? this.domain;
 
     if (!accountOrInternalAccount) {
       return null;
     }
 
-    const subs = Object.values(
-      this.notifyClient.getActiveSubscriptions({
-        account: accountOrInternalAccount,
-      })
-    );
+    return Web3InboxClient.subscriptionState.subscriptions.find(sub => {
+      const accountMatch = sub.account === accountOrInternalAccount;
+      const domainMatch = sub.metadata.appDomain === domainToSearch;
 
-    const domainToSearch = domain ?? this.domain;
-    const sub = subs.find((sub) => sub.metadata.appDomain === domainToSearch);
-
-    return sub ?? null;
+      return accountMatch && domainMatch;
+    }) ?? null;
   }
 
   /**
@@ -278,13 +272,11 @@ export class Web3InboxClient {
       return [];
     }
 
-    const subs = Object.values(
-      this.notifyClient.getActiveSubscriptions({
-        account: accountOrInternalAccount,
-      })
-    );
+    return Web3InboxClient.subscriptionState.subscriptions.filter(sub => {
+      const accountMatch = sub.account === accountOrInternalAccount;
 
-    return subs;
+      return accountMatch;
+    })
   }
 
   /**
@@ -388,11 +380,8 @@ export class Web3InboxClient {
 
     if (sub) {
       try {
-        const msgHistory = this.notifyClient.getMessageHistory({
-          topic: sub.topic,
-        });
 
-        return Object.values(msgHistory);
+	return Web3InboxClient.subscriptionState.messages.filter(m => m.topic === sub.topic);
       } catch (e) {
         console.error("Failed to fetch messages", e);
         return [];
@@ -519,7 +508,7 @@ export class Web3InboxClient {
    */
   public watchIsSubscribed(cb: (isSubbed: boolean) => void, account?: string, domain?: string) {
     return subscribe(Web3InboxClient.subscriptionState, () => {
-      cb(this.isSubscribedToDapp(domain ?? this.domain, account));
+      cb(this.isSubscribedToDapp(account, domain));
     });
   }
 
@@ -537,7 +526,7 @@ export class Web3InboxClient {
     domain?: string
   ) {
     return subscribe(Web3InboxClient.subscriptionState, () => {
-      cb(this.getSubscription(domain ?? this.domain, account)?.scope ?? {});
+      cb(this.getSubscription(account, domain)?.scope ?? {});
     });
   }
 
