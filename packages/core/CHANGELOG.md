@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.21
+
+### Patch Changes
+
+- use latest version of notify client
+
 ## 0.0.20
 
 ### Patch Changes
