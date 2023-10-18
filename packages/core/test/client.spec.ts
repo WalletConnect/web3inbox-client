@@ -63,7 +63,7 @@ const resetSingletonState = () => {
 
 }
 
-// Since Web3InboxClient is a singleton, it needs to be constrocted
+// Since Web3InboxClient is a singleton, it needs to be constructed
 // specifically to allow for a "clean slate" of the instance.
 const initNormalInstanceW3i = async (withAccount: string, withDomain: string) => {
   resetSingletonState();
