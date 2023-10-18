@@ -1,8 +1,14 @@
-import React from 'react'
+import React from "react";
 
 const ArrowRightIcon: React.FC = () => {
   return (
-    <svg width="5" height="12" viewBox="0 0 5 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="5"
+      height="12"
+      viewBox="0 0 5 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -10,7 +16,7 @@ const ArrowRightIcon: React.FC = () => {
         fill="currentcolor"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default ArrowRightIcon
+export default ArrowRightIcon;

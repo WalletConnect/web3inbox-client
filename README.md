@@ -1,4 +1,5 @@
 # Web3Inbox Widget
+
 Adds a convenient widget to any dapp that wants to use the functionalities of push and chat without
 any of the hassle.
 
@@ -26,8 +27,8 @@ yarn changeset publish
 
 Refer to [changesets docs](https://github.com/changesets/changesets/tree/main#documentation) for more information.
 
-
 # Using the widget
+
 ## React
 
 ### Normal use case
@@ -43,4 +44,3 @@ import "@web3inbox/widget-react/dist/compiled.css";
     onConnect={() => {}}
 </W3iContext>
 ```
-

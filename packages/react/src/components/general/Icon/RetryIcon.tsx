@@ -1,7 +1,7 @@
-import React from 'react'
+import React from "react";
 
 interface IRetryIconProps {
-  fillColor?: string
+  fillColor?: string;
 }
 
 const RetryIcon: React.FC<IRetryIconProps> = () => {
@@ -18,7 +18,7 @@ const RetryIcon: React.FC<IRetryIconProps> = () => {
         fill="#0D7DF2"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default RetryIcon
+export default RetryIcon;

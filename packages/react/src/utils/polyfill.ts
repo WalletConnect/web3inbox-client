@@ -1,5 +1,5 @@
-import { Buffer } from 'buffer'
+import { Buffer } from "buffer";
 
 export const polyfill = () => {
-  window.Buffer = Buffer
-}
+  window.Buffer = Buffer;
+};

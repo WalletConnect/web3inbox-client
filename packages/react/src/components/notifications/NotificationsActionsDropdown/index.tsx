@@ -1,39 +1,46 @@
-import { useCallback } from 'react'
-import { unsubscribeModalService } from '../../../utils/store'
-import Dropdown from '../../general/Dropdown/Dropdown'
-import CrossIcon from '../../general/Icon/CrossIcon'
-import './NotificationsActionsDropdown.scss'
+import { useCallback } from "react";
+import { unsubscribeModalService } from "../../../utils/store";
+import Dropdown from "../../general/Dropdown/Dropdown";
+import CrossIcon from "../../general/Icon/CrossIcon";
+import "./NotificationsActionsDropdown.scss";
 
 interface INotificationsActionsDropdownProps {
-  appId: string
-  btnShape?: 'circle' | 'square'
-  dropdownPlacement?: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
-  w: string
-  h: string
-  closeDropdown?: () => void
+  appId: string;
+  btnShape?: "circle" | "square";
+  dropdownPlacement?: "bottomLeft" | "bottomRight" | "topLeft" | "topRight";
+  w: string;
+  h: string;
+  closeDropdown?: () => void;
 }
 
-const NotificationsActionsDropdown: React.FC<INotificationsActionsDropdownProps> = ({
+const NotificationsActionsDropdown: React.FC<
+  INotificationsActionsDropdownProps
+> = ({
   appId,
-  btnShape = 'circle',
-  dropdownPlacement = 'bottomRight',
+  btnShape = "circle",
+  dropdownPlacement = "bottomRight",
   w,
   h,
-  closeDropdown
+  closeDropdown,
 }) => {
   const handleUnsubscribe = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault()
-      unsubscribeModalService.toggleModal(appId)
+      e.preventDefault();
+      unsubscribeModalService.toggleModal(appId);
       if (closeDropdown) {
-        closeDropdown()
+        closeDropdown();
       }
     },
     [appId]
-  )
+  );
 
   return (
-    <Dropdown btnShape={btnShape} h={h} w={w} dropdownPlacement={dropdownPlacement}>
+    <Dropdown
+      btnShape={btnShape}
+      h={h}
+      w={w}
+      dropdownPlacement={dropdownPlacement}
+    >
       <div className="NotificationsActionsDropdown__actions">
         <button
           className="NotificationsActions__dropdown__block__actions__unsubscribe"
@@ -44,7 +51,7 @@ const NotificationsActionsDropdown: React.FC<INotificationsActionsDropdownProps>
         </button>
       </div>
     </Dropdown>
-  )
-}
+  );
+};
 
-export default NotificationsActionsDropdown
+export default NotificationsActionsDropdown;

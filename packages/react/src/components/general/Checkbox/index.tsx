@@ -1,43 +1,53 @@
-import React, { useCallback } from 'react'
-import './Checkbox.scss'
+import React, { useCallback } from "react";
+import "./Checkbox.scss";
 
 interface CheckboxProps {
-  name: string
-  id: number | string
-  checked: boolean
-  onCheck?: () => void
-  onUncheck?: () => void
+  name: string;
+  id: number | string;
+  checked: boolean;
+  onCheck?: () => void;
+  onUncheck?: () => void;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ name, checked, id, onCheck, onUncheck }) => {
+const Checkbox: React.FC<CheckboxProps> = ({
+  name,
+  checked,
+  id,
+  onCheck,
+  onUncheck,
+}) => {
   const handleChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       if (ev.target.checked && onCheck) {
-        onCheck()
+        onCheck();
       }
       if (!ev.target.checked && onUncheck) {
-        onUncheck()
+        onUncheck();
       }
     },
     [onCheck, onUncheck]
-  )
+  );
 
   return (
     <div className="Checkbox">
       <svg
         aria-hidden="true"
         style={{
-          position: 'absolute',
+          position: "absolute",
           width: 0,
           height: 0,
-          overflow: 'hidden'
+          overflow: "hidden",
         }}
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         viewBox="0 0 15 14"
       >
-        <clipPath id="checkmark" clipPathUnits="objectBoundingBox" transform="scale(0.07, 0.07)">
+        <clipPath
+          id="checkmark"
+          clipPathUnits="objectBoundingBox"
+          transform="scale(0.07, 0.07)"
+        >
           <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -60,7 +70,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ name, checked, id, onCheck, onUnche
         id={id.toString()}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Checkbox
+export default Checkbox;

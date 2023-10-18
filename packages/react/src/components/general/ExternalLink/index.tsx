@@ -1,18 +1,24 @@
-import React from 'react'
-import './ExternalLink.scss'
-import Text from '../Text'
+import React from "react";
+import "./ExternalLink.scss";
+import Text from "../Text";
 
 type THTMLAnchorProps = React.DetailedHTMLProps<
   React.AnchorHTMLAttributes<HTMLAnchorElement>,
   HTMLAnchorElement
->
+>;
 type TAnchorProps = THTMLAnchorProps & {
-  link: string
-}
+  link: string;
+};
 
 const ExternalLink: React.FC<TAnchorProps> = ({ children, link, ...props }) => {
   return (
-    <a {...props} target="_blank" rel="noopener noreferrer" className="Anchor" href={link}>
+    <a
+      {...props}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="Anchor"
+      href={link}
+    >
       <Text variant="small-600">{children}</Text>
       <svg fill="none" viewBox="0 0 13 12">
         <path
@@ -21,7 +27,7 @@ const ExternalLink: React.FC<TAnchorProps> = ({ children, link, ...props }) => {
         />
       </svg>
     </a>
-  )
-}
+  );
+};
 
-export default ExternalLink
+export default ExternalLink;

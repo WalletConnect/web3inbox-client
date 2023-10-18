@@ -1,12 +1,18 @@
-import React from 'react'
+import React from "react";
 
 interface IWebsiteIconProps {
-  fillColor?: string
+  fillColor?: string;
 }
 
 const WebsiteIcon: React.FC<IWebsiteIconProps> = () => {
   return (
-    <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="15"
+      height="16"
+      viewBox="0 0 15 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -14,7 +20,7 @@ const WebsiteIcon: React.FC<IWebsiteIconProps> = () => {
         fill="currentcolor"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default WebsiteIcon
+export default WebsiteIcon;
