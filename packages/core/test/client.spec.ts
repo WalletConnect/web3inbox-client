@@ -174,7 +174,7 @@ describe("Web3Inbox Core Client", () => {
 	expect(subs.find(sub => sub.account === testSub3.account)).toBeFalsy();
       })
 
-      it("Reacts immediately account changes when fetching all", async () => {
+      it("Reacts immediately to account changes when fetching all", async () => {
 	const w3iClient = await initNormalInstanceW3i(testAccount, testDomain);
 	Web3InboxClient.subscriptionState.subscriptions = [testSub, testSub2, testSub3]
 	const subs = w3iClient.getSubscriptions();
