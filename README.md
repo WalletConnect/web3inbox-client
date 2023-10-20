@@ -42,5 +42,5 @@ import "@web3inbox/widget-react/dist/compiled.css";
     account="ep155:1:0xd7..."
     onSign={() => {}}
     onConnect={() => {}}
-</W3iContext>
+</W3iWidget>
 ```
