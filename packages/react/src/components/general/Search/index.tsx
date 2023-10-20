@@ -1,33 +1,42 @@
-import { useCallback, useEffect } from 'react'
-import SearchSvg from '../../../assets/Search.svg'
-import Button from '../Button'
-import SearchIcon from '../Icon/SearchIcon'
-import Input from '../Input'
-import './Search.scss'
+import { useCallback, useEffect } from "react";
+import SearchSvg from "../../../assets/Search.svg";
+import Button from "../Button";
+import SearchIcon from "../Icon/SearchIcon";
+import Input from "../Input";
+import "./Search.scss";
 
 interface ISearchProps {
-  setSearch: (term: string) => void
-  isSearchOpen: boolean
-  closeSearch: () => void
-  openSearch: () => void
+  setSearch: (term: string) => void;
+  isSearchOpen: boolean;
+  closeSearch: () => void;
+  openSearch: () => void;
 }
-const Search: React.FC<ISearchProps> = ({ setSearch, isSearchOpen, closeSearch, openSearch }) => {
+const Search: React.FC<ISearchProps> = ({
+  setSearch,
+  isSearchOpen,
+  closeSearch,
+  openSearch,
+}) => {
   const handleCloseSearch = useCallback(() => {
-    setSearch('')
-    closeSearch()
-  }, [setSearch])
+    setSearch("");
+    closeSearch();
+  }, [setSearch]);
 
   useEffect(() => {
     return () => {
-      closeSearch()
-    }
-  }, [])
+      closeSearch();
+    };
+  }, []);
 
   return (
     <div className="Search">
       {!isSearchOpen && (
-        <Button customType="action-icon" className="Search__btn" onClick={openSearch}>
-          <div style={{ width: '25em', height: '1em' }}>
+        <Button
+          customType="action-icon"
+          className="Search__btn"
+          onClick={openSearch}
+        >
+          <div style={{ width: "25em", height: "1em" }}>
             <SearchIcon />
           </div>
         </Button>
@@ -46,7 +55,7 @@ const Search: React.FC<ISearchProps> = ({ setSearch, isSearchOpen, closeSearch, 
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Search
+export default Search;

@@ -1,5 +1,5 @@
-import React from 'react'
-import './Web3InboxPlaceholder.scss'
+import React from "react";
+import "./Web3InboxPlaceholder.scss";
 
 const Web3InboxPlaceholder: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ const Web3InboxPlaceholder: React.FC = () => {
         Web<sup>3</sup>Inbox
       </span>
     </div>
-  )
-}
+  );
+};
 
-export default Web3InboxPlaceholder
+export default Web3InboxPlaceholder;

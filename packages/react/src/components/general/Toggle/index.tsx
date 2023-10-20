@@ -1,11 +1,11 @@
-import React from 'react'
-import './Toggle.scss'
+import React from "react";
+import "./Toggle.scss";
 
 interface ToggleProps {
-  name: string
-  id: string
-  checked: boolean
-  setChecked: (isChecked: boolean) => void
+  name: string;
+  id: string;
+  checked: boolean;
+  setChecked: (isChecked: boolean) => void;
 }
 
 const Toggle: React.FC<ToggleProps> = ({ name, id, setChecked, checked }) => {
@@ -13,7 +13,7 @@ const Toggle: React.FC<ToggleProps> = ({ name, id, setChecked, checked }) => {
     <div className="Toggle">
       <input
         checked={checked}
-        onChange={ev => setChecked(ev.target.checked)}
+        onChange={(ev) => setChecked(ev.target.checked)}
         type="checkbox"
         className="Toggle__checkbox"
         name={name}
@@ -24,7 +24,7 @@ const Toggle: React.FC<ToggleProps> = ({ name, id, setChecked, checked }) => {
         <span className="Toggle__switch" />
       </label>
     </div>
-  )
-}
+  );
+};
 
-export default Toggle
+export default Toggle;

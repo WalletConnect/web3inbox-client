@@ -3,13 +3,13 @@ import { useSubscriptionState } from "@web3inbox/core";
 import { useCallback, useEffect, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 
- /**
-  * Hook to watch messages of a subscription, and delete them
-  *
-  * @param {string} [account] - Account to get subscriptions messages from, defaulted to current account
-  * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
-  */
-export const useMessages = (account?: string, domain?: string)  => {
+/**
+ * Hook to watch messages of a subscription, and delete them
+ *
+ * @param {string} [account] - Account to get subscriptions messages from, defaulted to current account
+ * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
+ */
+export const useMessages = (account?: string, domain?: string) => {
   const client = useWeb3InboxClient();
   const { messages: messagesTrigger } = useSubscriptionState();
   const [messages, setMessages] = useState<
@@ -34,12 +34,12 @@ export const useMessages = (account?: string, domain?: string)  => {
   return { messages, deleteMessage };
 };
 
- /**
-  * Hook to manage a subscription: subscribe, unsubscribe
-  *
-  * @param {string} [account] - Account to get subscriptions messages from , defaulted to current account
-  * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
-  */
+/**
+ * Hook to manage a subscription: subscribe, unsubscribe
+ *
+ * @param {string} [account] - Account to get subscriptions messages from , defaulted to current account
+ * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
+ */
 export const useManageSubscription = (account?: string, domain?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
@@ -99,12 +99,12 @@ export const useManageSubscription = (account?: string, domain?: string) => {
   };
 };
 
- /**
-  * Hook to get all subscriptions of an account
-  *
-  * @param {string} [account] - Account to get subscription for, defaulted to current account
-  * @param {string} [domain] - Domain to get subscription for, defaulted to one set in init.
-  */
+/**
+ * Hook to get all subscriptions of an account
+ *
+ * @param {string} [account] - Account to get subscription for, defaulted to current account
+ * @param {string} [domain] - Domain to get subscription for, defaulted to one set in init.
+ */
 export const useSubscription = (account?: string, domain?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
@@ -120,20 +120,19 @@ export const useSubscription = (account?: string, domain?: string) => {
   }, [subscriptionsTrigger, account, client, domain]);
 
   return { subscription };
-}
+};
 
- /**
-  * Hook to get all subscriptions of an account
-  *
-  * @param {string} [account] - Account to get subscriptions from, defaulted to current account
-  */
+/**
+ * Hook to get all subscriptions of an account
+ *
+ * @param {string} [account] - Account to get subscriptions from, defaulted to current account
+ */
 export const useAllSubscriptions = (account?: string) => {
   const client = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
-  const [subscriptions, setSubscriptions] =
-    useState<NotifyClientTypes.NotifySubscription[] >(
-      []
-    );
+  const [subscriptions, setSubscriptions] = useState<
+    NotifyClientTypes.NotifySubscription[]
+  >([]);
 
   useEffect(() => {
     if (client) {

@@ -88,19 +88,21 @@ export const useW3iAccount = () => {
   );
 
   useEffect(() => {
-    const registrationStatus = registration? registration.account === account : false;
-    setIsRegistered(registrationStatus)
-  }, [account, registration])
+    const registrationStatus = registration
+      ? registration.account === account
+      : false;
+    setIsRegistered(registrationStatus);
+  }, [account, registration]);
 
   const register = useCallback(
     async (onSign: (m: string) => Promise<string>) => {
       if (client && account) {
-	setIsRegistering(true);
+        setIsRegistering(true);
         const identity = await client.register({
           account,
           onSign,
         });
-	setIsRegistering(false)
+        setIsRegistering(false);
         return identity;
       }
 
@@ -115,6 +117,7 @@ export const useW3iAccount = () => {
     register,
     isRegistering,
     isRegistered,
-    identityKey: isRegistered && registration ? registration.identity : undefined
+    identityKey:
+      isRegistered && registration ? registration.identity : undefined,
   };
 };

@@ -1,12 +1,12 @@
-import React from 'react'
-import './Radio.scss'
+import React from "react";
+import "./Radio.scss";
 
 interface RadioProps {
-  label: string
-  name: string
-  checked: boolean
-  onCheck: (name: string) => void
-  id: string
+  label: string;
+  name: string;
+  checked: boolean;
+  onCheck: (name: string) => void;
+  id: string;
 }
 
 const Radio: React.FC<RadioProps> = ({ label, checked, onCheck, name, id }) => {
@@ -14,9 +14,9 @@ const Radio: React.FC<RadioProps> = ({ label, checked, onCheck, name, id }) => {
     <div className="Radio">
       <input
         checked={checked}
-        onChange={ev => {
+        onChange={(ev) => {
           if (ev.currentTarget.checked) {
-            onCheck(name)
+            onCheck(name);
           }
         }}
         type="radio"
@@ -25,7 +25,7 @@ const Radio: React.FC<RadioProps> = ({ label, checked, onCheck, name, id }) => {
       />
       <label htmlFor={id}>{label}</label>
     </div>
-  )
-}
+  );
+};
 
-export default Radio
+export default Radio;

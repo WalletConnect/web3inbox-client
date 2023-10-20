@@ -1,7 +1,7 @@
-import React from 'react'
+import React from "react";
 
 interface ISubscribeIconProps {
-  fillColor?: string
+  fillColor?: string;
 }
 
 const SubscribeIcon: React.FC<ISubscribeIconProps> = () => {
@@ -14,7 +14,7 @@ const SubscribeIcon: React.FC<ISubscribeIconProps> = () => {
         clipRule="evenodd"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default SubscribeIcon
+export default SubscribeIcon;

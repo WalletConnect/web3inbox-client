@@ -1,12 +1,12 @@
-import React from 'react'
-import type { NavLinkProps } from 'react-router-dom'
-import { NavLink as RouterNavLink } from 'react-router-dom'
-import './TargetTitle.scss'
+import React from "react";
+import type { NavLinkProps } from "react-router-dom";
+import { NavLink as RouterNavLink } from "react-router-dom";
+import "./TargetTitle.scss";
 
 interface ITargetTitle extends NavLinkProps {
-  to: string
-  children: React.ReactNode | React.ReactNode[]
-  className: string
+  to: string;
+  children: React.ReactNode | React.ReactNode[];
+  className: string;
 }
 
 const TargetTitle: React.FC<ITargetTitle> = ({ to, children, className }) => {
@@ -14,7 +14,7 @@ const TargetTitle: React.FC<ITargetTitle> = ({ to, children, className }) => {
     <RouterNavLink className={`TargetTitle ${className}`} to={to}>
       {children}
     </RouterNavLink>
-  )
-}
+  );
+};
 
-export default TargetTitle
+export default TargetTitle;

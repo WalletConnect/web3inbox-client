@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 const PencilIcon: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ const PencilIcon: React.FC = () => {
         clipRule="evenodd"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default PencilIcon
+export default PencilIcon;
