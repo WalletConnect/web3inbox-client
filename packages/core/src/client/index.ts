@@ -124,9 +124,9 @@ export class Web3InboxClient {
   /**
    * Retrieve set account.
    *
-   * @returns {string} Set account
+   * @returns {string|undefined} Set account
    */
-  public getAccount() {
+  public getAccount(): string | undefined {
     return Web3InboxClient.clientState.account;
   }
 
@@ -450,8 +450,27 @@ export class Web3InboxClient {
       Web3InboxClient.clientState.account = params.account;
 
       return registeredIdentity;
-    } catch (e) {
-      throw new Error("Failed to register");
+    } catch (e: any) {
+      throw new Error(`Failed to register: ${e.message}`);
+    }
+  }
+
+  /**
+   * Unregister account on keyserver and unsubscribe from all topics
+   *
+   * @param {Object} params - register params
+   * @param {string} params.account - Account to unregister.
+   *
+   */
+  public async unregister(params: {
+    account: string;
+  }): Promise<void> {
+    try {
+      await this.notifyClient.unregister(params);
+
+      Web3InboxClient.clientState.registration = undefined
+    } catch (e: any) {
+      throw new Error(`Failed to uregister: ${e.message}`);
     }
   }
 

@@ -76,6 +76,7 @@ export const useW3iAccount = () => {
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
 
+
   const { account, registration } = useClientState();
 
   const setAccount = useCallback(
@@ -111,10 +112,17 @@ export const useW3iAccount = () => {
     [client, account]
   );
 
+  const unregister = useCallback(async () => {
+    if(client && account) {
+      return client.unregister({account})
+    }
+  }, [client, account])
+
   return {
     account,
     setAccount,
     register,
+    unregister,
     isRegistering,
     isRegistered,
     identityKey:
