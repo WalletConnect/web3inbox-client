@@ -1,5 +1,13 @@
 # @web3inbox/widget-react
 
+## 0.6.26
+
+### Patch Changes
+
+- Add unregister functionality
+- Updated dependencies
+  - @web3inbox/core@0.0.23
+
 ## 0.6.25
 
 ### Patch Changes

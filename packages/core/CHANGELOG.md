@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.23
+
+### Patch Changes
+
+- Add unregister functionality
+
 ## 0.0.22
 
 ### Patch Changes
