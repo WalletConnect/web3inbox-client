@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@walletconnect/core": "^2.10.2",
-    "@walletconnect/notify-client": "^0.14.2",
+    "@walletconnect/notify-client": "^0.14.4",
     "valtio": "^1.11.2"
   }
 }
