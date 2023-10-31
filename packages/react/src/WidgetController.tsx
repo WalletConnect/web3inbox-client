@@ -139,9 +139,7 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
   const ref = useRef<HTMLDivElement>(null);
   useColorModeValue(ref);
 
-  const { setAccount, register, isRegistering } = useW3iAccount();
-
-  console.log({isRegistering})
+  const { setAccount, register } = useW3iAccount();
 
   useEffect(() => {
     if (ready && account) {
