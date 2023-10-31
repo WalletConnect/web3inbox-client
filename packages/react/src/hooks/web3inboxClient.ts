@@ -99,14 +99,14 @@ export const useW3iAccount = () => {
     async (onSign: (m: string) => Promise<string>) => {
       if (client && account) {
         setIsRegistering(true);
-        let identity: string;
+        let identity: string | null;
         try {
           identity = await client.register({
             account,
             onSign,
           });
         } catch (e) {
-          identity = "";
+          identity = null
           console.error(e);
         } finally {
           setIsRegistering(false);
