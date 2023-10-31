@@ -139,7 +139,9 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
   const ref = useRef<HTMLDivElement>(null);
   useColorModeValue(ref);
 
-  const { setAccount, register } = useW3iAccount();
+  const { setAccount, register, isRegistering } = useW3iAccount();
+
+  console.log({isRegistering})
 
   useEffect(() => {
     if (ready && account) {
@@ -154,6 +156,7 @@ export const W3iWidget: React.FC<W3iWidgetProps> = ({
   }, [account, register, onSign, ready]);
 
   const { isOpen } = useManageView();
+
 
   useEffect(() => {
     console.warn(
