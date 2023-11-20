@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.24
+
+### Patch Changes
+
+- Bump to new version of notify client with fixes
+
 ## 0.0.23
 
 ### Patch Changes
