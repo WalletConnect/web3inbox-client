@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 0.0.25
+
+### Patch Changes
+
+- Bump notify packages with updated statement
+
 ## 0.0.24
 
 ### Patch Changes
