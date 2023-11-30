@@ -189,7 +189,7 @@ export class Web3InboxClient {
   public static async init(params: {
     projectId: string;
     domain?: string;
-    isLimited?: boolean
+    isLimited?: boolean;
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -462,13 +462,11 @@ export class Web3InboxClient {
    * @param {string} params.account - Account to unregister.
    *
    */
-  public async unregister(params: {
-    account: string;
-  }): Promise<void> {
+  public async unregister(params: { account: string }): Promise<void> {
     try {
       await this.notifyClient.unregister(params);
 
-      Web3InboxClient.clientState.registration = undefined
+      Web3InboxClient.clientState.registration = undefined;
     } catch (e: any) {
       throw new Error(`Failed to uregister: ${e.message}`);
     }
