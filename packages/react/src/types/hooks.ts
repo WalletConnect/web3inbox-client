@@ -8,8 +8,8 @@ export interface HooksSuccess<T> {
   isLoading: boolean;
 }
 
-export interface HooksFail {
-  data: null;
+export interface HooksFail<T> {
+  data: T | null;
   error: HooksError;
   isLoading: boolean;
 }
@@ -22,7 +22,7 @@ export interface HooksLoading {
 
 export type HooksReturn<TData, TActions = {}> = (
   | HooksSuccess<TData>
-  | HooksFail
+  | HooksFail<TData>
   | HooksLoading
 ) &
   TActions;

@@ -10,7 +10,7 @@ import { HooksReturn } from "../types/hooks";
  * @param {string} params.domain - The domain of the default dapp to target for functions.
  * @param {boolean} params.isLimited - All account's subscriptions accessable if explicitly set to false. Only param.domain's otherwise
  */
-export const useInitWeb3InboxClient = ({
+export const initWeb3InboxClient = ({
   projectId,
   domain,
   isLimited,
@@ -19,34 +19,7 @@ export const useInitWeb3InboxClient = ({
   domain?: string;
   isLimited?: boolean;
 }) => {
-  const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  const handleInitClient = useCallback(async () => {
-    try {
-      await Web3InboxClient.init({ projectId, domain, isLimited });
-      setIsInitialized(true);
-    } catch (error) {
-      console.log("Failed to initialize Web3InboxClient");
-      setIsInitialized(false);
-    }
-  }, [domain, projectId, isLimited]);
-
-  useEffect(() => {
-    if (!isInitialized) {
-      handleInitClient();
-    }
-  }, [handleInitClient, isInitialized]);
-
-  useEffect(() => {
-    const unsub = Web3InboxClient.watchIsReady(setIsReady);
-
-    return () => {
-      unsub();
-    };
-  }, []);
-
-  return isReady;
+  return Web3InboxClient.init({ projectId, domain, isLimited });
 };
 
 export const useWeb3InboxClient = (): HooksReturn<{
