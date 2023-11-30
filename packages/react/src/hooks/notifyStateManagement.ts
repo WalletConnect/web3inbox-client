@@ -4,12 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 
 /**
- * Hook to watch messages of a subscription, and delete them
+ * Hook to watch notifications of a subscription, and delete them
  *
  * @param {string} [account] - Account to get subscriptions messages from, defaulted to current account
  * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
  */
-export const useMessages = (account?: string, domain?: string) => {
+export const useNotifications = (account?: string, domain?: string) => {
   const client = useWeb3InboxClient();
   const { messages: messagesTrigger } = useSubscriptionState();
   const [messages, setMessages] = useState<
