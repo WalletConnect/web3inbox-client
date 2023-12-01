@@ -167,14 +167,14 @@ Sample wallets to test notifications:
    For example, if you are going to send promotional content as notification, you might want to add a notification type called "Promotional" with a description "Promotional content from the XYZ Team.".
    After saving, click the copy button next to your newly created notification type to copy its ID. Replace the existing ID in `/pages/index.tsx` Line 121 with your new ID.
    > Note: Skip this step if you've already setup notification types while testing.
-6. Copy the secret into your deployment as the `NOTIFY_API_SECRET` environment variable. Make sure to update the environment variables on your local environment as well as on your deployment platform.
-7. Next, you need to host the updated `did.json` file on your public URL in the /.well-known/ directory. Save it to the /public/.well-known/ directory in your fork of this template repository. Be sure to replace the existing did.json file.
+5. Copy the secret into your deployment as the `NOTIFY_API_SECRET` environment variable. Make sure to update the environment variables on your local environment as well as on your deployment platform.
+6. Next, you need to host the updated `did.json` file on your public URL in the /.well-known/ directory. Save it to the /public/.well-known/ directory in your fork of this template repository. Be sure to replace the existing did.json file.
 
    - Download `did.json` (Step 2: “Download did:web”) and place it at `/public/.well-known/did.json`
    - Update your `NEXT_PUBLIC_APP_DOMAIN` environment variable to include the hostname of your deployment.
    - Deploy your changes in `/public/.well-known/` to your public URL (e.g. by committing and pushing).
 
-8. Once the new files are deployed, on the APIs tab in Cloud, find the toggle switch next to the Notify API section and switch it on. You should see a success toast: "Notify configuration successfully verified"
+7. Once the new files are deployed, on the APIs tab in Cloud, find the toggle switch next to the Notify API section and switch it on. You should see a success toast: "Notify configuration successfully verified"
 
 ### Managing environment variables
 

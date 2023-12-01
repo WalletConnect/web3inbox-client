@@ -12,10 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import {
-  useManageSubscription,
-  useW3iAccount,
-} from "@web3inbox/widget-react";
+import { useManageSubscription, useW3iAccount } from "@web3inbox/widget-react";
 
 import { useAccount, usePublicClient, useSignMessage } from "wagmi";
 import { FaBell, FaBellSlash, FaPause, FaPlay } from "react-icons/fa";
@@ -77,7 +74,7 @@ const Home: NextPage = () => {
   }, [signMessage, address, setAccount]);
 
   const handleRegistration = useCallback(async () => {
-    console.log("Calling handle reg")
+    console.log("Calling handle reg");
     try {
       await registerIdentity(signMessage);
     } catch (registerIdentityError) {
@@ -93,13 +90,13 @@ const Home: NextPage = () => {
   // If you don't want to use this hook and want more flexibility, you can use sendNotification.
   const handleTestNotification = useCallback(async () => {
     if (subscriptionData?.isSubscribed) {
-      console.log("sending")
+      console.log("sending");
       handleSendNotification({
         title: "GM Hacker",
         body: "Hack it until you make it!",
         icon: `${window.location.origin}/WalletConnect-blue.svg`,
         url: window.location.origin,
-	// ID retrieved from explorer api - Copy your notification type from WalletConnect Cloud and replace the default value below
+        // ID retrieved from explorer api - Copy your notification type from WalletConnect Cloud and replace the default value below
         type: "ba0e9ab1-e194-4780-8fc5-3c8abd9678e2",
       });
     }
@@ -248,7 +245,7 @@ const Home: NextPage = () => {
               Register
             </Button>
           </Tooltip>
-	)}
+        )}
 
         {subscriptionData?.isSubscribed && (
           <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">

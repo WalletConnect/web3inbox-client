@@ -7,12 +7,11 @@ import { useAccount } from "wagmi";
 function useSendNotification() {
   const [isSending, setIsSending] = useState<boolean>(false);
   const toast = useToast();
-  const { address } = useAccount()
-
+  const { address } = useAccount();
 
   const handleSendNotification = useCallback(
     async (notification: INotification) => {
-      console.log({address})
+      console.log({ address });
       if (!address) {
         return;
       }

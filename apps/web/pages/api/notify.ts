@@ -2,7 +2,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 if (!projectId) {
-  throw new Error(`You need to provide NEXT_PUBLIC_PROJECT_ID env variable, current env: ${JSON.stringify(process.env)}`);
+  throw new Error(
+    `You need to provide NEXT_PUBLIC_PROJECT_ID env variable, current env: ${JSON.stringify(
+      process.env
+    )}`
+  );
 }
 
 export default async function handler(
@@ -11,7 +15,11 @@ export default async function handler(
 ) {
   const notifyApiSecret = process.env.NOTIFY_PROJECT_SECRET;
   if (!notifyApiSecret) {
-    throw new Error(`You need to provide NOTIFY_PROJECT_SECRET env variable, current env: ${JSON.stringify(process.env)}`);
+    throw new Error(
+      `You need to provide NOTIFY_PROJECT_SECRET env variable, current env: ${JSON.stringify(
+        process.env
+      )}`
+    );
   }
 
   if (req.method !== "POST") {

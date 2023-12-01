@@ -31,7 +31,6 @@ initWeb3InboxClient({
   isLimited: process.env.NODE_ENV == "production",
 });
 
-
 createWeb3Modal({ wagmiConfig, projectId, chains });
 
 function MyApp({ Component, pageProps }: AppProps) {

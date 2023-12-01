@@ -45,25 +45,24 @@ export const useWeb3InboxClient = (): HooksReturn<{
   }, [isReady]);
 
   const result = useMemo(() => {
-  if (isReady && client) {
+    if (isReady && client) {
+      return {
+        data: {
+          client,
+        },
+        isLoading: false,
+        error: null,
+      };
+    }
+
     return {
-      data: {
-        client,
-      },
-      isLoading: false,
+      data: null,
+      isLoading: true,
       error: null,
     };
-  }
-
-  return {
-    data: null,
-    isLoading: true,
-    error: null,
-  };
-  }, [isReady, client])
+  }, [isReady, client]);
 
   return result;
-
 };
 
 export const useW3iAccount = (): HooksReturn<
@@ -136,36 +135,36 @@ export const useW3iAccount = (): HooksReturn<
   }, [web3inboxClientData, account]);
 
   const result = useMemo(() => {
-  if (!web3inboxClientData) {
-    return {
-      data: null,
+    if (!web3inboxClientData) {
+      return {
+        data: null,
 
-      isLoading: true,
+        isLoading: true,
+        error: null,
+
+        register,
+        unregister,
+        setAccount,
+      };
+    }
+
+    return {
+      data: {
+        account: account ?? null,
+        isRegistered,
+        isRegistering,
+        identityKey:
+          isRegistered && registration ? registration.identity : null,
+      },
+
+      isLoading: false,
       error: null,
 
       register,
       unregister,
       setAccount,
     };
-  }
-
-  return {
-    data: {
-      account: account ?? null,
-      isRegistered,
-      isRegistering,
-      identityKey: isRegistered && registration ? registration.identity : null,
-    },
-
-    isLoading: false,
-    error: null,
-
-    register,
-    unregister,
-    setAccount,
-  };
-  }, [web3inboxClientData, register, unregister, setAccount])
+  }, [web3inboxClientData, register, unregister, setAccount]);
 
   return result;
-
 };

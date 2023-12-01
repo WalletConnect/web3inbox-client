@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { BiSave } from "react-icons/bi";
 import { useForm } from "react-hook-form";
-import { useSubscriptionScopes} from "@web3inbox/widget-react";
+import { useSubscriptionScopes } from "@web3inbox/widget-react";
 
 function Preferences() {
   const toast = useToast();
