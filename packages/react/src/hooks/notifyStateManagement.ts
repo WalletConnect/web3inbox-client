@@ -51,7 +51,7 @@ export const useNotifications = (
     [web3inboxClientData]
   );
 
-  const returnValue = useMemo(() => {
+  const result = useMemo(() => {
     if(!web3inboxClientData) {
 	return { data: null, error: null, isLoading: true, deleteMessage };
     }
@@ -67,7 +67,7 @@ export const useNotifications = (
     return { data: { messages }, error: null, isLoading: false, deleteMessage };
 }, [web3inboxClientData, clientError, error])
 
-  return returnValue;
+  return result;
 
 };
 
