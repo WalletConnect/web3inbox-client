@@ -112,13 +112,12 @@ export const useManageSubscription = (account?: string, domain?: string): HooksR
   const { data: web3inboxClientData, error: clientError } = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
 
-  const { subscription } = useSubscription();
+  const [subscription, setSubscription] =
+    useState<NotifyClientTypes.NotifySubscription | null>(
+      web3inboxClientData?.client.getSubscription(account, domain) ?? null
+    );
 
   const [error, setError] = useState<string | null>(null);
-
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(
-    () => web3inboxClientData?.client.isSubscribedToDapp(account, domain) ?? false
-  );
 
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isUnsubscribing, setIsUnsubscribing] = useState(false);
@@ -126,7 +125,7 @@ export const useManageSubscription = (account?: string, domain?: string): HooksR
   useEffect(() => {
     if (!web3inboxClientData) return;
 
-    setIsSubscribed(web3inboxClientData.client.isSubscribedToDapp(account, domain));
+      setSubscription(web3inboxClientData.client.getSubscription(account, domain));
   }, [web3inboxClientData, subscriptionsTrigger, account, domain]);
 
   const subscribe = useCallback(async () => {
@@ -203,7 +202,7 @@ export const useManageSubscription = (account?: string, domain?: string): HooksR
       isSubscribing,
       isUnsubscribing,
       subscription,
-      isSubscribed,
+      isSubscribed: Boolean(subscription),
     },
     isLoading: false,
     error: null,
