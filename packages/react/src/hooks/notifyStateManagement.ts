@@ -72,30 +72,7 @@ export const useNotifications = (
 };
 
 /**
- * Hook to get all subscriptions of an account
- *
- * @param {string} [account] - Account to get subscription for, defaulted to current account
- * @param {string} [domain] - Domain to get subscription for, defaulted to one set in init.
- */
-export const useSubscription = (account?: string, domain?: string) => {
-  const { data: web3InboxClientData } = useWeb3InboxClient();
-  const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
-  const [subscription, setSubscription] =
-    useState<NotifyClientTypes.NotifySubscription | null>(
-      web3InboxClientData?.client.getSubscription(account, domain) ?? null
-    );
-
-  useEffect(() => {
-    if (web3InboxClientData) {
-      setSubscription(web3InboxClientData.client.getSubscription(account, domain));
-    }
-  }, [subscriptionsTrigger, account, web3InboxClientData, domain]);
-
-  return { subscription };
-};
-
-/**
- * Hook to manage a subscription: subscribe, unsubscribe
+ * Hook to manage a subscribe, unsubscribe and get subscription
  *
  * @param {string} [account] - Account to get subscriptions messages from , defaulted to current account
  * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
