@@ -1,6 +1,6 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useSubscriptionState } from "@web3inbox/core";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 import { HooksReturn } from "../types/hooks";
 
@@ -51,19 +51,24 @@ export const useNotifications = (
     [web3inboxClientData]
   );
 
-  if(!web3inboxClientData) {
-    return { data: null, error: null, isLoading: true, deleteMessage };
-  }
+  const returnValue = useMemo(() => {
+    if(!web3inboxClientData) {
+	return { data: null, error: null, isLoading: true, deleteMessage };
+    }
 
-  if(clientError) {
-    return { data: null, error: clientError, isLoading: true, deleteMessage };
-  }
+    if(clientError) {
+	return { data: null, error: clientError, isLoading: true, deleteMessage };
+    }
 
-  if(error) {
-    return { data: null, error: { message: error }, isLoading: true, deleteMessage };
-  }
+    if(error) {
+	return { data: null, error: { message: error }, isLoading: true, deleteMessage };
+    }
 
-  return { data: { messages }, error: null, isLoading: false, deleteMessage };
+    return { data: { messages }, error: null, isLoading: false, deleteMessage };
+}, [web3inboxClientData, clientError, error])
+
+  return returnValue;
+
 };
 
 /**
@@ -160,6 +165,7 @@ export const useManageSubscription = (account?: string, domain?: string): HooksR
     }
   }, [web3inboxClientData, account, domain]);
 
+  const result = useMemo(() => {
   if(!web3inboxClientData) {
     return {
       data: null,
@@ -204,6 +210,10 @@ export const useManageSubscription = (account?: string, domain?: string): HooksR
     unsubscribe,
     subscribe,
   };
+  }, [web3inboxClientData, error, clientError])
+
+  return result;
+
 };
 
 
@@ -227,6 +237,7 @@ export const useAllSubscriptions = (account?: string): HooksReturn<{
     }
   }, [subscriptionsTrigger, account, web3inboxClientData]);
 
+  const result = useMemo(() => {
   if(!web3inboxClientData) {
     return {
       data: null, isLoading: true, error: null 
@@ -238,6 +249,10 @@ export const useAllSubscriptions = (account?: string): HooksReturn<{
   }
 
   return { data: { subscriptions }, isLoading: false, error: null };
+  }, [web3inboxClientData, error])
+
+  return result;
+
 };
 
 export const useSubscriptionScopes = (account?: string, domain?: string): HooksReturn<{scopes: NotifyClientTypes.ScopeMap}, {
@@ -271,6 +286,7 @@ export const useSubscriptionScopes = (account?: string, domain?: string): HooksR
     [web3inboxClientData, account, domain]
   );
 
+  const result = useMemo(() => {
   if(!web3inboxClientData) {
     return { data: null, error: null, isLoading: true, updateScopes }
   }
@@ -284,4 +300,7 @@ export const useSubscriptionScopes = (account?: string, domain?: string): HooksR
   }
 
   return { data: {scopes: subScopes}, error: null, isLoading: false, updateScopes };
+  }, [web3inboxClientData, clientError, error])
+
+  return result;
 };
