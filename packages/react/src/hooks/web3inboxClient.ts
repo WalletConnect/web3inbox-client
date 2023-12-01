@@ -1,5 +1,5 @@
 import { Web3InboxClient, useClientState } from "@web3inbox/core";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { HooksReturn } from "../types/hooks";
 
 /**
@@ -44,6 +44,7 @@ export const useWeb3InboxClient = (): HooksReturn<{
     }
   }, [isReady]);
 
+  const result = useMemo(() => {
   if (isReady && client) {
     return {
       data: {
@@ -59,6 +60,10 @@ export const useWeb3InboxClient = (): HooksReturn<{
     isLoading: true,
     error: null,
   };
+  }, [isReady, client])
+
+  return result;
+
 };
 
 export const useW3iAccount = (): HooksReturn<
@@ -130,6 +135,7 @@ export const useW3iAccount = (): HooksReturn<
     }
   }, [web3inboxClientData, account]);
 
+  const result = useMemo(() => {
   if (!web3inboxClientData) {
     return {
       data: null,
@@ -158,4 +164,8 @@ export const useW3iAccount = (): HooksReturn<
     unregister,
     setAccount,
   };
+  }, [web3inboxClientData, register, unregister, setAccount])
+
+  return result;
+
 };
