@@ -57,14 +57,14 @@ export const useNotifications = (
     }
 
     if (clientError) {
-      return { data: null, error: clientError, isLoading: true, deleteMessage };
+      return { data: null, error: clientError, isLoading: false, deleteMessage };
     }
 
     if (error) {
       return {
         data: null,
         error: { message: error },
-        isLoading: true,
+        isLoading: false,
         deleteMessage,
       };
     }
