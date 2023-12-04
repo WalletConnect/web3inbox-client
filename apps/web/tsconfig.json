@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!apps!web!pages!index.tsx~", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!apps!web!pages!_app.tsx~", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!apps!web!components!Messages.tsx~", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!apps!web!components!Preferences.tsx~", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!apps!web!pages!api!notify.ts~", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!apps!web!pages!api!subscribers.ts~", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!apps!web!utils!useSendNotification.tsx~"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }
