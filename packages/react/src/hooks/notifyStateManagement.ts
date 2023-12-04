@@ -18,7 +18,7 @@ export const useNotifications = (
     messages: NotifyClientTypes.NotifyMessageRecord[];
   },
   {
-    deleteMessage: (id: number) => Promise<void>;
+    deleteMessage: (id: number) => void;
   }
 > => {
   const { data: web3inboxClientData, error: clientError } =
@@ -38,7 +38,7 @@ export const useNotifications = (
   }, [web3inboxClientData, messagesTrigger, account, domain]);
 
   const deleteMessage = useCallback(
-    async (id: number) => {
+    (id: number) => {
       if (web3inboxClientData && id) {
         try {
           web3inboxClientData.client.deleteNotifyMessage({ id });
@@ -53,7 +53,7 @@ export const useNotifications = (
 
   const result = useMemo(() => {
     if (!web3inboxClientData) {
-      return { data: null, error: null, isLoading: true, deleteMessage };
+      return { data: null, error: null, isLoading: true, deleteMessage }
     }
 
     if (clientError) {
