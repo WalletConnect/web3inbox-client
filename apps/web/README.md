@@ -139,7 +139,7 @@ Sample wallets to test notifications:
         body: "Enjoy hacking on WalletConnect",
         icon: "https://avatars.githubusercontent.com/u/37784886?s=48&v=4",
         url: "https://hackers.gm.walletconnect.com/",
-        type: "promotional",
+        type: "0123-456-789", // needs to be the notification scope id (not hte actual scope name)
       },
     });
 
