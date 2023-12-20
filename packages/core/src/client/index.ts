@@ -557,6 +557,8 @@ export class Web3InboxClient {
     );
   }
 
+  public prepareRegistration = this.notifyClient.prepareRegistration;
+
   /**
    * Register account on keyserver, allowing them to subscribe
    *
@@ -584,8 +586,6 @@ export class Web3InboxClient {
         .split(":")
         .slice(-3)
         .join(":");
-
-      console.log(">>> registeredIdentity", registeredIdentity);
 
       Web3InboxClient.clientState.registration = {
         account,
