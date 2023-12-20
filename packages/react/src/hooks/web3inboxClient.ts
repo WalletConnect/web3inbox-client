@@ -65,7 +65,7 @@ export const useWeb3InboxClient = (): HooksReturn<{
   return result;
 };
 
-export const useW3iAccount = (): HooksReturn<
+export const useW3iAccount = (address?: string): HooksReturn<
   {
     account: string | null;
     identityKey: string | null;
@@ -133,6 +133,12 @@ export const useW3iAccount = (): HooksReturn<
       return web3inboxClientData.client.unregister({ account });
     }
   }, [web3inboxClientData, account]);
+
+  useEffect(() => {
+    if(!address) return;
+
+    setAccount(address)
+  }, [address])
 
   const result = useMemo(() => {
     if (!web3inboxClientData) {
