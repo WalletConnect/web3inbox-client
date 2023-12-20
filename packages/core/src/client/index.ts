@@ -420,32 +420,48 @@ export class Web3InboxClient {
     Web3InboxClient.updateMessages();
   }
 
-  public prepareRegistration = this.notifyClient.prepareRegistration;
+  /**
+   * Prepare a registration for the register function
+   *
+   * @param {Object} params - register params
+   * @param {string} params.account - Account to register.
+   * @param {string} params.[domain] - Domain to register to, defaulted to one set in init.
+   * @param {string} params.[allApps] - Request access for all domains or only for this domain
+   *
+   * @returns {Object} preparedRegistration - Prepared Registration
+   */
+  public prepareRegistration(
+    params: Parameters<NotifyClient["prepareRegistration"]>[0]
+  ): ReturnType<NotifyClient["prepareRegistration"]> {
+    return this.notifyClient.prepareRegistration(params);
+  }
 
   /**
    * Register account on keyserver, allowing them to subscribe
    *
    * @param {Object} params - register params
-   * @param {string} params.account - Account to register.
-   * @param params.onSign - Signing callback
-   * @param {string} params.[domain] - Domain to register to, defaulted to one set in init.
+   * @param {string} params.registerParams - Prepared params for registration
+   * @param {string} params.signature - Signature of prepared message
    *
    * @returns {string} identityKey  - Registered identity
    */
   public async register(params: {
-    registerParams: NotifyClientTypes.NotifyRegistrationParams,
-    signature: string
+    registerParams: NotifyClientTypes.NotifyRegistrationParams;
+    signature: string;
   }): Promise<string> {
     try {
       const registeredIdentity = await this.notifyClient.register({
-	registerParams: params.registerParams,
-	signature: params.signature
+        registerParams: params.registerParams,
+        signature: params.signature,
       });
 
-      const account = params.registerParams.cacaoPayload.iss.split(":").slice(-3).join(":");
+      const account = params.registerParams.cacaoPayload.iss
+        .split(":")
+        .slice(-3)
+        .join(":");
 
       Web3InboxClient.clientState.registration = {
-        account, 
+        account,
         identity: registeredIdentity,
       };
 
