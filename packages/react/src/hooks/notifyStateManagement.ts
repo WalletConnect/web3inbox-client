@@ -53,11 +53,16 @@ export const useNotifications = (
 
   const result = useMemo(() => {
     if (!web3inboxClientData) {
-      return { data: null, error: null, isLoading: true, deleteMessage }
+      return { data: null, error: null, isLoading: true, deleteMessage };
     }
 
     if (clientError) {
-      return { data: null, error: clientError, isLoading: false, deleteMessage };
+      return {
+        data: null,
+        error: clientError,
+        isLoading: false,
+        deleteMessage,
+      };
     }
 
     if (error) {
