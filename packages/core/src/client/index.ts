@@ -420,6 +420,8 @@ export class Web3InboxClient {
     Web3InboxClient.updateMessages();
   }
 
+  public prepareRegistration = this.notifyClient.prepareRegistration;
+
   /**
    * Register account on keyserver, allowing them to subscribe
    *
@@ -431,23 +433,23 @@ export class Web3InboxClient {
    * @returns {string} identityKey  - Registered identity
    */
   public async register(params: {
-    account: string;
-    onSign: (m: string) => Promise<string>;
-    domain?: string;
+    registerParams: NotifyClientTypes.NotifyRegistrationParams,
+    signature: string
   }): Promise<string> {
     try {
       const registeredIdentity = await this.notifyClient.register({
-        account: params.account,
-        onSign: params.onSign,
-        domain: params.domain ?? this.domain,
-        isLimited: this.isLimited,
+	registerParams: params.registerParams,
+	signature: params.signature
       });
 
+      const account = params.registerParams.cacaoPayload.iss.split(":").slice(-3).join(":");
+
       Web3InboxClient.clientState.registration = {
-        account: params.account,
+        account, 
         identity: registeredIdentity,
       };
-      Web3InboxClient.clientState.account = params.account;
+
+      Web3InboxClient.clientState.account = account;
 
       return registeredIdentity;
     } catch (e: any) {
