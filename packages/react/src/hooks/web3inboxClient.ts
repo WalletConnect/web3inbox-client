@@ -75,9 +75,8 @@ export const useW3iAccount = (
     isRegistering: boolean;
   },
   {
-    register: (
-      onSign: (m: string) => Promise<string>
-    ) => Promise<string | null>;
+    register: (params: Parameters<Web3InboxClient['register']>[0]) => Promise<string | null>,
+    prepareRegistration: () => ReturnType<Web3InboxClient['prepareRegistration']>,
     unregister: (onSign: (m: string) => Promise<string>) => Promise<void>;
     setAccount: (account: string) => Promise<void>;
   }
@@ -105,16 +104,22 @@ export const useW3iAccount = (
     setIsRegistered(registrationStatus);
   }, [account, registration]);
 
+  const prepareRegistration = useCallback(
+    async () => {
+      if(web3inboxClientData?.client && account) {
+	return web3inboxClientData?.client.prepareRegistration({account})
+      }
+
+      throw new Error("Web3InboxClient not ready");
+    }, [web3inboxClientData, account])
+
   const register = useCallback(
-    async (onSign: (m: string) => Promise<string>) => {
+    async (params: Parameters<Web3InboxClient['register']>[0]) => {
       if (web3inboxClientData?.client && account) {
         setIsRegistering(true);
         let identity: string | null;
         try {
-          identity = await web3inboxClientData.client.register({
-            account,
-            onSign,
-          });
+          identity = await web3inboxClientData.client.register(params);
         } catch (e) {
           identity = null;
           console.error(e);
@@ -150,6 +155,7 @@ export const useW3iAccount = (
         isLoading: true,
         error: null,
 
+	prepareRegistration,
         register,
         unregister,
         setAccount,
@@ -167,7 +173,7 @@ export const useW3iAccount = (
 
       isLoading: false,
       error: null,
-
+      prepareRegistration,
       register,
       unregister,
       setAccount,

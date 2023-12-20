@@ -425,15 +425,17 @@ export class Web3InboxClient {
    *
    * @param {Object} params - register params
    * @param {string} params.account - Account to register.
-   * @param {string} params.[domain] - Domain to register to, defaulted to one set in init.
-   * @param {string} params.[allApps] - Request access for all domains or only for this domain
    *
    * @returns {Object} preparedRegistration - Prepared Registration
    */
   public prepareRegistration(
-    params: Parameters<NotifyClient["prepareRegistration"]>[0]
+    params: {account: string}
   ): ReturnType<NotifyClient["prepareRegistration"]> {
-    return this.notifyClient.prepareRegistration(params);
+    return this.notifyClient.prepareRegistration({
+      account: params.account,
+      domain: this.domain,
+      allApps: this.isLimited
+    });
   }
 
   /**
