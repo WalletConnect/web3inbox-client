@@ -2,8 +2,17 @@ import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useSubscriptionState } from "@web3inbox/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
-import { HooksReturn } from "../types/hooks";
+import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 
+type NotificationsReturn = HooksReturn<
+  {
+    messages: NotifyClientTypes.NotifyMessageRecord[];
+  },
+  {
+    deleteMessage: (id: number) => void;
+  },
+  "deleteMessage"
+>;
 /**
  * Hook to watch notifications of a subscription, and delete them
  *
@@ -13,14 +22,7 @@ import { HooksReturn } from "../types/hooks";
 export const useNotifications = (
   account?: string,
   domain?: string
-): HooksReturn<
-  {
-    messages: NotifyClientTypes.NotifyMessageRecord[];
-  },
-  {
-    deleteMessage: (id: number) => void;
-  }
-> => {
+): NotificationsReturn => {
   const { data: web3inboxClientData, error: clientError } =
     useWeb3InboxClient();
   const { messages: messagesTrigger } = useSubscriptionState();
@@ -51,7 +53,7 @@ export const useNotifications = (
     [web3inboxClientData]
   );
 
-  const result = useMemo(() => {
+  const result: NotificationsReturn = useMemo(() => {
     if (!web3inboxClientData) {
       return { data: null, error: null, isLoading: true, deleteMessage };
     }
@@ -59,37 +61,35 @@ export const useNotifications = (
     if (clientError) {
       return {
         data: null,
-        error: clientError,
+        error: {
+          client: clientError.client,
+        },
         isLoading: false,
         deleteMessage,
-      };
+      } as ErrorOf<NotificationsReturn>;
     }
 
     if (error) {
       return {
         data: null,
-        error: { message: error },
+        error: { deleteMessage: { message: error } },
         isLoading: false,
         deleteMessage,
-      };
+      } as ErrorOf<NotificationsReturn>;
     }
 
-    return { data: { messages }, error: null, isLoading: false, deleteMessage };
+    return {
+      data: { messages },
+      error: null,
+      isLoading: false,
+      deleteMessage,
+    } as SuccessOf<NotificationsReturn>;
   }, [web3inboxClientData, clientError, error]);
 
   return result;
 };
 
-/**
- * Hook to manage a subscribe, unsubscribe and get subscription
- *
- * @param {string} [account] - Account to get subscriptions messages from , defaulted to current account
- * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
- */
-export const useManageSubscription = (
-  account?: string,
-  domain?: string
-): HooksReturn<
+type ManageSubscriptionReturn = HooksReturn<
   {
     isSubscribed: boolean;
     isSubscribing: boolean;
@@ -99,8 +99,19 @@ export const useManageSubscription = (
   {
     unsubscribe: () => Promise<void>;
     subscribe: () => Promise<void>;
-  }
-> => {
+  },
+  "unsubscribe" | "subscribe"
+>;
+/**
+ * Hook to manage a subscribe, unsubscribe and get subscription
+ *
+ * @param {string} [account] - Account to get subscriptions messages from , defaulted to current account
+ * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
+ */
+export const useManageSubscription = (
+  account?: string,
+  domain?: string
+): ManageSubscriptionReturn => {
   const { data: web3inboxClientData, error: clientError } =
     useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
@@ -159,7 +170,7 @@ export const useManageSubscription = (
     }
   }, [web3inboxClientData, account, domain]);
 
-  const result = useMemo(() => {
+  const result: ManageSubscriptionReturn = useMemo(() => {
     if (!web3inboxClientData) {
       return {
         data: null,
@@ -167,17 +178,22 @@ export const useManageSubscription = (
         error: null,
         unsubscribe,
         subscribe,
-      };
+      } as LoadingOf<ManageSubscriptionReturn>;
     }
 
     if (clientError) {
       return {
         data: null,
         isLoading: false,
-        error: clientError,
+        error: {
+          client: clientError.client,
+          subscribe: { message: error },
+          unsubscribe: { message: error },
+        },
+
         unsubscribe,
         subscribe,
-      };
+      } as ErrorOf<ManageSubscriptionReturn>;
     }
 
     if (error) {
@@ -185,11 +201,12 @@ export const useManageSubscription = (
         data: null,
         isLoading: false,
         error: {
-          message: error,
+          subscribe: { message: error },
+          unsubscribe: { message: error },
         },
         unsubscribe,
         subscribe,
-      };
+      } as ErrorOf<ManageSubscriptionReturn>;
     }
 
     return {
@@ -203,12 +220,15 @@ export const useManageSubscription = (
       error: null,
       unsubscribe,
       subscribe,
-    };
+    } as SuccessOf<ManageSubscriptionReturn>;
   }, [web3inboxClientData, error, clientError]);
 
   return result;
 };
 
+type AllSubscriptionsReturn = HooksReturn<{
+  subscriptions: NotifyClientTypes.NotifySubscription[];
+}>;
 /**
  * Hook to get all subscriptions of an account
  *
@@ -216,9 +236,7 @@ export const useManageSubscription = (
  */
 export const useAllSubscriptions = (
   account?: string
-): HooksReturn<{
-  subscriptions: NotifyClientTypes.NotifySubscription[];
-}> => {
+): AllSubscriptionsReturn => {
   const { data: web3inboxClientData, error } = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subscriptions, setSubscriptions] = useState<
@@ -231,34 +249,47 @@ export const useAllSubscriptions = (
     }
   }, [subscriptionsTrigger, account, web3inboxClientData]);
 
-  const result = useMemo(() => {
+  const result: AllSubscriptionsReturn = useMemo(() => {
     if (!web3inboxClientData) {
       return {
         data: null,
         isLoading: true,
         error: null,
-      };
+      } as LoadingOf<AllSubscriptionsReturn>;
     }
 
     if (error) {
-      return { data: null, isLoading: false, error };
+      return {
+        data: null,
+        isLoading: false,
+        error: {
+          client: error.client,
+        },
+      } as ErrorOf<AllSubscriptionsReturn>;
     }
 
-    return { data: { subscriptions }, isLoading: false, error: null };
+    return {
+      data: { subscriptions },
+      isLoading: false,
+      error: null,
+    } as SuccessOf<AllSubscriptionsReturn>;
   }, [web3inboxClientData, error]);
 
   return result;
 };
 
-export const useSubscriptionScopes = (
-  account?: string,
-  domain?: string
-): HooksReturn<
+type SubscriptionScopesReturn = HooksReturn<
   { scopes: NotifyClientTypes.ScopeMap },
   {
     updateScopes: (scope: string[]) => Promise<boolean>;
-  }
-> => {
+  },
+  "updateScopes"
+>;
+
+export const useSubscriptionScopes = (
+  account?: string,
+  domain?: string
+): SubscriptionScopesReturn => {
   const { data: web3inboxClientData, error: clientError } =
     useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
@@ -292,20 +323,30 @@ export const useSubscriptionScopes = (
 
   const result = useMemo(() => {
     if (!web3inboxClientData) {
-      return { data: null, error: null, isLoading: true, updateScopes };
+      return {
+        data: null,
+        error: null,
+        isLoading: true,
+        updateScopes,
+      } as LoadingOf<SubscriptionScopesReturn>;
     }
 
     if (clientError) {
-      return { data: null, error: clientError, isLoading: false, updateScopes };
+      return {
+        data: null,
+        error: clientError,
+        isLoading: false,
+        updateScopes,
+      } as ErrorOf<SubscriptionScopesReturn>;
     }
 
     if (error) {
       return {
         data: null,
-        error: { message: error },
+        error: { updateScopes: { message: error } },
         isLoading: false,
         updateScopes,
-      };
+      } as ErrorOf<SubscriptionScopesReturn>;
     }
 
     return {
@@ -313,7 +354,7 @@ export const useSubscriptionScopes = (
       error: null,
       isLoading: false,
       updateScopes,
-    };
+    } as SuccessOf<SubscriptionScopesReturn>;
   }, [web3inboxClientData, clientError, error]);
 
   return result;

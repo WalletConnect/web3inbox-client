@@ -428,13 +428,13 @@ export class Web3InboxClient {
    *
    * @returns {Object} preparedRegistration - Prepared Registration
    */
-  public prepareRegistration(
-    params: {account: string}
-  ): ReturnType<NotifyClient["prepareRegistration"]> {
+  public prepareRegistration(params: {
+    account: string;
+  }): ReturnType<NotifyClient["prepareRegistration"]> {
     return this.notifyClient.prepareRegistration({
       account: params.account,
       domain: this.domain,
-      allApps: this.isLimited
+      allApps: this.isLimited,
     });
   }
 

@@ -6,12 +6,15 @@ import {
   AccordionPanel,
   Code,
 } from "@chakra-ui/react";
-import { useSubscription, useW3iAccount } from "@web3inbox/widget-react";
+import { useManageSubscription } from "@web3inbox/widget-react";
 import React from "react";
 
 function Subscription() {
-  const { account } = useW3iAccount();
-  const { subscription } = useSubscription(account);
+  const hooksReturn = useManageSubscription();
+
+  if (!hooksReturn.error) {
+    const data = hooksReturn.data;
+  }
 
   return (
     <AccordionItem>
@@ -37,7 +40,9 @@ function Subscription() {
               overflow: "scroll",
             }}
           >
-            {JSON.stringify(subscription, undefined, 2)}
+            {isLoading
+              ? "Loading.."
+              : JSON.stringify(error ?? data.subscription, undefined, 2)}
           </pre>
         </Code>
       </AccordionPanel>

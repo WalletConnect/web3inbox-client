@@ -1,6 +1,6 @@
 import { Web3InboxClient, useClientState } from "@web3inbox/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { HooksReturn } from "../types/hooks";
+import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 
 /**
  * Init a singleton instance of the Web3InboxClient
@@ -22,9 +22,15 @@ export const initWeb3InboxClient = ({
   return Web3InboxClient.init({ projectId, domain, isLimited });
 };
 
-export const useWeb3InboxClient = (): HooksReturn<{
-  client: Web3InboxClient;
-}> => {
+type Web3InboxClientReturn = HooksReturn<
+  {
+    client: Web3InboxClient;
+  },
+  {},
+  "client"
+>;
+
+export const useWeb3InboxClient = (): Web3InboxClientReturn => {
   const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
   const [client, setClient] = useState<Web3InboxClient | null>(
     Web3InboxClient.getIsReady() ? Web3InboxClient.getInstance() : null
@@ -44,7 +50,7 @@ export const useWeb3InboxClient = (): HooksReturn<{
     }
   }, [isReady]);
 
-  const result = useMemo(() => {
+  const result: HooksReturn<{ client: Web3InboxClient }> = useMemo(() => {
     if (isReady && client) {
       return {
         data: {
@@ -52,22 +58,20 @@ export const useWeb3InboxClient = (): HooksReturn<{
         },
         isLoading: false,
         error: null,
-      };
+      } as SuccessOf<Web3InboxClientReturn>;
     }
 
     return {
       data: null,
       isLoading: true,
       error: null,
-    };
+    } as LoadingOf<Web3InboxClientReturn>;
   }, [isReady, client]);
 
   return result;
 };
 
-export const useW3iAccount = (
-  address?: string
-): HooksReturn<
+type W3iAccountReturn = HooksReturn<
   {
     account: string | null;
     identityKey: string | null;
@@ -75,12 +79,18 @@ export const useW3iAccount = (
     isRegistering: boolean;
   },
   {
-    register: (params: Parameters<Web3InboxClient['register']>[0]) => Promise<string | null>,
-    prepareRegistration: () => ReturnType<Web3InboxClient['prepareRegistration']>,
+    register: (
+      params: Parameters<Web3InboxClient["register"]>[0]
+    ) => Promise<string | null>;
+    prepareRegistration: () => ReturnType<
+      Web3InboxClient["prepareRegistration"]
+    >;
     unregister: (onSign: (m: string) => Promise<string>) => Promise<void>;
     setAccount: (account: string) => Promise<void>;
   }
-> => {
+>;
+
+export const useW3iAccount = (address?: string): W3iAccountReturn => {
   const { data: web3inboxClientData } = useWeb3InboxClient();
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
@@ -104,17 +114,16 @@ export const useW3iAccount = (
     setIsRegistered(registrationStatus);
   }, [account, registration]);
 
-  const prepareRegistration = useCallback(
-    async () => {
-      if(web3inboxClientData?.client && account) {
-	return web3inboxClientData?.client.prepareRegistration({account})
-      }
+  const prepareRegistration = useCallback(async () => {
+    if (web3inboxClientData?.client && account) {
+      return web3inboxClientData?.client.prepareRegistration({ account });
+    }
 
-      throw new Error("Web3InboxClient not ready");
-    }, [web3inboxClientData, account])
+    throw new Error("Web3InboxClient not ready");
+  }, [web3inboxClientData, account]);
 
   const register = useCallback(
-    async (params: Parameters<Web3InboxClient['register']>[0]) => {
+    async (params: Parameters<Web3InboxClient["register"]>[0]) => {
       if (web3inboxClientData?.client && account) {
         setIsRegistering(true);
         let identity: string | null;
@@ -147,7 +156,7 @@ export const useW3iAccount = (
     setAccount(address);
   }, [address]);
 
-  const result = useMemo(() => {
+  const result: W3iAccountReturn = useMemo(() => {
     if (!web3inboxClientData) {
       return {
         data: null,
@@ -155,11 +164,11 @@ export const useW3iAccount = (
         isLoading: true,
         error: null,
 
-	prepareRegistration,
+        prepareRegistration,
         register,
         unregister,
         setAccount,
-      };
+      } as LoadingOf<W3iAccountReturn>;
     }
 
     return {
@@ -177,7 +186,7 @@ export const useW3iAccount = (
       register,
       unregister,
       setAccount,
-    };
+    } as SuccessOf<W3iAccountReturn>;
   }, [web3inboxClientData, register, unregister, setAccount]);
 
   return result;
