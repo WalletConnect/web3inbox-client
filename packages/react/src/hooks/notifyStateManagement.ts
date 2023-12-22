@@ -334,7 +334,9 @@ export const useSubscriptionScopes = (
     if (clientError) {
       return {
         data: null,
-        error: clientError,
+        error: {
+	  client: clientError.client
+	},
         isLoading: false,
         updateScopes,
       } as ErrorOf<SubscriptionScopesReturn>;

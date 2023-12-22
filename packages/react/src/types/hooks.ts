@@ -30,15 +30,13 @@ export type HooksReturn<
   TActions;
 
 export type SuccessOf<T> = T extends HooksReturn<
-  infer TData,
-  infer TActions,
-  infer TErrorKeys
+  infer TData
 >
   ? Extract<T, HooksSuccess<TData>>
   : never;
 export type ErrorOf<T> = T extends HooksReturn<
   infer TData,
-  infer TActions,
+  any,
   infer TErrorKeys
 >
   ? Extract<T, HooksFail<TData, TErrorKeys>>
