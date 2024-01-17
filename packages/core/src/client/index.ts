@@ -13,9 +13,9 @@ export type GetNotificationsReturn = {
 };
 
 export type GetNotificationsReturn = {
-  notifications: NotifyClientTypes.NotifyMessage[],
-  hasMore: boolean
-}
+  notifications: NotifyClientTypes.NotifyMessage[];
+  hasMore: boolean;
+};
 
 interface IClientState {
   isReady: boolean;
@@ -576,7 +576,7 @@ export class Web3InboxClient {
     return this.notifyClient.prepareRegistration({
       account: params.account,
       domain: this.domain,
-      allApps: this.isLimited,
+      allApps: this.allApps,
     });
   }
 
