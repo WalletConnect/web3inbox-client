@@ -34,6 +34,8 @@ const Home: NextPage = () => {
     prepareRegistration,
   } = useW3iAccount();
 
+  console.log(">>> w3iAccountData", w3iAccountData)
+
   const {
     subscribe,
     data: subscriptionData,

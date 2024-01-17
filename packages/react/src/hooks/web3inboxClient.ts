@@ -8,18 +8,18 @@ import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
  * @param {Object} params - the params needed to init the client
  * @param {string} params.projectId - your WalletConnect Cloud project ID
  * @param {string} params.domain - The domain of the default dapp to target for functions.
- * @param {boolean} params.isLimited - All account's subscriptions accessable if explicitly set to false. Only param.domain's otherwise
+ * @param {boolean} params.allApps - All account's subscriptions accessable if explicitly set to true. Only param.domain's otherwise
  */
 export const initWeb3InboxClient = ({
   projectId,
   domain,
-  isLimited,
+  allApps,
 }: {
   projectId: string;
   domain?: string;
-  isLimited?: boolean;
+  allApps?: boolean;
 }) => {
-  return Web3InboxClient.init({ projectId, domain, isLimited });
+  return Web3InboxClient.init({ projectId, domain, allApps });
 };
 
 type Web3InboxClientReturn = HooksReturn<
@@ -111,6 +111,7 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
     const registrationStatus = registration
       ? registration.account === account
       : false;
+    console.log(">>> registrationStatus: ", registrationStatus)
     setIsRegistered(registrationStatus);
   }, [account, registration]);
 
@@ -156,6 +157,8 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
     setAccount(address);
   }, [address]);
 
+  console.log(">>> isRegistered", isRegistered)
+
   const result: W3iAccountReturn = useMemo(() => {
     if (!web3inboxClientData) {
       return {
@@ -187,7 +190,7 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
       unregister,
       setAccount,
     } as SuccessOf<W3iAccountReturn>;
-  }, [web3inboxClientData, register, unregister, setAccount]);
+  }, [web3inboxClientData, register, isRegistered, isRegistering, registration, unregister, setAccount]);
 
   return result;
 };

@@ -36,7 +36,7 @@ export class Web3InboxClient {
   public constructor(
     private notifyClient: NotifyClient,
     private domain: string,
-    private isLimited: boolean
+    private allApps: boolean
   ) {}
 
   private getRequiredAccountParam(account?: string) {
@@ -99,9 +99,12 @@ export class Web3InboxClient {
    * @param {string} account
    */
   public async setAccount(account: string) {
+    console.log(">>> Setting account: ", account)
+    const isRegistered = await this.getAccountIsRegistered(account);
+    console.log(">>> isRegistered: ", isRegistered)
     // Account setting is duplicated to ensure it only gets updated once
     // identity state is confirmed
-    if (await this.getAccountIsRegistered(account)) {
+    if (isRegistered) {
       const identity = await this.notifyClient.identityKeys.getIdentity({
         account,
       });
@@ -145,10 +148,7 @@ export class Web3InboxClient {
    */
   public async getAccountIsRegistered(account: string): Promise<boolean> {
     try {
-      const identity = await this.notifyClient.identityKeys.getIdentity({
-        account,
-      });
-      return Boolean(identity);
+      return this.notifyClient.isRegistered({account, allApps: this.allApps, domain: this.domain })
     } catch (e) {
       return false;
     }
@@ -175,14 +175,14 @@ export class Web3InboxClient {
    * @param {Object} params - the params needed to init the client
    * @param {string} params.projectId - your WalletConnect Cloud project ID
    * @param {string} params.domain - The domain of the default dapp to target for functions.
-   * @param {boolean} params.isLimited - All account's subscriptions accessable if explicitly set to false. Only param.domain's otherwise
+   * @param {boolean} params.allApps - All account's subscriptions accessable if explicitly set to true. Only param.domain's otherwise
    *
    * @returns {Object} Web3InboxClient
    */
   public static async init(params: {
     projectId: string;
     domain?: string;
-    isLimited?: boolean;
+    allApps?: boolean;
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -216,7 +216,7 @@ export class Web3InboxClient {
       notifyClient,
       params.domain ?? window.location.host,
       // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
-      params.isLimited ?? true
+      params.allApps ?? false
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -469,7 +469,7 @@ export class Web3InboxClient {
     return this.notifyClient.prepareRegistration({
       account: params.account,
       domain: this.domain,
-      allApps: this.isLimited,
+      allApps: this.allApps,
     });
   }
 
@@ -496,6 +496,8 @@ export class Web3InboxClient {
         .split(":")
         .slice(-3)
         .join(":");
+
+      console.log(">>> registeredIdentity", registeredIdentity)
 
       Web3InboxClient.clientState.registration = {
         account,

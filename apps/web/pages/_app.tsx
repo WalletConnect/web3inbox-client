@@ -30,7 +30,7 @@ const wagmiConfig = defaultWagmiConfig({
 initWeb3InboxClient({
   projectId,
   domain: appDomain,
-  isLimited: process.env.NODE_ENV == "production",
+  allApps: process.env.NODE_ENV !== "production",
 });
 
 createWeb3Modal({ wagmiConfig, projectId, chains });
