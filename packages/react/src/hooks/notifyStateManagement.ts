@@ -149,6 +149,7 @@ export const useManageSubscription = (
     if (web3inboxClientData) {
       setIsSubscribing(true);
       try {
+	console.log(">>> subscribing to", account, domain)
         await web3inboxClientData.client.subscribeToDapp(account, domain);
       } catch (e) {
         console.error("Failed to subscribe", e);
@@ -232,7 +233,7 @@ export const useManageSubscription = (
       unsubscribe,
       subscribe,
     } as SuccessOf<ManageSubscriptionReturn>;
-  }, [web3inboxClientData, error, clientError]);
+  }, [web3inboxClientData, subscription, isSubscribing, isUnsubscribing, error, clientError]);
 
   return result;
 };

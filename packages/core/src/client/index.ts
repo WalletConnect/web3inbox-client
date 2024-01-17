@@ -565,6 +565,11 @@ export class Web3InboxClient {
       return;
     }
 
+    console.log(">>> subscribing to", {
+      account: accountOrInternalAccount,
+      appDomain: domain ?? this.domain,
+    })
+
     await this.notifyClient.subscribe({
       account: accountOrInternalAccount,
       appDomain: domain ?? this.domain,
