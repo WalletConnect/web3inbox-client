@@ -450,6 +450,21 @@ export class Web3InboxClient {
       }
     });
 
+    this.notifyClient.on("notify_message", async () => {
+      console.log(">>> Notification...");
+      const fetchedNotificationData = await this.getNotificationHistory(
+        notificationsPerPage,
+        undefined,
+        account,
+        domain
+      );
+      const notification = fetchedNotificationData.notifications.shift();
+      if (notification) {
+        console.log(">>> Notification...", notification);
+        data.notifications = [notification, ...data.notifications];
+      }
+    });
+
     const nextPage = async () => {
       const lastMessage = data.notifications.length
         ? data.notifications[data.notifications.length - 1].id
