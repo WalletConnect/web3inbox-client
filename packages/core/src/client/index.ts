@@ -12,6 +12,11 @@ export type GetNotificationsReturn = {
   hasMore: boolean;
 };
 
+export type GetNotificationsReturn = {
+  notifications: NotifyClientTypes.NotifyMessage[],
+  hasMore: boolean
+}
+
 interface IClientState {
   isReady: boolean;
   initting: boolean;
