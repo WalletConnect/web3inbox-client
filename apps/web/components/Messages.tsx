@@ -8,18 +8,18 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
-  CloseButton,
   Flex,
   Heading,
   Image,
   Text,
 } from "@chakra-ui/react";
-import { useNotifications } from "@web3inbox/widget-react";
+import { useNotifications, useSubscriptionScopes } from "@web3inbox/widget-react";
 import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { data: messageData, deleteMessage } = useNotifications();
+  const { data: messageData } = useNotifications(3, false);
+  const {data: scopeData } = useSubscriptionScopes()
 
   return (
     <AccordionItem>
@@ -37,12 +37,11 @@ function Messages() {
           gap={2}
           position={"relative"}
         >
-          {!messageData?.messages?.length ? (
+          {!messageData?.notifications?.length ? (
             <Text>No messages yet.</Text>
           ) : (
-            messageData?.messages
-              .sort((a, b) => b.id - a.id)
-              .map(({ id, message }) => (
+            messageData?.notifications
+              .map(({ id, ...message }) => (
                 <Alert
                   as={Link}
                   href={message.url}
@@ -64,23 +63,13 @@ function Messages() {
                   </Flex>
                   <Flex w="60px" justifyContent="center">
                     <Image
-                      src={message.icon}
+                      src={scopeData?.scopes[message.type ?? ""].imageUrls.md}
                       alt="notification image"
                       height="60px"
                       rounded="full"
                       alignSelf="center"
                     />
                   </Flex>
-                  <CloseButton
-                    alignSelf="flex-start"
-                    position="relative"
-                    right={-1}
-                    top={-1}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      deleteMessage(id);
-                    }}
-                  />
                 </Alert>
               ))
           )}
