@@ -18,7 +18,7 @@ import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { data: messageData } = useNotifications(3, false);
+  const { data: messageData, error, isLoading } = useNotifications(3, false);
   const {data: scopeData } = useSubscriptionScopes()
 
   return (
@@ -63,7 +63,7 @@ function Messages() {
                   </Flex>
                   <Flex w="60px" justifyContent="center">
                     <Image
-                      src={scopeData?.scopes[message.type ?? ""].imageUrls.md}
+                      src={scopeData?.scopes[message.type ?? ""].imageUrls?.md}
                       alt="notification image"
                       height="60px"
                       rounded="full"

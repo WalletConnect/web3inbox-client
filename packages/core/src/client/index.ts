@@ -378,12 +378,23 @@ export class Web3InboxClient {
     data: GetNotificationsReturn,
     nextPage: () => void
   } {
-    
+
     const data = proxy<GetNotificationsReturn>({
       notifications: [],
       hasMore: false
     })
 
+
+    this.notifyClient.on("notify_message", async () => {
+      console.log(">>> Notification...")
+      const fetchedNotificationData = await this.getNotificationHistory(notificationsPerPage, undefined, account, domain);
+      const notification = fetchedNotificationData.notifications.shift()
+      if(notification) {
+	console.log(">>> Notification...", notification)
+	data.notifications = [notification, ...data.notifications]
+      }
+    })
+    
     const nextPage = async () => {
       const lastMessage = data.notifications.length? data.notifications[data.notifications.length -1].id : undefined;
       const fetchedNotificationData = await this.getNotificationHistory(notificationsPerPage, lastMessage, account, domain);
@@ -395,6 +406,7 @@ export class Web3InboxClient {
 
     return (onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void) => ({
       stopWatchingNotifications: subscribe(data, () => {
+	console.log(">>> updating notification...")
 	onNotificationDataUpdate(data)
       }),
       data,

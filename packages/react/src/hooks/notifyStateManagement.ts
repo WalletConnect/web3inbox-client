@@ -95,7 +95,7 @@ export const useNotifications = (
       isLoading: false,
       nextPage,
     } as SuccessOf<NotificationsReturn>;
-  }, [web3inboxClientData, clientError, error]);
+  }, [web3inboxClientData, nextPage, notifications, clientError, error]);
 
   return result;
 };

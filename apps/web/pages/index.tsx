@@ -105,7 +105,7 @@ const Home: NextPage = () => {
         icon: `${window.location.origin}/WalletConnect-blue.svg`,
         url: window.location.origin,
         // ID retrieved from explorer api - Copy your notification type from WalletConnect Cloud and replace the default value below
-        type: "ba0e9ab1-e194-4780-8fc5-3c8abd9678e2",
+        type: "f173f231-a45c-4dc0-aa5d-956eb04f7360",
       });
     }
   }, [handleSendNotification, subscriptionData]);
@@ -130,7 +130,7 @@ const Home: NextPage = () => {
               body: blockNumber.toString(),
               icon: `${window.location.origin}/eth-glyph-colored.png`,
               url: `https://etherscan.io/block/${blockNumber.toString()}`,
-              type: "ba0e9ab1-e194-4780-8fc5-3c8abd9678e2",
+              type: "f173f231-a45c-4dc0-aa5d-956eb04f7360",
             },
           });
         } catch (error: any) {
