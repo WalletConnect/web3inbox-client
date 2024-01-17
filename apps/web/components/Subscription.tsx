@@ -12,10 +12,6 @@ import React from "react";
 function Subscription() {
   const hooksReturn = useManageSubscription();
 
-  if (!hooksReturn.error) {
-    const data = hooksReturn.data;
-  }
-
   return (
     <AccordionItem>
       <h2>
@@ -40,9 +36,9 @@ function Subscription() {
               overflow: "scroll",
             }}
           >
-            {isLoading
+            {hooksReturn.isLoading
               ? "Loading.."
-              : JSON.stringify(error ?? data.subscription, undefined, 2)}
+              : JSON.stringify(hooksReturn.error ?? hooksReturn.data?.subscription, undefined, 2)}
           </pre>
         </Code>
       </AccordionPanel>

@@ -22,7 +22,9 @@ const chains = [mainnet];
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
-  appName: "GM Hackers",
+  metadata: {
+    name: "GM Hackers"
+  }
 });
 
 initWeb3InboxClient({

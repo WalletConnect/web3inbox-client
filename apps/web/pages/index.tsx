@@ -31,6 +31,7 @@ const Home: NextPage = () => {
     setAccount,
     data: w3iAccountData,
     register: registerIdentity,
+    prepareRegistration,
   } = useW3iAccount();
 
   const {
@@ -76,7 +77,12 @@ const Home: NextPage = () => {
   const handleRegistration = useCallback(async () => {
     console.log("Calling handle reg");
     try {
-      await registerIdentity(signMessage);
+      const { message, registerParams } = await prepareRegistration()
+      const signature = await signMessageAsync({message: message})
+      await registerIdentity({
+	registerParams,
+	signature
+      });
     } catch (registerIdentityError) {
       console.error({ registerIdentityError });
     }
