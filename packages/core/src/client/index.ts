@@ -6,6 +6,11 @@ import {
 } from "@walletconnect/notify-client";
 import { proxy, subscribe } from "valtio";
 
+export type GetNotificationsReturn = {
+  notifications: NotifyClientTypes.NotifyMessage[],
+  hasMore: boolean
+}
+
 interface IClientState {
   isReady: boolean;
   initting: boolean;
@@ -17,7 +22,6 @@ export class Web3InboxClient {
   public static instance: Web3InboxClient | null = null;
   public static subscriptionState: {
     subscriptions: NotifyClientTypes.NotifySubscription[];
-    messages: NotifyClientTypes.NotifyMessageRecord[];
   } = proxy({ subscriptions: [], messages: [] });
   public static view: { isOpen: boolean } = proxy({
     isOpen: false,
@@ -35,15 +39,6 @@ export class Web3InboxClient {
     private isLimited: boolean
   ) {}
 
-  //TODO: Make more efficient - this is very slow.
-  private static updateMessages() {
-    Web3InboxClient.subscriptionState.messages =
-      Web3InboxClient.instance?.notifyClient.messages
-        .getAll()
-        .filter((m) => m)
-        .flatMap((m) => Object.values(m.messages)) ?? [];
-  }
-
   private getRequiredAccountParam(account?: string) {
     if (account) {
       return account;
@@ -58,10 +53,8 @@ export class Web3InboxClient {
     const updateInternalSubscriptions = () => {
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
-      Web3InboxClient.updateMessages();
     };
 
-    this.notifyClient.on("notify_message", Web3InboxClient.updateMessages);
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
@@ -375,49 +368,91 @@ export class Web3InboxClient {
     return {};
   }
 
+  public pageNotifications(
+    notificationsPerPage: number,
+    isInfiniteScroll?: boolean,
+    account?: string,
+    domain?: string,
+  ): (onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void) => {
+    stopWatchingNotifications: () => void,
+    data: GetNotificationsReturn,
+    nextPage: () => void
+  } {
+    
+    const data = proxy<GetNotificationsReturn>({
+      notifications: [],
+      hasMore: false
+    })
+
+    const nextPage = async () => {
+      const lastMessage = data.notifications.length? data.notifications[data.notifications.length -1].id : undefined;
+      const fetchedNotificationData = await this.getNotificationHistory(notificationsPerPage, lastMessage, account, domain);
+      data.notifications = isInfiniteScroll?
+	[...data.notifications, ...fetchedNotificationData.notifications]
+	: fetchedNotificationData.notifications
+      data.hasMore = fetchedNotificationData.hasMore
+    }
+
+    return (onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void) => ({
+      stopWatchingNotifications: subscribe(data, () => {
+	onNotificationDataUpdate(data)
+      }),
+      data,
+      nextPage
+    })
+  }
+
   /**
    * Get message history for a subscription
    *
+   * @param {number} limit - How many notifications to get after `startingAfter`
+   * @param {string} [startingAfter] - ID of the notification to get messages after
    * @param {string} [account] - Account to get subscription message history for, defaulted to current account
    * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
    *
    * @returns {Object[]} messages  - Message Record array
    */
-  public getMessageHistory(
+  public getNotificationHistory(
+    limit: number,
+    startingAfter?: string,
     account?: string,
-    domain?: string
-  ): NotifyClientTypes.NotifyMessageRecord[] {
+    domain?: string,
+  ): Promise<{
+    notifications: NotifyClientTypes.NotifyMessage[],
+    hasMore: boolean
+  }> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
-      return [];
+      return Promise.resolve({
+        hasMore: false,
+        notifications: []
+      });
     }
 
     const sub = this.getSubscription(account, domain);
 
     if (sub) {
       try {
-        return Web3InboxClient.subscriptionState.messages.filter(
-          (m) => m.topic === sub.topic
-        );
+        return this.notifyClient.getNotificationHistory({
+          topic: sub.topic,
+          limit,
+          startingAfter 
+        })
       } catch (e) {
         console.error("Failed to fetch messages", e);
-        return [];
+        return Promise.reject({
+	  hasMore: false,
+	  notifications: []
+	});
+
       }
     }
 
-    return [];
-  }
-
-  /**
-   * Delete message from message history
-   *
-   * @param {Object} params - Params to delete a message
-   * @param {number} params.id - ID of message to delete
-   */
-  public deleteNotifyMessage(params: { id: number }): void {
-    this.notifyClient.deleteNotifyMessage(params);
-    Web3InboxClient.updateMessages();
+    return Promise.resolve({
+      hasMore: false,
+      notifications: []
+    });
   }
 
   /**
@@ -589,24 +624,6 @@ export class Web3InboxClient {
   ) {
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain)?.scope ?? {});
-    });
-  }
-
-  /**
-   * Watch messagees for a subscription
-   *
-   * @param cb - callback that gets called every time messages update
-   * @param {string} [account] - Account to watch subscription's messages for, defaulted to current account
-   * @param {string} [domain] - Domain to watch subscription's messages for, defaulted to one set in init.
-   *
-   */
-  public watchMessages(
-    cb: (messages: NotifyClientTypes.NotifyMessageRecord[]) => void,
-    account?: string,
-    domain?: string
-  ) {
-    return subscribe(Web3InboxClient.subscriptionState, () => {
-      cb(Object.values(this.getMessageHistory(account, domain)));
     });
   }
 

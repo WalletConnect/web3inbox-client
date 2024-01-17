@@ -15,7 +15,7 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@walletconnect/types": "^2.10.2",
+    "@walletconnect/types": "2.11.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",
@@ -23,8 +23,8 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@walletconnect/core": "^2.10.2",
-    "@walletconnect/notify-client": "^0.15.0",
+    "@walletconnect/core": "2.11.0",
+    "@walletconnect/notify-client": "^0.16.4",
     "valtio": "^1.11.2"
   }
 }

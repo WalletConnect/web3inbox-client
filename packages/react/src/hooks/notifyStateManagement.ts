@@ -4,14 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 
+export type GetNotificationsReturn = {
+  notifications: NotifyClientTypes.NotifyMessage[],
+  hasMore: boolean
+}
+
 type NotificationsReturn = HooksReturn<
+  GetNotificationsReturn,
   {
-    messages: NotifyClientTypes.NotifyMessageRecord[];
+    nextPage: () => void;
   },
-  {
-    deleteMessage: (id: number) => void;
-  },
-  "deleteMessage"
+  "getMessages"
 >;
 /**
  * Hook to watch notifications of a subscription, and delete them
@@ -20,42 +23,50 @@ type NotificationsReturn = HooksReturn<
  * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
  */
 export const useNotifications = (
+  notificationsPerPage: number,
+  isInfiniteScroll?: boolean,
   account?: string,
   domain?: string
 ): NotificationsReturn => {
   const { data: web3inboxClientData, error: clientError } =
     useWeb3InboxClient();
-  const { messages: messagesTrigger } = useSubscriptionState();
 
-  const [messages, setMessages] = useState<
-    NotifyClientTypes.NotifyMessageRecord[]
-  >(web3inboxClientData?.client.getMessageHistory(account, domain) ?? []);
+  const [notifications, setNotifications] = useState<
+    GetNotificationsReturn
+  >();
+
+  const [nextPage, setNextPage] = useState<() => void>(() => {})
 
   const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
     if (!web3inboxClientData) return;
 
-    setMessages(web3inboxClientData.client.getMessageHistory(account));
-  }, [web3inboxClientData, messagesTrigger, account, domain]);
+    try {
+      const {nextPage: nextPageFunc, stopWatchingNotifications} = web3inboxClientData
+        .client
+        .pageNotifications(
+          notificationsPerPage,
+          isInfiniteScroll,
+          account,
+          domain
+        )(setNotifications)
+   
+      setNextPage(nextPageFunc);
+  
+      return () => stopWatchingNotifications();
+    }
+    catch(e: any) {
+      setError(e.message)
+    }
 
-  const deleteMessage = useCallback(
-    (id: number) => {
-      if (web3inboxClientData && id) {
-        try {
-          web3inboxClientData.client.deleteNotifyMessage({ id });
-        } catch (e) {
-          console.error("Failed to delete message", e);
-          setError("Failed to delete message");
-        }
-      }
-    },
-    [web3inboxClientData]
-  );
+
+  }, [web3inboxClientData, account, domain]);
+
 
   const result: NotificationsReturn = useMemo(() => {
     if (!web3inboxClientData) {
-      return { data: null, error: null, isLoading: true, deleteMessage };
+      return { data: null, error: null, isLoading: true, nextPage };
     }
 
     if (clientError) {
@@ -65,24 +76,24 @@ export const useNotifications = (
           client: clientError.client,
         },
         isLoading: false,
-        deleteMessage,
+	nextPage
       } as ErrorOf<NotificationsReturn>;
     }
 
     if (error) {
       return {
         data: null,
-        error: { deleteMessage: { message: error } },
+        error: {getMessages: {message: error}},
         isLoading: false,
-        deleteMessage,
+	nextPage
       } as ErrorOf<NotificationsReturn>;
     }
 
     return {
-      data: { messages },
+      data: notifications,
       error: null,
       isLoading: false,
-      deleteMessage,
+      nextPage,
     } as SuccessOf<NotificationsReturn>;
   }, [web3inboxClientData, clientError, error]);
 
