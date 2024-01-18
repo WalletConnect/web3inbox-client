@@ -4,13 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWeb3InboxClient } from "./web3inboxClient";
 import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 
-export type GetNotificationsReturn = {
-  notifications: NotifyClientTypes.NotifyMessage[],
-  hasMore: boolean
-}
-
 type NotificationsReturn = HooksReturn<
-  GetNotificationsReturn,
+  {
+    notifications: NotifyClientTypes.NotifyMessage[],
+    hasMore: boolean
+  },
   {
     nextPage: () => void;
   },
@@ -31,9 +29,7 @@ export const useNotifications = (
   const { data: web3inboxClientData, error: clientError } =
     useWeb3InboxClient();
 
-  const [notifications, setNotifications] = useState<
-    GetNotificationsReturn
-  >();
+  const [notifications, setNotifications] = useState<SuccessOf<NotificationsReturn>['data']>();
 
   const [nextPage, setNextPage] = useState<() => void>(() => {})
 
