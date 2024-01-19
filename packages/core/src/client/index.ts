@@ -50,16 +50,33 @@ export class Web3InboxClient {
   }
 
   protected attachEventListeners(): void {
+    console.log(">>> attachEventListener")
     const updateInternalSubscriptions = () => {
+      console.log(">>> updating internal subscriptions")
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
     };
 
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on(
+      "notify_subscription",
+      updateInternalSubscriptions
+    );
+    this.notifyClient.on(
+      "notify_update",
+      updateInternalSubscriptions
+    );
+    this.notifyClient.on(
       "notify_subscriptions_changed",
       updateInternalSubscriptions
     );
+
+    const clientReadyInterval = setInterval(() => {
+      if(this.notifyClient.hasFinishedInitialLoad()) {
+	updateInternalSubscriptions()
+	clearInterval(clientReadyInterval)
+      }
+    }, 100)
   }
 
   /**
@@ -245,18 +262,22 @@ export class Web3InboxClient {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
     const domainToSearch = domain ?? this.domain;
 
+    console.log(">>> getSubscription for", accountOrInternalAccount, domainToSearch)
+
     if (!accountOrInternalAccount) {
       return null;
     }
 
-    return (
-      Web3InboxClient.subscriptionState.subscriptions.find((sub) => {
+    const subscription = Web3InboxClient.subscriptionState.subscriptions.find((sub) => {
         const accountMatch = sub.account === accountOrInternalAccount;
         const domainMatch = sub.metadata.appDomain === domainToSearch;
 
         return accountMatch && domainMatch;
       }) ?? null
-    );
+
+    console.log(">>> getSubscription found", subscription)
+
+    return subscription;
   }
 
   /**
@@ -568,19 +589,24 @@ export class Web3InboxClient {
   ): Promise<void> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
+    console.log(">>> subscribeToDapp (internally)", {
+      account: accountOrInternalAccount,
+      appDomain: domain ?? this.domain,
+    })
+
     if (!accountOrInternalAccount) {
       console.error("Failed to subscribe since no account has been set");
       return;
     }
 
     if (this.isSubscribedToDapp(accountOrInternalAccount, domain)) {
+      console.log(">>> isSubscribed: true", {
+        account: accountOrInternalAccount,
+        appDomain: domain ?? this.domain,
+      })
       return;
     }
 
-    console.log(">>> subscribing to", {
-      account: accountOrInternalAccount,
-      appDomain: domain ?? this.domain,
-    })
 
     await this.notifyClient.subscribe({
       account: accountOrInternalAccount,

@@ -119,9 +119,8 @@ export const useManageSubscription = (
   account?: string,
   domain?: string
 ): ManageSubscriptionReturn => {
-  const { data: web3inboxClientData, error: clientError } =
+  const { data: web3inboxClientData, isLoading: isClientLoading, error: clientError } =
     useWeb3InboxClient();
-  const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
 
   const [subscription, setSubscription] =
     useState<NotifyClientTypes.NotifySubscription | null>(
@@ -136,10 +135,18 @@ export const useManageSubscription = (
   useEffect(() => {
     if (!web3inboxClientData) return;
 
+    const stopWatching = web3inboxClientData.client?.watchSubscription((sub) => {
+      console.log(">>> watcher")
+      setSubscription(sub)
+    }, account, domain);
+
     setSubscription(
       web3inboxClientData.client.getSubscription(account, domain)
     );
-  }, [web3inboxClientData, subscriptionsTrigger, account, domain]);
+
+    return stopWatching;
+
+  }, [web3inboxClientData, isClientLoading, account, domain]);
 
   const subscribe = useCallback(async () => {
     if (web3inboxClientData) {
@@ -230,6 +237,8 @@ export const useManageSubscription = (
       subscribe,
     } as SuccessOf<ManageSubscriptionReturn>;
   }, [web3inboxClientData, subscription, isSubscribing, isUnsubscribing, error, clientError]);
+
+  console.log(">>> result: ", result)
 
   return result;
 };
