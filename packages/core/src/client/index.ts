@@ -65,6 +65,8 @@ export class Web3InboxClient {
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
     this.notifyClient.on("notify_update", updateInternalSubscriptions);
+    this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
+    this.notifyClient.on("notify_update", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
       updateInternalSubscriptions
