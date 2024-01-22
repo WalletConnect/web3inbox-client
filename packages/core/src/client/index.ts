@@ -471,14 +471,12 @@ export class Web3InboxClient {
       const lastMessage = data.notifications.length
         ? data.notifications[data.notifications.length - 1].id
         : undefined;
-
       const fetchedNotificationData = await this.getNotificationHistory(
         notificationsPerPage,
         lastMessage,
         account,
         domain
       );
-
       data.notifications = isInfiniteScroll
         ? [...data.notifications, ...fetchedNotificationData.notifications]
         : fetchedNotificationData.notifications;
