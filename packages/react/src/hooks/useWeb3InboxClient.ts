@@ -28,23 +28,19 @@ export const useWeb3InboxClient = (): Web3InboxClientReturn => {
     }
   }, [isReady]);
 
-  const result: HooksReturn<{ client: Web3InboxClient }> = useMemo(() => {
-    if (isReady && client) {
-      return {
-        data: {
-          client,
-        },
-        isLoading: false,
-        error: null,
-      } as SuccessOf<Web3InboxClientReturn>;
-    }
-
+  if (isReady && client) {
     return {
-      data: null,
-      isLoading: true,
+      data: {
+        client,
+      },
+      isLoading: false,
       error: null,
-    } as LoadingOf<Web3InboxClientReturn>;
-  }, [isReady, client]);
+    } as SuccessOf<Web3InboxClientReturn>;
+  }
 
-  return result;
+  return {
+    data: null,
+    isLoading: true,
+    error: null,
+  } as LoadingOf<Web3InboxClientReturn>;
 };

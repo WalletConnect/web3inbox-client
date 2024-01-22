@@ -1,6 +1,6 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useSubscriptionState } from "@web3inbox/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
@@ -27,31 +27,27 @@ export const useAllSubscriptions = (
     }
   }, [subscriptionsTrigger, account, web3inboxClientData]);
 
-  const result: AllSubscriptionsReturn = useMemo(() => {
-    if (!web3inboxClientData) {
-      return {
-        data: null,
-        isLoading: true,
-        error: null,
-      } as LoadingOf<AllSubscriptionsReturn>;
-    }
-
-    if (error) {
-      return {
-        data: null,
-        isLoading: false,
-        error: {
-          client: error.client,
-        },
-      } as ErrorOf<AllSubscriptionsReturn>;
-    }
-
+  if (!web3inboxClientData) {
     return {
-      data: { subscriptions },
-      isLoading: false,
+      data: null,
+      isLoading: true,
       error: null,
-    } as SuccessOf<AllSubscriptionsReturn>;
-  }, [web3inboxClientData, error]);
+    } as LoadingOf<AllSubscriptionsReturn>;
+  }
 
-  return result;
+  if (error) {
+    return {
+      data: null,
+      isLoading: false,
+      error: {
+        client: error.client,
+      },
+    } as ErrorOf<AllSubscriptionsReturn>;
+  }
+
+  return {
+    data: { subscriptions },
+    isLoading: false,
+    error: null,
+  } as SuccessOf<AllSubscriptionsReturn>;
 };

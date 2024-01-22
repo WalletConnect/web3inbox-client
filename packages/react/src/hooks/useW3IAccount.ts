@@ -91,46 +91,33 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
 
   console.log(">>> isRegistered", isRegistered);
 
-  const result: W3iAccountReturn = useMemo(() => {
-    if (!web3inboxClientData) {
-      return {
-        data: null,
-
-        isLoading: true,
-        error: null,
-
-        prepareRegistration,
-        register,
-        unregister,
-        setAccount,
-      } as LoadingOf<W3iAccountReturn>;
-    }
-
+  if (!web3inboxClientData) {
     return {
-      data: {
-        account: account ?? null,
-        isRegistered,
-        isRegistering,
-        identityKey:
-          isRegistered && registration ? registration.identity : null,
-      },
+      data: null,
 
-      isLoading: false,
+      isLoading: true,
       error: null,
+
       prepareRegistration,
       register,
       unregister,
       setAccount,
-    } as SuccessOf<W3iAccountReturn>;
-  }, [
-    web3inboxClientData,
+    } as LoadingOf<W3iAccountReturn>;
+  }
+
+  return {
+    data: {
+      account: account ?? null,
+      isRegistered,
+      isRegistering,
+      identityKey: isRegistered && registration ? registration.identity : null,
+    },
+
+    isLoading: false,
+    error: null,
+    prepareRegistration,
     register,
-    isRegistered,
-    isRegistering,
-    registration,
     unregister,
     setAccount,
-  ]);
-
-  return result;
+  } as SuccessOf<W3iAccountReturn>;
 };
