@@ -1,6 +1,6 @@
 "use client";
 import type { NextPage } from "next";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Accordion,
   Button,
@@ -14,7 +14,12 @@ import {
 
 import { useManageSubscription, useW3iAccount } from "@web3inbox/widget-react";
 
-import { useAccount, usePublicClient, useSignMessage } from "wagmi";
+import {
+  useAccount,
+  useAccountEffect,
+  usePublicClient,
+  useSignMessage,
+} from "wagmi";
 import { FaBell, FaBellSlash, FaPause, FaPlay } from "react-icons/fa";
 import { BsSendFill } from "react-icons/bs";
 import useSendNotification from "../utils/useSendNotification";
@@ -22,7 +27,6 @@ import { useInterval } from "usehooks-ts";
 import Preferences from "../components/Preferences";
 import Messages from "../components/Messages";
 import Subscription from "../components/Subscription";
-import { sendNotification } from "../utils/fetchNotify";
 import Subscribers from "../components/Subscribers";
 
 const Home: NextPage = () => {
@@ -34,7 +38,7 @@ const Home: NextPage = () => {
     prepareRegistration,
   } = useW3iAccount();
 
-  console.log(">>> w3iAccountData", w3iAccountData)
+  console.log(">>> w3iAccountData", w3iAccountData);
 
   const {
     subscribe,
@@ -42,8 +46,10 @@ const Home: NextPage = () => {
     unsubscribe,
   } = useManageSubscription();
 
-  const { address } = useAccount({
-    onDisconnect: () => {
+  const { address } = useAccount();
+
+  useAccountEffect({
+    onDisconnect() {
       setAccount("");
     },
   });
@@ -79,11 +85,11 @@ const Home: NextPage = () => {
   const handleRegistration = useCallback(async () => {
     console.log("Calling handle reg");
     try {
-      const { message, registerParams } = await prepareRegistration()
-      const signature = await signMessageAsync({message: message})
+      const { message, registerParams } = await prepareRegistration();
+      const signature = await signMessageAsync({ message: message });
       await registerIdentity({
-	registerParams,
-	signature
+        registerParams,
+        signature,
       });
     } catch (registerIdentityError) {
       console.error({ registerIdentityError });

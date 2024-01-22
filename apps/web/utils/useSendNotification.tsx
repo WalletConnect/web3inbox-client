@@ -11,7 +11,6 @@ function useSendNotification() {
 
   const handleSendNotification = useCallback(
     async (notification: INotification) => {
-      console.log({ address });
       if (!address) {
         return;
       }

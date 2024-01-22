@@ -13,13 +13,16 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { useNotifications, useSubscriptionScopes } from "@web3inbox/widget-react";
+import {
+  useNotifications,
+  useSubscriptionScopes,
+} from "@web3inbox/widget-react";
 import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { data: messageData, error, isLoading } = useNotifications(3, false);
-  const {data: scopeData } = useSubscriptionScopes()
+  const { data: messageData } = useNotifications(3, false);
+  const { data: scopeData } = useSubscriptionScopes();
 
   return (
     <AccordionItem>
@@ -40,38 +43,37 @@ function Messages() {
           {!messageData?.notifications?.length ? (
             <Text>No messages yet.</Text>
           ) : (
-            messageData?.notifications
-              .map(({ id, ...message }) => (
-                <Alert
-                  as={Link}
-                  href={message.url}
-                  target="_blank"
-                  key={id}
-                  status="info"
-                  colorScheme={
-                    message.type === "transactional" ? "blue" : "purple"
-                  }
-                  rounded="xl"
-                >
-                  <AlertIcon />
+            messageData?.notifications.map(({ id, ...message }) => (
+              <Alert
+                as={Link}
+                href={message.url}
+                target="_blank"
+                key={id}
+                status="info"
+                colorScheme={
+                  message.type === "transactional" ? "blue" : "purple"
+                }
+                rounded="xl"
+              >
+                <AlertIcon />
 
-                  <Flex flexDir={"column"} flexGrow={1}>
-                    <AlertTitle>{message.title}</AlertTitle>
-                    <AlertDescription flexGrow={1}>
-                      {message.body}
-                    </AlertDescription>
-                  </Flex>
-                  <Flex w="60px" justifyContent="center">
-                    <Image
-                      src={scopeData?.scopes[message.type ?? ""].imageUrls?.md}
-                      alt="notification image"
-                      height="60px"
-                      rounded="full"
-                      alignSelf="center"
-                    />
-                  </Flex>
-                </Alert>
-              ))
+                <Flex flexDir={"column"} flexGrow={1}>
+                  <AlertTitle>{message.title}</AlertTitle>
+                  <AlertDescription flexGrow={1}>
+                    {message.body}
+                  </AlertDescription>
+                </Flex>
+                <Flex w="60px" justifyContent="center">
+                  <Image
+                    src={scopeData?.scopes[message.type ?? ""].imageUrls?.md}
+                    alt="notification image"
+                    height="60px"
+                    rounded="full"
+                    alignSelf="center"
+                  />
+                </Flex>
+              </Alert>
+            ))
           )}
         </AccordionPanel>
       </Box>
