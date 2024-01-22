@@ -9,9 +9,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const notifyApiSecret = process.env.NOTIFY_PROJECT_SECRET;
+  const notifyApiSecret = process.env.NOTIFY_API_SECRET;
   if (!notifyApiSecret) {
-    throw new Error("You need to provide NOTIFY_PROJECT_SECRET env variable");
+    throw new Error("You need to provide NOTIFY_API_SECRET env variable");
   }
 
   if (req.method !== "GET") {

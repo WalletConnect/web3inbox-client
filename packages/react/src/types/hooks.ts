@@ -29,9 +29,7 @@ export type HooksReturn<
 > = (HooksSuccess<TData> | HooksFail<TData, TErrorKeys> | HooksLoading) &
   TActions;
 
-export type SuccessOf<T> = T extends HooksReturn<
-  infer TData
->
+export type SuccessOf<T> = T extends HooksReturn<infer TData>
   ? Extract<T, HooksSuccess<TData>>
   : never;
 export type ErrorOf<T> = T extends HooksReturn<

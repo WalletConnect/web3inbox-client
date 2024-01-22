@@ -7,9 +7,9 @@ import {
 import { proxy, subscribe } from "valtio";
 
 export type GetNotificationsReturn = {
-  notifications: NotifyClientTypes.NotifyMessage[],
-  hasMore: boolean
-}
+  notifications: NotifyClientTypes.NotifyMessage[];
+  hasMore: boolean;
+};
 
 interface IClientState {
   isReady: boolean;
@@ -18,6 +18,7 @@ interface IClientState {
   // state is duplicated to guard against future data races
   registration?: { account: string; identity: string };
 }
+
 export class Web3InboxClient {
   public static instance: Web3InboxClient | null = null;
   public static subscriptionState: {
@@ -50,33 +51,27 @@ export class Web3InboxClient {
   }
 
   protected attachEventListeners(): void {
-    console.log(">>> attachEventListener")
+    console.log(">>> attachEventListener");
     const updateInternalSubscriptions = () => {
-      console.log(">>> updating internal subscriptions")
+      console.log(">>> updating internal subscriptions");
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
     };
 
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
-    this.notifyClient.on(
-      "notify_subscription",
-      updateInternalSubscriptions
-    );
-    this.notifyClient.on(
-      "notify_update",
-      updateInternalSubscriptions
-    );
+    this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
+    this.notifyClient.on("notify_update", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
       updateInternalSubscriptions
     );
 
     const clientReadyInterval = setInterval(() => {
-      if(this.notifyClient.hasFinishedInitialLoad()) {
-	updateInternalSubscriptions()
-	clearInterval(clientReadyInterval)
+      if (this.notifyClient.hasFinishedInitialLoad()) {
+        updateInternalSubscriptions();
+        clearInterval(clientReadyInterval);
       }
-    }, 100)
+    }, 100);
   }
 
   /**
@@ -116,9 +111,9 @@ export class Web3InboxClient {
    * @param {string} account
    */
   public async setAccount(account: string) {
-    console.log(">>> Setting account: ", account)
+    console.log(">>> Setting account: ", account);
     const isRegistered = await this.getAccountIsRegistered(account);
-    console.log(">>> isRegistered: ", isRegistered)
+    console.log(">>> isRegistered: ", isRegistered);
     // Account setting is duplicated to ensure it only gets updated once
     // identity state is confirmed
     if (isRegistered) {
@@ -165,7 +160,11 @@ export class Web3InboxClient {
    */
   public async getAccountIsRegistered(account: string): Promise<boolean> {
     try {
-      return this.notifyClient.isRegistered({account, allApps: this.allApps, domain: this.domain })
+      return this.notifyClient.isRegistered({
+        account,
+        allApps: this.allApps,
+        domain: this.domain,
+      });
     } catch (e) {
       return false;
     }
@@ -262,20 +261,33 @@ export class Web3InboxClient {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
     const domainToSearch = domain ?? this.domain;
 
-    console.log(">>> getSubscription for", accountOrInternalAccount, domainToSearch)
+    console.log(
+      ">>> getSubscription for",
+      accountOrInternalAccount,
+      domainToSearch
+    );
 
     if (!accountOrInternalAccount) {
       return null;
     }
 
-    const subscription = Web3InboxClient.subscriptionState.subscriptions.find((sub) => {
+    const subscription =
+      Web3InboxClient.subscriptionState.subscriptions.find((sub) => {
         const accountMatch = sub.account === accountOrInternalAccount;
         const domainMatch = sub.metadata.appDomain === domainToSearch;
 
         return accountMatch && domainMatch;
-      }) ?? null
+      }) ?? null;
 
-    console.log(">>> getSubscription found", subscription)
+    console.log(
+      ">>> getSubscriptions",
+      Web3InboxClient.subscriptionState.subscriptions.map(
+        (item) => `${item.account}***${item.metadata.appDomain}`
+      ),
+      accountOrInternalAccount,
+      domainToSearch
+    );
+    console.log(">>> getSubscription found", subscription);
 
     return subscription;
   }
@@ -393,46 +405,64 @@ export class Web3InboxClient {
     notificationsPerPage: number,
     isInfiniteScroll?: boolean,
     account?: string,
-    domain?: string,
-  ): (onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void) => {
-    stopWatchingNotifications: () => void,
-    data: GetNotificationsReturn,
-    nextPage: () => void
+    domain?: string
+  ): (
+    onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void
+  ) => {
+    stopWatchingNotifications: () => void;
+    data: GetNotificationsReturn;
+    nextPage: () => void;
   } {
-
     const data = proxy<GetNotificationsReturn>({
       notifications: [],
-      hasMore: false
-    })
-
+      hasMore: false,
+    });
 
     this.notifyClient.on("notify_message", async () => {
-      console.log(">>> Notification...")
-      const fetchedNotificationData = await this.getNotificationHistory(notificationsPerPage, undefined, account, domain);
-      const notification = fetchedNotificationData.notifications.shift()
-      if(notification) {
-	console.log(">>> Notification...", notification)
-	data.notifications = [notification, ...data.notifications]
+      console.log(">>> Notification...");
+      const fetchedNotificationData = await this.getNotificationHistory(
+        notificationsPerPage,
+        undefined,
+        account,
+        domain
+      );
+      const notification = fetchedNotificationData.notifications.shift();
+      if (notification) {
+        console.log(">>> Notification...", notification);
+        data.notifications = [notification, ...data.notifications];
       }
-    })
-    
-    const nextPage = async () => {
-      const lastMessage = data.notifications.length? data.notifications[data.notifications.length -1].id : undefined;
-      const fetchedNotificationData = await this.getNotificationHistory(notificationsPerPage, lastMessage, account, domain);
-      data.notifications = isInfiniteScroll?
-	[...data.notifications, ...fetchedNotificationData.notifications]
-	: fetchedNotificationData.notifications
-      data.hasMore = fetchedNotificationData.hasMore
-    }
+    });
 
-    return (onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void) => ({
-      stopWatchingNotifications: subscribe(data, () => {
-	console.log(">>> updating notification...")
-	onNotificationDataUpdate(data)
-      }),
-      data,
-      nextPage
-    })
+    const nextPage = async () => {
+      const lastMessage = data.notifications.length
+        ? data.notifications[data.notifications.length - 1].id
+        : undefined;
+      const fetchedNotificationData = await this.getNotificationHistory(
+        notificationsPerPage,
+        lastMessage,
+        account,
+        domain
+      );
+      data.notifications = isInfiniteScroll
+        ? [...data.notifications, ...fetchedNotificationData.notifications]
+        : fetchedNotificationData.notifications;
+      data.hasMore = fetchedNotificationData.hasMore;
+    };
+
+    return (
+      onNotificationDataUpdate: (
+        notificationData: GetNotificationsReturn
+      ) => void
+    ) => {
+      return {
+        stopWatchingNotifications: subscribe(data, () => {
+          console.log(">>> updating notification...", data);
+          onNotificationDataUpdate(data);
+        }),
+        data,
+        nextPage,
+      };
+    };
   }
 
   /**
@@ -449,17 +479,17 @@ export class Web3InboxClient {
     limit: number,
     startingAfter?: string,
     account?: string,
-    domain?: string,
+    domain?: string
   ): Promise<{
-    notifications: NotifyClientTypes.NotifyMessage[],
-    hasMore: boolean
+    notifications: NotifyClientTypes.NotifyMessage[];
+    hasMore: boolean;
   }> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
       return Promise.resolve({
         hasMore: false,
-        notifications: []
+        notifications: [],
       });
     }
 
@@ -470,21 +500,20 @@ export class Web3InboxClient {
         return this.notifyClient.getNotificationHistory({
           topic: sub.topic,
           limit,
-          startingAfter 
-        })
+          startingAfter,
+        });
       } catch (e) {
         console.error("Failed to fetch messages", e);
         return Promise.reject({
-	  hasMore: false,
-	  notifications: []
-	});
-
+          hasMore: false,
+          notifications: [],
+        });
       }
     }
 
     return Promise.resolve({
       hasMore: false,
-      notifications: []
+      notifications: [],
     });
   }
 
@@ -530,7 +559,7 @@ export class Web3InboxClient {
         .slice(-3)
         .join(":");
 
-      console.log(">>> registeredIdentity", registeredIdentity)
+      console.log(">>> registeredIdentity", registeredIdentity);
 
       Web3InboxClient.clientState.registration = {
         account,
@@ -592,7 +621,7 @@ export class Web3InboxClient {
     console.log(">>> subscribeToDapp (internally)", {
       account: accountOrInternalAccount,
       appDomain: domain ?? this.domain,
-    })
+    });
 
     if (!accountOrInternalAccount) {
       console.error("Failed to subscribe since no account has been set");
@@ -603,10 +632,9 @@ export class Web3InboxClient {
       console.log(">>> isSubscribed: true", {
         account: accountOrInternalAccount,
         appDomain: domain ?? this.domain,
-      })
+      });
       return;
     }
-
 
     await this.notifyClient.subscribe({
       account: accountOrInternalAccount,

@@ -1,75 +1,7 @@
 import { Web3InboxClient, useClientState } from "@web3inbox/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
-
-/**
- * Init a singleton instance of the Web3InboxClient
- *
- * @param {Object} params - the params needed to init the client
- * @param {string} params.projectId - your WalletConnect Cloud project ID
- * @param {string} params.domain - The domain of the default dapp to target for functions.
- * @param {boolean} params.allApps - All account's subscriptions accessable if explicitly set to true. Only param.domain's otherwise
- */
-export const initWeb3InboxClient = ({
-  projectId,
-  domain,
-  allApps,
-}: {
-  projectId: string;
-  domain?: string;
-  allApps?: boolean;
-}) => {
-  return Web3InboxClient.init({ projectId, domain, allApps });
-};
-
-type Web3InboxClientReturn = HooksReturn<
-  {
-    client: Web3InboxClient;
-  },
-  {},
-  "client"
->;
-
-export const useWeb3InboxClient = (): Web3InboxClientReturn => {
-  const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
-  const [client, setClient] = useState<Web3InboxClient | null>(
-    Web3InboxClient.getIsReady() ? Web3InboxClient.getInstance() : null
-  );
-
-  useEffect(() => {
-    const unsub = Web3InboxClient.watchIsReady(setIsReady);
-
-    return () => {
-      unsub();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isReady) {
-      setClient(Web3InboxClient.getInstance());
-    }
-  }, [isReady]);
-
-  const result: HooksReturn<{ client: Web3InboxClient }> = useMemo(() => {
-    if (isReady && client) {
-      return {
-        data: {
-          client,
-        },
-        isLoading: false,
-        error: null,
-      } as SuccessOf<Web3InboxClientReturn>;
-    }
-
-    return {
-      data: null,
-      isLoading: true,
-      error: null,
-    } as LoadingOf<Web3InboxClientReturn>;
-  }, [isReady, client]);
-
-  return result;
-};
+import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
 type W3iAccountReturn = HooksReturn<
   {
@@ -111,7 +43,7 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
     const registrationStatus = registration
       ? registration.account === account
       : false;
-    console.log(">>> registrationStatus: ", registrationStatus)
+    console.log(">>> registrationStatus: ", registrationStatus);
     setIsRegistered(registrationStatus);
   }, [account, registration]);
 
@@ -157,7 +89,7 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
     setAccount(address);
   }, [address]);
 
-  console.log(">>> isRegistered", isRegistered)
+  console.log(">>> isRegistered", isRegistered);
 
   const result: W3iAccountReturn = useMemo(() => {
     if (!web3inboxClientData) {
@@ -190,7 +122,15 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
       unregister,
       setAccount,
     } as SuccessOf<W3iAccountReturn>;
-  }, [web3inboxClientData, register, isRegistered, isRegistering, registration, unregister, setAccount]);
+  }, [
+    web3inboxClientData,
+    register,
+    isRegistered,
+    isRegistering,
+    registration,
+    unregister,
+    setAccount,
+  ]);
 
   return result;
 };

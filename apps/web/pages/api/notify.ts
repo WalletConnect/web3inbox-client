@@ -9,19 +9,19 @@ if (!projectId) {
   );
 }
 
+const notifyApiSecret = process.env.NOTIFY_API_SECRET;
+if (!notifyApiSecret) {
+  throw new Error(
+    `You need to provide NOTIFY_API_SECRET env variable, current env: ${JSON.stringify(
+      process.env
+    )}`
+  );
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const notifyApiSecret = process.env.NOTIFY_PROJECT_SECRET;
-  if (!notifyApiSecret) {
-    throw new Error(
-      `You need to provide NOTIFY_PROJECT_SECRET env variable, current env: ${JSON.stringify(
-        process.env
-      )}`
-    );
-  }
-
   if (req.method !== "POST") {
     throw new ReferenceError("Method not allowed");
   }

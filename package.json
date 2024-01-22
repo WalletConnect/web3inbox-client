@@ -3,9 +3,12 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "turbo run build",
+    "build:packages": "turbo run build --filter=@web3inbox",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "web:dev": "turbo run dev --filter=gm-hackers",
+    "test": "turbo run test --filter=@web3inbox/widget-react"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
