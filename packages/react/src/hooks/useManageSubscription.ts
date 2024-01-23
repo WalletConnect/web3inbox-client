@@ -37,15 +37,15 @@ export const useManageSubscription = (
       web3inboxClientData?.client.getSubscription(account, domain) ?? null
     );
 
+  const [watching, setWatching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isUnsubscribing, setIsUnsubscribing] = useState(false);
 
   useEffect(() => {
-    if (!web3inboxClientData) return;
+    if (!web3inboxClientData?.client || watching) return;
 
-    const stopWatching = web3inboxClientData.client?.watchSubscription(
+    const stopWatching = web3inboxClientData.client.watchSubscription(
       (sub) => {
         console.log(">>> watcher");
         setSubscription(sub);
@@ -54,12 +54,24 @@ export const useManageSubscription = (
       domain
     );
 
+    setWatching(true);
+
+    console.log(
+      ">>> check effect2",
+      web3inboxClientData.client,
+      account,
+      domain
+    );
+
     setSubscription(
       web3inboxClientData.client.getSubscription(account, domain)
     );
 
-    return stopWatching;
-  }, [web3inboxClientData, isClientLoading, account, domain]);
+    return () => {
+      setWatching(false);
+      stopWatching();
+    };
+  }, [account, domain]);
 
   const subscribe = useCallback(async () => {
     if (web3inboxClientData) {

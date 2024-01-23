@@ -28,25 +28,24 @@ import Preferences from "../components/Preferences";
 import Messages from "../components/Messages";
 import Subscription from "../components/Subscription";
 import Subscribers from "../components/Subscribers";
+import { sendNotification } from "../utils/fetchNotify";
 
 const Home: NextPage = () => {
-  /** Web3Inbox SDK hooks **/
+  const { address } = useAccount();
+
   const {
     setAccount,
     data: w3iAccountData,
+    isLoading,
     register: registerIdentity,
     prepareRegistration,
   } = useW3iAccount();
-
-  console.log(">>> w3iAccountData", w3iAccountData);
 
   const {
     subscribe,
     data: subscriptionData,
     unsubscribe,
   } = useManageSubscription();
-
-  const { address } = useAccount();
 
   useAccountEffect({
     onDisconnect() {
@@ -65,28 +64,19 @@ const Home: NextPage = () => {
   const [isBlockNotificationEnabled, setIsBlockNotificationEnabled] =
     useState(true);
 
-  const signMessage = useCallback(
-    async (message: string) => {
-      const res = await signMessageAsync({
-        message,
-      });
-
-      return res as string;
-    },
-    [signMessageAsync]
-  );
-
   // We need to set the account as soon as the user is connected
   useEffect(() => {
     if (!Boolean(address)) return;
     setAccount(`eip155:1:${address}`);
-  }, [signMessage, address, setAccount]);
+  }, [address, setAccount]);
 
-  const handleRegistration = useCallback(async () => {
+  const handleRegistration = async () => {
     console.log("Calling handle reg");
     try {
       const { message, registerParams } = await prepareRegistration();
-      const signature = await signMessageAsync({ message: message });
+      const signature = await signMessageAsync({
+        message: message,
+      });
       await registerIdentity({
         registerParams,
         signature,
@@ -94,7 +84,7 @@ const Home: NextPage = () => {
     } catch (registerIdentityError) {
       console.error({ registerIdentityError });
     }
-  }, [signMessage, registerIdentity]);
+  };
 
   const handleSubscribe = useCallback(async () => {
     await subscribe();
@@ -102,7 +92,7 @@ const Home: NextPage = () => {
 
   // handleSendNotification will send a notification to the current user and includes error handling.
   // If you don't want to use this hook and want more flexibility, you can use sendNotification.
-  const handleTestNotification = useCallback(async () => {
+  const handleTestNotification = async () => {
     if (subscriptionData?.isSubscribed) {
       console.log("sending");
       handleSendNotification({
@@ -114,11 +104,11 @@ const Home: NextPage = () => {
         type: "f173f231-a45c-4dc0-aa5d-956eb04f7360",
       });
     }
-  }, [handleSendNotification, subscriptionData]);
+  };
 
   // Example of how to send a notification based on some "automation".
   // sendNotification will make a fetch request to /api/notify
-  const handleBlockNotification = useCallback(async () => {
+  const handleBlockNotification = async () => {
     if (subscriptionData?.isSubscribed && isBlockNotificationEnabled) {
       const blockNumber = await wagmiPublicClient.getBlockNumber();
       if (lastBlock !== blockNumber.toString()) {
@@ -147,13 +137,7 @@ const Home: NextPage = () => {
         }
       }
     }
-  }, [
-    wagmiPublicClient,
-    lastBlock,
-    subscriptionData,
-    toast,
-    isBlockNotificationEnabled,
-  ]);
+  };
 
   useInterval(() => {
     handleBlockNotification();
@@ -174,7 +158,18 @@ const Home: NextPage = () => {
       </Heading>
 
       <Flex flexDirection="column" gap={4}>
-        {subscriptionData?.isSubscribed ? (
+        {isLoading ? (
+          <Button
+            leftIcon={<FaBell />}
+            colorScheme="cyan"
+            rounded="full"
+            variant="outline"
+            w="fit-content"
+            alignSelf="center"
+            isLoading={true}
+            isDisabled={true}
+          ></Button>
+        ) : subscriptionData?.isSubscribed ? (
           <Flex flexDirection={"column"} alignItems="center" gap={4}>
             <Button
               leftIcon={<BsSendFill />}

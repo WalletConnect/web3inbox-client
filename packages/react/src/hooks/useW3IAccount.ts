@@ -24,7 +24,7 @@ type W3iAccountReturn = HooksReturn<
 >;
 
 export const useW3iAccount = (address?: string): W3iAccountReturn => {
-  const { data: web3inboxClientData } = useWeb3InboxClient();
+  const { data: web3inboxClientData, isLoading } = useWeb3InboxClient();
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
@@ -95,10 +95,8 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
   if (!web3inboxClientData) {
     return {
       data: null,
-
       isLoading: true,
       error: null,
-
       prepareRegistration,
       register,
       unregister,
@@ -113,7 +111,6 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
       isRegistering,
       identityKey: isRegistered && registration ? registration.identity : null,
     },
-
     isLoading: false,
     error: null,
     prepareRegistration,
