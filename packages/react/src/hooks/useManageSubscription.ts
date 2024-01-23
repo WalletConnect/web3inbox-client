@@ -47,7 +47,6 @@ export const useManageSubscription = (
 
     const stopWatching = web3inboxClientData.client.watchSubscription(
       (sub) => {
-        console.log(">>> watcher");
         setSubscription(sub);
       },
       account,
@@ -55,14 +54,6 @@ export const useManageSubscription = (
     );
 
     setWatching(true);
-
-    console.log(
-      ">>> check effect2",
-      web3inboxClientData.client,
-      account,
-      domain
-    );
-
     setSubscription(
       web3inboxClientData.client.getSubscription(account, domain)
     );
@@ -77,7 +68,6 @@ export const useManageSubscription = (
     if (web3inboxClientData) {
       setIsSubscribing(true);
       try {
-        console.log(">>> subscribing to", account, domain);
         await web3inboxClientData.client.subscribeToDapp(account, domain);
       } catch (e) {
         console.error("Failed to subscribe", e);
@@ -86,10 +76,6 @@ export const useManageSubscription = (
         setIsSubscribing(false);
       }
     } else {
-      console.log(
-        ">>> subscribing to",
-        "Trying to subscribe before Web3Inbox Client was initialized"
-      );
       console.error(
         "Trying to subscribe before Web3Inbox Client was initialized"
       );
@@ -115,7 +101,6 @@ export const useManageSubscription = (
   }, [web3inboxClientData, account, domain]);
 
   if (!web3inboxClientData) {
-    console.log(">>> useManageData no client data");
     return {
       data: null,
       isLoading: false,
@@ -126,7 +111,6 @@ export const useManageSubscription = (
   }
 
   if (clientError) {
-    console.log(">>> useManageData client error");
     return {
       data: null,
       isLoading: false,
@@ -142,7 +126,6 @@ export const useManageSubscription = (
   }
 
   if (error) {
-    console.log(">>> useManageData error", error);
     return {
       data: null,
       isLoading: false,
