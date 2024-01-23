@@ -35,7 +35,7 @@ import { sendNotification } from "../utils/fetchNotify";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
-  const { data: w3iClientData, isLoading: w3iClientIsLoading } =
+  const { data: w3iClient, isLoading: w3iClientIsLoading } =
     useWeb3InboxClient();
   const {
     data: w3iAccountData,
@@ -48,8 +48,6 @@ const Home: NextPage = () => {
     subscribe,
     unsubscribe,
   } = useManageSubscription();
-
-  const w3iClient = w3iClientData?.client;
 
   const { signMessageAsync } = useSignMessage();
   const wagmiPublicClient = usePublicClient();
@@ -136,9 +134,9 @@ const Home: NextPage = () => {
   });
 
   useEffect(() => {
-    if (!address || !w3iClientData?.client) return;
+    if (!address || !w3iClient) return;
     setAccount(`eip155:1:${address}`);
-  }, [w3iClientData?.client, address]);
+  }, [w3iClient, address]);
 
   return (
     <Flex w="full" flexDirection={"column"} maxW="700px">

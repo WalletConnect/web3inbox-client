@@ -4,9 +4,10 @@ import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { useSubscriptionState } from "../utils/snapshots";
 
-type AllSubscriptionsReturn = HooksReturn<{
-  subscriptions: NotifyClientTypes.NotifySubscription[];
-}>;
+type AllSubscriptionsReturn = HooksReturn<
+  NotifyClientTypes.NotifySubscription[]
+>;
+
 /**
  * Hook to get all subscriptions of an account
  *
@@ -15,19 +16,19 @@ type AllSubscriptionsReturn = HooksReturn<{
 export const useAllSubscriptions = (
   account?: string
 ): AllSubscriptionsReturn => {
-  const { data: web3inboxClientData, error } = useWeb3InboxClient();
+  const { data: w3iClient, error } = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subscriptions, setSubscriptions] = useState<
     NotifyClientTypes.NotifySubscription[]
   >([]);
 
   useEffect(() => {
-    if (web3inboxClientData?.client) {
-      setSubscriptions(web3inboxClientData?.client.getSubscriptions(account));
+    if (w3iClient) {
+      setSubscriptions(w3iClient.getSubscriptions(account));
     }
-  }, [subscriptionsTrigger, account, web3inboxClientData]);
+  }, [account, subscriptionsTrigger, w3iClient]);
 
-  if (!web3inboxClientData) {
+  if (!w3iClient) {
     return {
       data: null,
       isLoading: true,
@@ -46,7 +47,7 @@ export const useAllSubscriptions = (
   }
 
   return {
-    data: { subscriptions },
+    data: subscriptions,
     isLoading: false,
     error: null,
   } as SuccessOf<AllSubscriptionsReturn>;
