@@ -82,6 +82,4 @@ export const useSubscriptionScopes = (
     isLoading: false,
     updateScopes,
   } as SuccessOf<SubscriptionScopesReturn>;
-
-  return result;
 };

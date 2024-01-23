@@ -16,15 +16,9 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
-    "esbuild-sass-plugin": "^2.15.0",
-    "lodash.debounce": "^4.0.8",
-    "react": "^18.2.0",
-    "react-router-dom": "^6.15.0",
-    "react-toastify": "^9.1.3"
+    "react": "^18.2.0"
   },
   "devDependencies": {
-    "@testing-library/react-hooks": "^8.0.1",
-    "@types/lodash.debounce": "^4.0.7",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@web3inbox/core": "*",
@@ -32,9 +26,6 @@
     "eslint-config-custom": "*",
     "eslint-plugin-react-hooks": "^4.6.0",
     "jsdom": "^23.2.0",
-    "postcss": "^8.4.29",
-    "sass": "^1.66.1",
-    "sass-loader": "^13.3.2",
     "tsconfig": "*",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"
