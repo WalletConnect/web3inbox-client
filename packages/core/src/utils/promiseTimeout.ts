@@ -11,8 +11,8 @@ const createPromiseWithTimeout = <T>(
     }, timeoutMs);
 
     promise
-      .then(resolve) 
-      .catch(reject) 
-      .finally(() => clearTimeout(timeoutId)); 
+      .then(resolve)
+      .catch(reject)
+      .finally(() => clearTimeout(timeoutId));
   });
 };
