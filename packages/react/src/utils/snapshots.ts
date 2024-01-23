@@ -1,14 +1,9 @@
-import { useSnapshot } from "valtio";
-import { Web3InboxClient } from "../client";
+import { Web3InboxClient, valtio } from "@web3inbox/core";
 
 export const useSubscriptionState = () => {
-  return useSnapshot(Web3InboxClient.subscriptionState);
+  return valtio.useSnapshot(Web3InboxClient.subscriptionState)
 };
 
 export const useClientState = () => {
-  return useSnapshot(Web3InboxClient.clientState);
-};
-
-export const useViewState = () => {
-  return useSnapshot(Web3InboxClient.view);
+  return valtio.useSnapshot(Web3InboxClient.clientState)
 };

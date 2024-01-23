@@ -24,9 +24,6 @@ export class Web3InboxClient {
   public static subscriptionState: {
     subscriptions: NotifyClientTypes.NotifySubscription[];
   } = proxy({ subscriptions: [], messages: [] });
-  public static view: { isOpen: boolean } = proxy({
-    isOpen: false,
-  });
   public static clientState = proxy<IClientState>({
     isReady: false,
     initting: false,
@@ -697,28 +694,6 @@ export class Web3InboxClient {
   ) {
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain)?.scope ?? {});
-    });
-  }
-
-  public openView() {
-    Web3InboxClient.view.isOpen = true;
-  }
-
-  public closeView() {
-    Web3InboxClient.view.isOpen = false;
-  }
-
-  public toggle() {
-    Web3InboxClient.view.isOpen = !Web3InboxClient.view.isOpen;
-  }
-
-  public getViewIsOpen() {
-    return Web3InboxClient.view.isOpen;
-  }
-
-  public watchViewIsOpen(cb: (isOpen: boolean) => void) {
-    return subscribe(Web3InboxClient.view, () => {
-      cb(Web3InboxClient.view.isOpen);
     });
   }
 
