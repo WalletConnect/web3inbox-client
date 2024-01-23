@@ -40,7 +40,7 @@ export function render<Result, Props>(
     ...options,
     wrapper: createWrapper(WagmiProvider, {
       config,
-      reconnectOnMount: false,
+      reconnectOnMount: true,
     }),
   });
 }
@@ -53,7 +53,7 @@ export function customRenderHook<Result, Props>(
     ...options,
     wrapper: createWrapper(WagmiProvider, {
       config,
-      reconnectOnMount: false,
+      reconnectOnMount: true,
     }),
   });
 }
