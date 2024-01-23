@@ -240,13 +240,7 @@ export class Web3InboxClient {
 
     Web3InboxClient.clientState.initting = false;
 
-    if (notifyClient.hasFinishedInitialLoad()) {
-      Web3InboxClient.clientState.isReady = true;
-    } else {
-      notifyClient.once("notify_subscriptions_changed", () => {
-        Web3InboxClient.clientState.isReady = true;
-      });
-    }
+    Web3InboxClient.clientState.isReady = true;
 
     return Web3InboxClient.instance;
   }
