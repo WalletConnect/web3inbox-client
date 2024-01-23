@@ -30,9 +30,7 @@ export const useWeb3InboxClient = (): Web3InboxClientReturn => {
 
   if (!isReady || !client) {
     return {
-      data: {
-        client,
-      },
+      data: client,
       isLoading: false,
       error: null,
     } as LoadingOf<Web3InboxClientReturn>;
