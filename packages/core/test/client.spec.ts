@@ -51,7 +51,6 @@ const testSub3 = {
 };
 
 const resetSingletonState = () => {
-  Web3InboxClient.view = proxy({ isOpen: false });
   Web3InboxClient.subscriptionState = proxy({
     subscriptions: [],
     messages: [],
@@ -89,7 +88,7 @@ const initNonSingletonInstanceW3i = async (
 
   const notifyClient = await NotifyClient.init(notifyParams);
 
-  const w3iClient = new Web3InboxClient(notifyClient, withDomain);
+  const w3iClient = new Web3InboxClient(notifyClient, withDomain, true);
 
   Web3InboxClient.instance = w3iClient;
 
@@ -150,7 +149,7 @@ describe("Web3Inbox Core Client", () => {
       expect(Web3InboxClient.clientState.initting).toEqual(true);
 
       await waitForEvent(() => {
-        return !Web3InboxClient.clientState.initting;
+        return !Web3InboxClient.clientState.initting && Web3InboxClient.clientState.isReady;
       });
 
       expect(Web3InboxClient.clientState.isReady).toEqual(true);
