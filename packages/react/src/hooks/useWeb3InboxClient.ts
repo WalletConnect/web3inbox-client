@@ -1,5 +1,5 @@
-import { Web3InboxClient, useClientState } from "@web3inbox/core";
-import { useEffect, useMemo, useState } from "react";
+import { Web3InboxClient } from "@web3inbox/core";
+import { useEffect, useState } from "react";
 import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 
 type Web3InboxClientReturn = HooksReturn<

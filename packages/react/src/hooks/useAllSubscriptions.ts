@@ -1,8 +1,8 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
-import { useSubscriptionState } from "@web3inbox/core";
 import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
+import { useSubscriptionState } from "../utils/snapshots";
 
 type AllSubscriptionsReturn = HooksReturn<{
   subscriptions: NotifyClientTypes.NotifySubscription[];
