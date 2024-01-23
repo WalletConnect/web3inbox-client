@@ -1,6 +1,7 @@
 "use client";
+
 import type { NextPage } from "next";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   Button,
@@ -11,9 +12,11 @@ import {
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
-
-import { useManageSubscription, useW3iAccount } from "@web3inbox/widget-react";
-
+import {
+  useManageSubscription,
+  useW3iAccount,
+  useWeb3InboxClient,
+} from "@web3inbox/widget-react";
 import {
   useAccount,
   useAccountEffect,
@@ -32,26 +35,22 @@ import { sendNotification } from "../utils/fetchNotify";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
-
+  const { data: w3iClientData, isLoading: w3iClientIsLoading } =
+    useWeb3InboxClient();
   const {
-    setAccount,
     data: w3iAccountData,
     isLoading,
-    register: registerIdentity,
+    register,
+    setAccount,
     prepareRegistration,
-  } = useW3iAccount();
-
+  } = useW3iAccount(address);
   const {
-    subscribe,
     data: subscriptionData,
+    subscribe,
     unsubscribe,
   } = useManageSubscription();
 
-  useAccountEffect({
-    onDisconnect() {
-      setAccount("");
-    },
-  });
+  const w3iClient = w3iClientData?.client;
 
   const { signMessageAsync } = useSignMessage();
   const wagmiPublicClient = usePublicClient();
@@ -64,20 +63,13 @@ const Home: NextPage = () => {
   const [isBlockNotificationEnabled, setIsBlockNotificationEnabled] =
     useState(true);
 
-  // We need to set the account as soon as the user is connected
-  useEffect(() => {
-    if (!Boolean(address)) return;
-    setAccount(`eip155:1:${address}`);
-  }, [address, setAccount]);
-
   const handleRegistration = async () => {
-    console.log("Calling handle reg");
     try {
       const { message, registerParams } = await prepareRegistration();
       const signature = await signMessageAsync({
         message: message,
       });
-      await registerIdentity({
+      await register({
         registerParams,
         signature,
       });
@@ -86,15 +78,10 @@ const Home: NextPage = () => {
     }
   };
 
-  const handleSubscribe = useCallback(async () => {
-    await subscribe();
-  }, [subscribe]);
-
   // handleSendNotification will send a notification to the current user and includes error handling.
   // If you don't want to use this hook and want more flexibility, you can use sendNotification.
   const handleTestNotification = async () => {
     if (subscriptionData?.isSubscribed) {
-      console.log("sending");
       handleSendNotification({
         title: "GM Hacker",
         body: "Hack it until you make it!",
@@ -143,6 +130,12 @@ const Home: NextPage = () => {
     handleBlockNotification();
   }, 12000);
 
+  useAccountEffect({
+    onDisconnect() {
+      setAccount("");
+    },
+  });
+
   return (
     <Flex w="full" flexDirection={"column"} maxW="700px">
       <Image
@@ -158,7 +151,7 @@ const Home: NextPage = () => {
       </Heading>
 
       <Flex flexDirection="column" gap={4}>
-        {isLoading ? (
+        {isLoading || w3iClientIsLoading || !w3iClient ? (
           <Button
             leftIcon={<FaBell />}
             colorScheme="cyan"
@@ -218,7 +211,7 @@ const Home: NextPage = () => {
           >
             <Button
               leftIcon={<FaBell />}
-              onClick={handleSubscribe}
+              onClick={subscribe}
               colorScheme="cyan"
               rounded="full"
               variant="outline"
@@ -255,7 +248,6 @@ const Home: NextPage = () => {
             </Button>
           </Tooltip>
         )}
-
         {subscriptionData?.isSubscribed && (
           <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
             <Subscription />

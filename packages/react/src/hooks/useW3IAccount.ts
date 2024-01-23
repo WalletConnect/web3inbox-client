@@ -1,5 +1,5 @@
 import { Web3InboxClient } from "@web3inbox/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { useClientState } from "../utils/snapshots";
@@ -24,45 +24,34 @@ type W3iAccountReturn = HooksReturn<
 >;
 
 export const useW3iAccount = (address?: string): W3iAccountReturn => {
-  const { data: web3inboxClientData, isLoading } = useWeb3InboxClient();
+  const { data: clientData } = useWeb3InboxClient();
+  const { account, registration } = useClientState();
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
 
-  const { account, registration } = useClientState();
+  const setAccount = async (account: string) => {
+    if (clientData?.client) {
+      return clientData.client.setAccount(account);
+    }
+  };
 
-  const setAccount = useCallback(
-    async (account: string) => {
-      if (web3inboxClientData?.client) {
-        return web3inboxClientData.client.setAccount(account);
-      }
-    },
-    [web3inboxClientData, account]
-  );
-
-  useEffect(() => {
-    const registrationStatus = registration
-      ? registration.account === account
-      : false;
-    console.log(">>> registrationStatus: ", registrationStatus);
-    setIsRegistered(registrationStatus);
-  }, [account, registration]);
-
-  const prepareRegistration = useCallback(async () => {
-    if (web3inboxClientData?.client && account) {
-      return web3inboxClientData?.client.prepareRegistration({ account });
+  const prepareRegistration = async () => {
+    if (clientData?.client && account) {
+      return clientData?.client.prepareRegistration({ account });
     }
 
-    throw new Error("Web3InboxClient not ready");
-  }, [web3inboxClientData, account]);
+    throw new Error("Web3InboxClient not ready, cannot prepare");
+  };
 
   const register = useCallback(
     async (params: Parameters<Web3InboxClient["register"]>[0]) => {
-      if (web3inboxClientData?.client && account) {
+      if (clientData?.client && account) {
         setIsRegistering(true);
         let identity: string | null;
+
         try {
-          identity = await web3inboxClientData.client.register(params);
+          identity = await clientData.client.register(params);
         } catch (e) {
           identity = null;
           console.error(e);
@@ -75,24 +64,29 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
 
       throw new Error("Web3InboxClient not ready");
     },
-    [web3inboxClientData, account]
+    [clientData, account]
   );
 
   const unregister = useCallback(async () => {
-    if (web3inboxClientData && account) {
-      return web3inboxClientData.client.unregister({ account });
+    if (clientData && account) {
+      return clientData.client.unregister({ account });
     }
-  }, [web3inboxClientData, account]);
+  }, [clientData, account]);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !clientData?.client) return;
+    setAccount(`eip155:1:${address}`);
+  }, [clientData?.client, address]);
 
-    setAccount(address);
-  }, [address]);
+  useEffect(() => {
+    const registrationStatus = registration
+      ? registration.account === account
+      : false;
 
-  console.log(">>> isRegistered", isRegistered);
+    setIsRegistered(registrationStatus);
+  }, [account, registration]);
 
-  if (!web3inboxClientData) {
+  if (!clientData) {
     return {
       data: null,
       isLoading: true,
