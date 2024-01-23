@@ -12,7 +12,8 @@
     "build:cjs": "tsup src/index.ts --format cjs --dts",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
@@ -20,7 +21,6 @@
     "concurrently": "^8.2.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
-    "react": "^18.2.0",
     "tsconfig": "*",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"
