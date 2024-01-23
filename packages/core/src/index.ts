@@ -1,2 +1,3 @@
 export { Web3InboxClient } from "./client";
-export * from "./state/snapshots";
+
+export * as valtio from "valtio"
