@@ -20,6 +20,7 @@ interface IClientState {
 }
 
 export class Web3InboxClient {
+  public static maxTimeout: number = 10_000;
   public static instance: Web3InboxClient | null = null;
   public static subscriptionState: {
     subscriptions: NotifyClientTypes.NotifySubscription[];
@@ -372,10 +373,11 @@ export class Web3InboxClient {
     const sub = this.getSubscription(account, domain);
 
     if (sub) {
-      return this.notifyClient.update({
+      return  createPromiseWithTimeout(
+      this.notifyClient.update({
         topic: sub.topic,
         scope,
-      });
+      }), Web3InboxClient.maxTimeout, "update")
     }
 
     return false;
@@ -443,12 +445,14 @@ export class Web3InboxClient {
       const lastMessage = data.notifications.length
         ? data.notifications[data.notifications.length - 1].id
         : undefined;
-      const fetchedNotificationData = await this.getNotificationHistory(
+
+      const fetchedNotificationData = this.getNotificationHistory(
         notificationsPerPage,
         lastMessage,
         account,
         domain
       );
+
       data.notifications = isInfiniteScroll
         ? [...data.notifications, ...fetchedNotificationData.notifications]
         : fetchedNotificationData.notifications;
@@ -503,11 +507,13 @@ export class Web3InboxClient {
 
     if (sub) {
       try {
-        return this.notifyClient.getNotificationHistory({
+        return createPromiseWithTimeout(
+      this.notifyClient.getNotificationHistory({
           topic: sub.topic,
           limit,
           startingAfter,
-        });
+        }), Web3InboxClient.maxTimeout, "getNotificationHistory")
+
       } catch (e) {
         console.error("Failed to fetch messages", e);
         return Promise.reject({
@@ -534,11 +540,11 @@ export class Web3InboxClient {
   public prepareRegistration(params: {
     account: string;
   }): ReturnType<NotifyClient["prepareRegistration"]> {
-    return this.notifyClient.prepareRegistration({
+    return createPromiseWithTimeout(this.notifyClient.prepareRegistration({
       account: params.account,
       domain: this.domain,
       allApps: this.allApps,
-    });
+    }), Web3InboxClient.maxTimeout, "prepareRegistration")
   }
 
   /**
@@ -555,10 +561,10 @@ export class Web3InboxClient {
     signature: string;
   }): Promise<string> {
     try {
-      const registeredIdentity = await this.notifyClient.register({
+      const registeredIdentity = await createPromiseWithTimeout(this.notifyClient.register({
         registerParams: params.registerParams,
         signature: params.signature,
-      });
+      }), Web3InboxClient.maxTimeout, "register");
 
       const account = params.registerParams.cacaoPayload.iss
         .split(":")
@@ -589,7 +595,7 @@ export class Web3InboxClient {
    */
   public async unregister(params: { account: string }): Promise<void> {
     try {
-      await this.notifyClient.unregister(params);
+      await createPromiseWithTimeout(this.notifyClient.unregister(params), Web3InboxClient.maxTimeout, "unregister");
 
       Web3InboxClient.clientState.registration = undefined;
     } catch (e: any) {
@@ -642,10 +648,10 @@ export class Web3InboxClient {
       return;
     }
 
-    await this.notifyClient.subscribe({
+    await createPromiseWithTimeout(this.notifyClient.subscribe({
       account: accountOrInternalAccount,
       appDomain: domain ?? this.domain,
-    });
+    }), Web3InboxClient.maxTimeout, "subscribe");
   }
 
   /**
@@ -666,7 +672,7 @@ export class Web3InboxClient {
     const sub = this.getSubscription(accountOrInternalAccount, domain);
 
     if (sub) {
-      await this.notifyClient.deleteSubscription({ topic: sub.topic });
+      await createPromiseWithTimeout(this.notifyClient.deleteSubscription({ topic: sub.topic }), Web3InboxClient.maxTimeout, "deleteSubscription");
     }
   }
 
