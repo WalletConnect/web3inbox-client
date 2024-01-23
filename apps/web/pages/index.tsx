@@ -39,7 +39,6 @@ const Home: NextPage = () => {
     useWeb3InboxClient();
   const {
     data: w3iAccountData,
-    isLoading,
     register,
     setAccount,
     prepareRegistration,
@@ -156,7 +155,7 @@ const Home: NextPage = () => {
       </Heading>
 
       <Flex flexDirection="column" gap={4}>
-        {isLoading || w3iClientIsLoading || !w3iClient ? (
+        {w3iClientIsLoading ? (
           <Button
             leftIcon={<FaBell />}
             colorScheme="cyan"
