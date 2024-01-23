@@ -1,7 +1,7 @@
 "use client";
 
 import type { NextPage } from "next";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   Button,
@@ -135,6 +135,11 @@ const Home: NextPage = () => {
       setAccount("");
     },
   });
+
+  useEffect(() => {
+    if (!address || !w3iClientData?.client) return;
+    setAccount(`eip155:1:${address}`);
+  }, [w3iClientData?.client, address]);
 
   return (
     <Flex w="full" flexDirection={"column"} maxW="700px">

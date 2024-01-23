@@ -74,11 +74,6 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
   }, [clientData, account]);
 
   useEffect(() => {
-    if (!address || !clientData?.client) return;
-    setAccount(`eip155:1:${address}`);
-  }, [clientData?.client, address]);
-
-  useEffect(() => {
     const registrationStatus = registration
       ? registration.account === account
       : false;
