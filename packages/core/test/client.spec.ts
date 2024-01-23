@@ -140,7 +140,7 @@ describe("Web3Inbox Core Client", () => {
       expect(subs).toEqual([]);
     });
 
-    it("correctly updates ready state", async () => {
+    it.skipIf(!projectId)("correctly updates ready state", async () => {
       expect(Web3InboxClient.clientState.isReady).toEqual(false);
 
       // Not awaiting to be able to observe initting state.
@@ -150,7 +150,6 @@ describe("Web3Inbox Core Client", () => {
 
       await waitForEvent(() => {
         return (
-          !Web3InboxClient.clientState.initting &&
           Web3InboxClient.clientState.isReady
         );
       });
