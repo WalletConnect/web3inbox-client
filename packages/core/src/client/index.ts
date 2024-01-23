@@ -177,7 +177,7 @@ export class Web3InboxClient {
     account: string,
     cb: (isRegistered: boolean) => void
   ) {
-    this.getAccountIsRegistered(account).then(cb)
+    this.getAccountIsRegistered(account).then(cb);
     return subscribe(Web3InboxClient.clientState, async () => {
       cb(await this.getAccountIsRegistered(account));
     });
@@ -240,13 +240,12 @@ export class Web3InboxClient {
 
     Web3InboxClient.clientState.initting = false;
 
-    if(notifyClient.hasFinishedInitialLoad()) {
+    if (notifyClient.hasFinishedInitialLoad()) {
       Web3InboxClient.clientState.isReady = true;
-    }
-    else {
+    } else {
       notifyClient.once("notify_subscriptions_changed", () => {
         Web3InboxClient.clientState.isReady = true;
-      })
+      });
     }
 
     return Web3InboxClient.instance;
@@ -333,8 +332,8 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
-    console.log("watching subscription for, ", account)
-    cb(this.getSubscription(account, domain))
+    console.log("watching subscription for, ", account);
+    cb(this.getSubscription(account, domain));
 
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain));

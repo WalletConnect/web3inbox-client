@@ -26,7 +26,11 @@ export const useManageSubscription = (
   account?: string,
   domain?: string
 ): ManageSubscriptionReturn => {
-  const { data: w3iClient, isLoading: clientLoading, error: clientError } = useWeb3InboxClient();
+  const {
+    data: w3iClient,
+    isLoading: clientLoading,
+    error: clientError,
+  } = useWeb3InboxClient();
 
   const [subscription, setSubscription] =
     useState<NotifyClientTypes.NotifySubscription | null>(
@@ -39,14 +43,17 @@ export const useManageSubscription = (
   const [isUnsubscribing, setIsUnsubscribing] = useState(false);
 
   useEffect(() => {
-    if(w3iClient) {
-      console.log(">>>>1 stting sub", w3iClient.getSubscription(account, domain) )
-      setSubscription(w3iClient.getSubscription(account, domain))
+    if (w3iClient) {
+      console.log(
+        ">>>>1 stting sub",
+        w3iClient.getSubscription(account, domain)
+      );
+      setSubscription(w3iClient.getSubscription(account, domain));
     }
-  }, [clientLoading, w3iClient])
+  }, [clientLoading, w3iClient]);
 
   useEffect(() => {
-    console.log({w3iClient})
+    console.log({ w3iClient });
     if (!w3iClient || watching) return;
 
     const stopWatching = w3iClient.watchSubscription(
@@ -139,13 +146,13 @@ export const useManageSubscription = (
   }
 
   const data = {
-      isSubscribing,
-      isUnsubscribing,
-      subscription,
-      isSubscribed: Boolean(subscription),
-    }
+    isSubscribing,
+    isUnsubscribing,
+    subscription,
+    isSubscribed: Boolean(subscription),
+  };
 
-  console.log(">>>>1 data: ", data)
+  console.log(">>>>1 data: ", data);
 
   return {
     data,
