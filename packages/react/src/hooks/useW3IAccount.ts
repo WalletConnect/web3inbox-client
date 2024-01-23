@@ -41,7 +41,7 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
       return clientData?.client.prepareRegistration({ account });
     }
 
-    throw new Error("Web3InboxClient not ready, cannot prepare");
+    throw new Error("Web3InboxClient not ready, cannot prepare registration");
   };
 
   const register = useCallback(
