@@ -3,14 +3,17 @@ import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
-type NotificationsReturn = HooksReturn<
+type NotificationsState = SuccessOf<UseNotificationsReturn>["data"];
+type NextPageState = (() => void) | undefined;
+type UseNotificationsReturn = HooksReturn<
   {
     notifications: NotifyClientTypes.NotifyNotification[];
     hasMore: boolean;
   },
-  { nextPage: () => void },
+  { nextPage: NextPageState },
   "getMessages"
 >;
+
 /**
  * Hook to watch notifications of a subscription, and delete them
  *
@@ -22,12 +25,12 @@ export const useNotifications = (
   isInfiniteScroll?: boolean,
   account?: string,
   domain?: string
-): NotificationsReturn => {
+): UseNotificationsReturn => {
   const { data: w3iClient, error: w3iClientError } = useWeb3InboxClient();
-  const [nextPage, setNextPage] = useState<() => void>(() => {});
+
+  const [nextPage, setNextPage] = useState<NextPageState>(undefined);
   const [error, setError] = useState<null | string>(null);
-  const [notifications, setNotifications] =
-    useState<SuccessOf<NotificationsReturn>["data"]>();
+  const [notifications, setNotifications] = useState<NotificationsState>();
 
   useEffect(() => {
     if (!w3iClient) return;
@@ -77,7 +80,7 @@ export const useNotifications = (
       },
       isLoading: false,
       nextPage,
-    } as ErrorOf<NotificationsReturn>;
+    } as ErrorOf<UseNotificationsReturn>;
   }
 
   if (error) {
@@ -86,7 +89,7 @@ export const useNotifications = (
       error: { getMessages: { message: error } },
       isLoading: false,
       nextPage,
-    } as ErrorOf<NotificationsReturn>;
+    } as ErrorOf<UseNotificationsReturn>;
   }
 
   return {
@@ -94,5 +97,5 @@ export const useNotifications = (
     error: null,
     isLoading: false,
     nextPage,
-  } as SuccessOf<NotificationsReturn>;
+  } as SuccessOf<UseNotificationsReturn>;
 };

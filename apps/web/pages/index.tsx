@@ -40,6 +40,7 @@ const Home: NextPage = () => {
   const {
     data: w3iAccountData,
     register,
+    unregister,
     setAccount,
     prepareRegistration,
   } = useW3iAccount(address);
@@ -63,14 +64,14 @@ const Home: NextPage = () => {
   const handleRegistration = async () => {
     try {
       const { message, registerParams } = await prepareRegistration();
-      const signature = await signMessageAsync({
-        message: message,
-      });
-      await register({
-        registerParams,
-        signature,
-      });
+      const signature = await signMessageAsync({ message: message });
+      await register({ registerParams, signature });
     } catch (registerIdentityError) {
+      toast({
+        title: registerIdentityError?.message || "no message",
+        position: "top",
+        variant: "subtle",
+      });
       console.error({ registerIdentityError });
     }
   };
@@ -123,9 +124,9 @@ const Home: NextPage = () => {
     }
   };
 
-  useInterval(() => {
-    handleBlockNotification();
-  }, 12000);
+  // useInterval(() => {
+  //   handleBlockNotification();
+  // }, 12000);
 
   useAccountEffect({
     onDisconnect() {
@@ -162,93 +163,117 @@ const Home: NextPage = () => {
             w="fit-content"
             alignSelf="center"
             isLoading={true}
+            loadingText="Client loading..."
             isDisabled={true}
-          ></Button>
-        ) : subscriptionData?.isSubscribed ? (
-          <Flex flexDirection={"column"} alignItems="center" gap={4}>
-            <Button
-              leftIcon={<BsSendFill />}
-              variant="outline"
-              onClick={handleTestNotification}
-              colorScheme="purple"
-              rounded="full"
-              isLoading={isSending}
-              loadingText="Sending..."
-            >
-              Send test notification
-            </Button>
-            <Button
-              leftIcon={isBlockNotificationEnabled ? <FaPause /> : <FaPlay />}
-              variant="outline"
-              onClick={() =>
-                setIsBlockNotificationEnabled((isEnabled) => !isEnabled)
-              }
-              colorScheme={isBlockNotificationEnabled ? "orange" : "blue"}
-              rounded="full"
-            >
-              {isBlockNotificationEnabled ? "Pause" : "Resume"} block
-              notifications
-            </Button>
-            <Button
-              leftIcon={<FaBellSlash />}
-              onClick={unsubscribe}
-              variant="outline"
-              isDisabled={!address}
-              colorScheme="red"
-              isLoading={subscriptionData.isUnsubscribing}
-              loadingText="Unsubscribing..."
-              rounded="full"
-            >
-              Unsubscribe
-            </Button>
-          </Flex>
-        ) : w3iAccountData?.isRegistered ? (
-          <Tooltip
-            label={
-              !Boolean(address)
-                ? "Connect your wallet first."
-                : "Register your account."
-            }
-            hidden={Boolean(address)}
           >
-            <Button
-              leftIcon={<FaBell />}
-              onClick={subscribe}
-              colorScheme="cyan"
-              rounded="full"
-              variant="outline"
-              w="fit-content"
-              alignSelf="center"
-              isLoading={subscriptionData?.isSubscribing}
-              loadingText="Subscribing..."
-              isDisabled={!Boolean(address)}
-            >
-              Subscribe
-            </Button>
-          </Tooltip>
+            Client loading...
+          </Button>
         ) : (
-          <Tooltip
-            label={
-              !Boolean(address)
-                ? "Connect your wallet first."
-                : "Register your account."
-            }
-            hidden={Boolean(address)}
-          >
-            <Button
-              leftIcon={<FaBell />}
-              onClick={handleRegistration}
-              colorScheme="cyan"
-              rounded="full"
-              variant="outline"
-              w="fit-content"
-              alignSelf="center"
-              isLoading={w3iAccountData?.isRegistering}
-              loadingText="Registering..."
-            >
-              Register
-            </Button>
-          </Tooltip>
+          <React.Fragment>
+            {subscriptionData?.isSubscribed && w3iAccountData?.isRegistered ? (
+              <Flex flexDirection={"column"} alignItems="center" gap={4}>
+                <Button
+                  leftIcon={<BsSendFill />}
+                  variant="outline"
+                  onClick={handleTestNotification}
+                  colorScheme="purple"
+                  rounded="full"
+                  isLoading={isSending}
+                  loadingText="Sending..."
+                >
+                  Send test notification
+                </Button>
+                <Button
+                  leftIcon={
+                    isBlockNotificationEnabled ? <FaPause /> : <FaPlay />
+                  }
+                  variant="outline"
+                  onClick={() =>
+                    setIsBlockNotificationEnabled((isEnabled) => !isEnabled)
+                  }
+                  colorScheme={isBlockNotificationEnabled ? "orange" : "blue"}
+                  rounded="full"
+                >
+                  {isBlockNotificationEnabled ? "Pause" : "Resume"} block
+                  notifications
+                </Button>
+                <Button
+                  leftIcon={<FaBellSlash />}
+                  onClick={unsubscribe}
+                  variant="outline"
+                  isDisabled={!address}
+                  colorScheme="red"
+                  isLoading={subscriptionData.isUnsubscribing}
+                  loadingText="Unsubscribing..."
+                  rounded="full"
+                >
+                  Unsubscribe
+                </Button>
+                <Button
+                  onClick={unregister}
+                  variant="outline"
+                  colorScheme="red"
+                  rounded="full"
+                  w="fit-content"
+                  alignSelf="center"
+                  isLoading={w3iAccountData?.isUnregistering}
+                  loadingText="Unregistering..."
+                  isDisabled={!Boolean(address)}
+                >
+                  Unregister
+                </Button>
+              </Flex>
+            ) : w3iAccountData?.isRegistered ? (
+              <React.Fragment>
+                <Tooltip
+                  label={
+                    !Boolean(address)
+                      ? "Connect your wallet first."
+                      : "Register your account."
+                  }
+                  hidden={Boolean(address)}
+                >
+                  <Button
+                    leftIcon={<FaBell />}
+                    onClick={subscribe}
+                    colorScheme="cyan"
+                    rounded="full"
+                    variant="outline"
+                    w="fit-content"
+                    alignSelf="center"
+                    isLoading={subscriptionData?.isSubscribing}
+                    loadingText="Subscribing..."
+                    isDisabled={!Boolean(address)}
+                  >
+                    Subscribe
+                  </Button>
+                </Tooltip>
+              </React.Fragment>
+            ) : (
+              <Tooltip
+                label={
+                  !Boolean(address)
+                    ? "Connect your wallet first."
+                    : "Register your account."
+                }
+                hidden={Boolean(address)}
+              >
+                <Button
+                  leftIcon={<FaBell />}
+                  onClick={handleRegistration}
+                  colorScheme="cyan"
+                  rounded="full"
+                  variant="outline"
+                  w="fit-content"
+                  alignSelf="center"
+                  isLoading={w3iAccountData?.isRegistering}
+                  loadingText="Registering..."
+                >
+                  Register
+                </Button>
+              </Tooltip>
+            )}
+          </React.Fragment>
         )}
         {subscriptionData?.isSubscribed && (
           <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">

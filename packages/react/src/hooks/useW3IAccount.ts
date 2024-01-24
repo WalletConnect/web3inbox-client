@@ -1,6 +1,6 @@
 import { Web3InboxClient } from "@web3inbox/core";
 import { useEffect, useState } from "react";
-import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
+import { HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { useClientState } from "../utils/snapshots";
 
@@ -10,6 +10,9 @@ type W3iAccountReturn = HooksReturn<
     identityKey: string | null;
     isRegistered: boolean;
     isRegistering: boolean;
+    isUnregistering: boolean;
+    errorRegister: string | null;
+    errorUnregister: string | null;
   },
   {
     register: (
@@ -29,6 +32,9 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
+  const [isUnregistering, setIsUnregistering] = useState<boolean>(false);
+  const [errorRegister, setErrorRegister] = useState<string | null>(null);
+  const [errorUnregister, setErrorUnregister] = useState<string | null>(null);
 
   const setAccount = async (account: string) => {
     if (!w3iClient) {
@@ -55,41 +61,57 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
   const register = async (
     params: Parameters<Web3InboxClient["register"]>[0]
   ) => {
-    if (!account) {
-      throw new Error("Account not set, cannot register account");
-    }
-
-    if (!w3iClient) {
-      throw new Error("Web3InboxClient is not ready, cannot register account");
-    }
-
     setIsRegistering(true);
-    let identity: string | null;
 
-    try {
-      identity = await w3iClient.register(params);
-    } catch (e) {
-      identity = null;
-      console.error(e);
-    } finally {
-      setIsRegistering(false);
-    }
+    return new Promise<string>(async (resolve, reject) => {
+      if (!account) {
+        return reject("Account not set, cannot register account");
+      }
 
-    return identity;
+      if (!w3iClient) {
+        return reject("Web3InboxClient is not ready, cannot register account");
+      }
+
+      await w3iClient
+        .register(params)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((e) => {
+          setErrorRegister(e?.message ?? "Failed to register");
+          reject(e);
+        })
+        .finally(() => {
+          setIsRegistering(false);
+        });
+    });
   };
 
   const unregister = async () => {
-    if (!account) {
-      throw new Error("Account not set, cannot unregister account");
-    }
+    setIsUnregistering(true);
 
-    if (!w3iClient) {
-      throw new Error(
-        "Web3InboxClient is not ready, cannot unregister account"
-      );
-    }
+    return new Promise<void>(async (resolve, reject) => {
+      if (!account) {
+        return reject("Account not set, cannot unregister account");
+      }
 
-    return w3iClient.unregister({ account });
+      if (!w3iClient) {
+        return reject("Web3InboxClient is not ready, cannot register account");
+      }
+
+      w3iClient
+        .unregister({ account })
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((e) => {
+          setErrorUnregister(e?.message ?? "Failed to unregister");
+          reject(e);
+        })
+        .finally(() => {
+          setIsUnregistering(false);
+        });
+    });
   };
 
   useEffect(() => {
@@ -100,27 +122,18 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
     setIsRegistered(registrationStatus);
   }, [account, registration]);
 
-  if (!w3iClient) {
-    return {
-      data: null,
-      isLoading: true,
-      error: null,
-      prepareRegistration,
-      register,
-      unregister,
-      setAccount,
-    } as LoadingOf<W3iAccountReturn>;
-  }
-
   return {
     data: {
       account: account ?? null,
-      isRegistered,
-      isRegistering,
       identityKey: isRegistered && registration ? registration.identity : null,
+      isRegistering,
+      isRegistered,
+      isUnregistering,
+      errorRegister,
+      errorUnregister,
     },
-    isLoading: false,
     error: null,
+    isLoading: false,
     prepareRegistration,
     register,
     unregister,

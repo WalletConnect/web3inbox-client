@@ -1,13 +1,16 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
-import { useCallback, useEffect, useState } from "react";
-import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
+import { useEffect, useState } from "react";
+import { HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
+type SubscriptionState = NotifyClientTypes.NotifySubscription | null;
 type ManageSubscriptionReturn = HooksReturn<
   {
     isSubscribed: boolean;
     isSubscribing: boolean;
     isUnsubscribing: boolean;
+    errorSubscribe: string | null;
+    errorUnsubscribe: string | null;
     subscription: NotifyClientTypes.NotifySubscription | null;
   },
   {
@@ -26,30 +29,25 @@ export const useManageSubscription = (
   account?: string,
   domain?: string
 ): ManageSubscriptionReturn => {
-  const {
-    data: w3iClient,
-    isLoading: clientLoading,
-    error: clientError,
-  } = useWeb3InboxClient();
+  const { data: w3iClient, isLoading: isLoadingClient } = useWeb3InboxClient();
 
-  const [subscription, setSubscription] =
-    useState<NotifyClientTypes.NotifySubscription | null>(
-      w3iClient?.getSubscription(account, domain) ?? null
-    );
+  const [subscription, setSubscription] = useState<SubscriptionState>(
+    w3iClient?.getSubscription(account, domain) ?? null
+  );
 
   const [watching, setWatching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorSubscribe, setErrorSubscribe] = useState<string | null>(null);
+  const [errorUnsubscribe, setErrorUnsubscribe] = useState<string | null>(null);
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isUnsubscribing, setIsUnsubscribing] = useState(false);
 
   useEffect(() => {
-    if (w3iClient && !clientLoading) {
+    if (w3iClient && !isLoadingClient) {
       setSubscription(w3iClient.getSubscription(account, domain));
     }
-  }, [w3iClient, clientLoading]);
+  }, [w3iClient, isLoadingClient]);
 
   useEffect(() => {
-    console.log({ w3iClient });
     if (!w3iClient || watching) return;
 
     const stopWatching = w3iClient.watchSubscription(
@@ -70,88 +68,64 @@ export const useManageSubscription = (
   }, [account, domain, w3iClient]);
 
   const subscribe = async () => {
-    if (!w3iClient) {
-      throw new Error("Web3InboxClient is not ready, cannot subscribe");
-    }
-
     setIsSubscribing(true);
 
-    try {
-      await w3iClient.subscribeToDapp(account, domain);
-    } catch (e) {
-      console.error("Failed to subscribe", e);
-      setError(`Failed to subscribe ${e}`);
-    } finally {
-      setIsSubscribing(false);
-    }
+    return new Promise<void>(async (resolve, reject) => {
+      if (!w3iClient) {
+        reject(new Error("Web3InboxClient is not ready, cannot subscribe"));
+      } else {
+        await w3iClient
+          .subscribeToDapp(account, domain)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((e) => {
+            setErrorSubscribe(e?.message ?? "Failed to subscribe");
+            reject(e);
+          })
+          .finally(() => {
+            setIsSubscribing(false);
+          });
+      }
+    });
   };
 
   const unsubscribe = async () => {
-    if (!w3iClient) {
-      throw new Error("Web3InboxClient is not ready, cannot unsubscribe");
-    }
-
     setIsUnsubscribing(true);
 
-    try {
-      await w3iClient.unsubscribeFromDapp(account, domain);
-    } catch (e) {
-      console.error("Failed to unsubscribe", e);
-      setError("Failed to unsubscribe");
-    } finally {
-      setIsUnsubscribing(false);
-    }
+    return new Promise<void>(async (resolve, reject) => {
+      if (!w3iClient) {
+        reject(new Error("Web3InboxClient is not ready, cannot unsubscribe"));
+      } else {
+        await w3iClient
+          .unsubscribeFromDapp(account, domain)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((e) => {
+            setErrorUnsubscribe(e?.message ?? "Failed to unsubscribe");
+            reject(e);
+          })
+          .finally(() => {
+            setIsUnsubscribing(false);
+          });
+      }
+    });
   };
-
-  if (!w3iClient) {
-    return {
-      data: null,
-      isLoading: false,
-      error: null,
-      unsubscribe,
-      subscribe,
-    } as LoadingOf<ManageSubscriptionReturn>;
-  }
-
-  if (clientError) {
-    return {
-      data: null,
-      isLoading: false,
-      error: {
-        client: clientError.client,
-        subscribe: { message: error },
-        unsubscribe: { message: error },
-      },
-
-      unsubscribe,
-      subscribe,
-    } as ErrorOf<ManageSubscriptionReturn>;
-  }
-
-  if (error) {
-    return {
-      data: null,
-      isLoading: false,
-      error: {
-        subscribe: { message: error },
-        unsubscribe: { message: error },
-      },
-      unsubscribe,
-      subscribe,
-    } as ErrorOf<ManageSubscriptionReturn>;
-  }
 
   const data = {
     isSubscribing,
-    isUnsubscribing,
-    subscription,
     isSubscribed: Boolean(subscription),
+    isUnsubscribing,
+    errorSubscribe,
+    errorUnsubscribe,
+    subscription,
   };
 
   return {
     data,
-    isLoading: false,
     error: null,
+    isLoading: false,
     unsubscribe,
     subscribe,
   } as SuccessOf<ManageSubscriptionReturn>;

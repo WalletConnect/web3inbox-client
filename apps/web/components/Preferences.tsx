@@ -31,6 +31,7 @@ function Preferences() {
       .map(([key]) => key);
     try {
       const isUpdated = await updateScopes(enabledScopes);
+
       if (isUpdated) {
         toast({
           title: "Preferences updated",
@@ -40,7 +41,7 @@ function Preferences() {
       }
     } catch (error) {
       toast({
-        title: "Failed to update preferences",
+        title: error?.message as string,
         status: "error",
         variant: "subtle",
       });

@@ -1,3 +1,5 @@
+"use client";
+
 import type { AppProps } from "next/app";
 import { ChakraProvider, Flex, Grid, GridItem } from "@chakra-ui/react";
 import { WagmiProvider, http } from "wagmi";

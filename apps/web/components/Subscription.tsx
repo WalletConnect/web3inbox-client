@@ -6,11 +6,19 @@ import {
   AccordionPanel,
   Code,
 } from "@chakra-ui/react";
-import { useManageSubscription } from "@web3inbox/widget-react";
+import {
+  useManageSubscription,
+  useWeb3InboxClient,
+} from "@web3inbox/widget-react";
 import React from "react";
 
 function Subscription() {
-  const hooksReturn = useManageSubscription();
+  const { data: w3iClient } = useWeb3InboxClient();
+  const { data } = useManageSubscription();
+
+  if (!w3iClient || !data?.subscription) {
+    return null;
+  }
 
   return (
     <AccordionItem>
@@ -31,18 +39,8 @@ function Subscription() {
             md: "full",
           }}
         >
-          <pre
-            style={{
-              overflow: "scroll",
-            }}
-          >
-            {hooksReturn.isLoading
-              ? "Loading.."
-              : JSON.stringify(
-                  hooksReturn.error ?? hooksReturn.data?.subscription,
-                  undefined,
-                  2
-                )}
+          <pre style={{ overflow: "scroll" }}>
+            {JSON.stringify(data?.subscription, null, 2)}
           </pre>
         </Code>
       </AccordionPanel>
