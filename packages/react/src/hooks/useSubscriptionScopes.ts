@@ -1,11 +1,15 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { useSubscriptionState } from "../utils/snapshots";
 
-type SubscriptionScopesReturn = HooksReturn<
-  { scopes: NotifyClientTypes.ScopeMap },
+type UseSubscriptionScopesReturn = HooksReturn<
+  {
+    scopes: NotifyClientTypes.ScopeMap;
+    isUpdatingScopes: boolean;
+    errorUpdatingScopes: string | null;
+  },
   { updateScopes: (scope: string[]) => Promise<boolean> },
   "updateScopes"
 >;
@@ -13,14 +17,17 @@ type SubscriptionScopesReturn = HooksReturn<
 export const useSubscriptionScopes = (
   account?: string,
   domain?: string
-): SubscriptionScopesReturn => {
+): UseSubscriptionScopesReturn => {
   const { data: w3iClient, error: clientError } = useWeb3InboxClient();
+
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subScopes, setSubScopes] = useState<NotifyClientTypes.ScopeMap>(
     w3iClient?.getNotificationTypes(account) ?? {}
   );
-
-  const [error, setError] = useState<string | null>(null);
+  const [isUpdatingScopes, setIsUpdatingScopes] = useState<boolean>(false);
+  const [errorUpdatingScopes, setErrorUpdatingScopes] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (w3iClient) {
@@ -28,19 +35,30 @@ export const useSubscriptionScopes = (
     }
   }, [w3iClient, account, subscriptionsTrigger, domain]);
 
-  const updateScopes = useCallback(
-    (scope: string[]) => {
-      if (w3iClient) {
-        return w3iClient.update(scope, account, domain);
-      } else {
-        setError(
-          "Trying to update scope before Web3Inbox Client was initialized "
+  const updateScopes = (scope: string[]) => {
+    setIsUpdatingScopes(true);
+
+    return new Promise<boolean>(async (resolve, reject) => {
+      if (!w3iClient) {
+        return reject(
+          new Error("Web3InboxClient is not ready, cannot update scopes")
         );
-        return Promise.resolve(false);
       }
-    },
-    [w3iClient, account, domain]
-  );
+
+      await w3iClient
+        .update(scope, account, domain)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((e) => {
+          setErrorUpdatingScopes(e?.message ?? "Failed to register");
+          reject(e);
+        })
+        .finally(() => {
+          setIsUpdatingScopes(false);
+        });
+    });
+  };
 
   if (!w3iClient) {
     return {
@@ -48,7 +66,7 @@ export const useSubscriptionScopes = (
       error: null,
       isLoading: true,
       updateScopes,
-    } as LoadingOf<SubscriptionScopesReturn>;
+    } as LoadingOf<UseSubscriptionScopesReturn>;
   }
 
   if (clientError) {
@@ -59,22 +77,13 @@ export const useSubscriptionScopes = (
       },
       isLoading: false,
       updateScopes,
-    } as ErrorOf<SubscriptionScopesReturn>;
-  }
-
-  if (error) {
-    return {
-      data: null,
-      error: { updateScopes: { message: error } },
-      isLoading: false,
-      updateScopes,
-    } as ErrorOf<SubscriptionScopesReturn>;
+    } as ErrorOf<UseSubscriptionScopesReturn>;
   }
 
   return {
-    data: { scopes: subScopes },
+    data: { scopes: subScopes, isUpdatingScopes, errorUpdatingScopes },
     error: null,
     isLoading: false,
     updateScopes,
-  } as SuccessOf<SubscriptionScopesReturn>;
+  } as SuccessOf<UseSubscriptionScopesReturn>;
 };
