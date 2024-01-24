@@ -6,9 +6,7 @@ import { useSubscriptionState } from "../utils/snapshots";
 
 type SubscriptionScopesReturn = HooksReturn<
   { scopes: NotifyClientTypes.ScopeMap },
-  {
-    updateScopes: (scope: string[]) => Promise<boolean>;
-  },
+  { updateScopes: (scope: string[]) => Promise<boolean> },
   "updateScopes"
 >;
 
@@ -16,27 +14,24 @@ export const useSubscriptionScopes = (
   account?: string,
   domain?: string
 ): SubscriptionScopesReturn => {
-  const { data: web3inboxClientData, error: clientError } =
-    useWeb3InboxClient();
+  const { data: w3iClient, error: clientError } = useWeb3InboxClient();
   const { subscriptions: subscriptionsTrigger } = useSubscriptionState();
   const [subScopes, setSubScopes] = useState<NotifyClientTypes.ScopeMap>(
-    web3inboxClientData?.client.getNotificationTypes(account) ?? {}
+    w3iClient?.getNotificationTypes(account) ?? {}
   );
 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (web3inboxClientData?.client) {
-      setSubScopes(
-        web3inboxClientData?.client.getNotificationTypes(account, domain)
-      );
+    if (w3iClient) {
+      setSubScopes(w3iClient.getNotificationTypes(account, domain));
     }
-  }, [web3inboxClientData, account, subscriptionsTrigger, domain]);
+  }, [w3iClient, account, subscriptionsTrigger, domain]);
 
   const updateScopes = useCallback(
     (scope: string[]) => {
-      if (web3inboxClientData?.client) {
-        return web3inboxClientData?.client.update(scope, account, domain);
+      if (w3iClient) {
+        return w3iClient.update(scope, account, domain);
       } else {
         setError(
           "Trying to update scope before Web3Inbox Client was initialized "
@@ -44,10 +39,10 @@ export const useSubscriptionScopes = (
         return Promise.resolve(false);
       }
     },
-    [web3inboxClientData, account, domain]
+    [w3iClient, account, domain]
   );
 
-  if (!web3inboxClientData) {
+  if (!w3iClient) {
     return {
       data: null,
       error: null,

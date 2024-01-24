@@ -1,6 +1,5 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
-import { Web3InboxClient } from "@web3inbox/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
@@ -22,70 +21,46 @@ export const useNotifications = (
   notificationsPerPage: number,
   isInfiniteScroll?: boolean,
   account?: string,
-  domain?: string,
-  client?: Web3InboxClient
+  domain?: string
 ): NotificationsReturn => {
-  const [clientData, setClientData] = useState<Web3InboxClient | undefined>(
-    client
-  );
-  const { data: web3inboxClientData, error: clientError } =
-    useWeb3InboxClient();
-
-  useEffect(() => {
-    if (!clientData && web3inboxClientData) {
-      setClientData(web3inboxClientData.client);
-    }
-  }, [web3inboxClientData]);
-
+  const { data: w3iClient, error: w3iClientError } = useWeb3InboxClient();
+  const [nextPage, setNextPage] = useState<() => void>(() => {});
+  const [error, setError] = useState<null | string>(null);
   const [notifications, setNotifications] =
     useState<SuccessOf<NotificationsReturn>["data"]>();
 
-  const [nextPage, setNextPage] = useState<() => void>(() => {});
-
-  const [error, setError] = useState<null | string>(null);
-
   useEffect(() => {
-    if (!clientData) return;
+    if (!w3iClient) return;
 
     try {
       const { nextPage: nextPageFunc, stopWatchingNotifications } =
-        clientData.pageNotifications(
+        w3iClient.pageNotifications(
           notificationsPerPage,
           isInfiniteScroll,
           account,
           domain
         )((notifications) => {
-          console.log(">>> got new notifications", notifications);
           setNotifications(notifications);
         });
 
       setNextPage(nextPageFunc);
 
       return () => {
-        console.log("stopWatchingNotifications");
         stopWatchingNotifications();
       };
     } catch (e: any) {
       setError(e.message);
     }
   }, [
-    clientData,
     account,
     domain,
     notificationsPerPage,
     isInfiniteScroll,
+    w3iClient,
     setNotifications,
   ]);
 
-  console.log(
-    ">>>> notifications state: ",
-    notifications,
-    client ? true : false,
-    clientError,
-    error
-  );
-
-  if (!clientData) {
+  if (!w3iClient) {
     return {
       data: null,
       error: null,
@@ -94,11 +69,11 @@ export const useNotifications = (
     };
   }
 
-  if (clientError) {
+  if (w3iClientError) {
     return {
       data: null,
       error: {
-        client: clientError.client,
+        client: w3iClientError.client,
       },
       isLoading: false,
       nextPage,

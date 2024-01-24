@@ -1,6 +1,7 @@
 "use client";
+
 import type { NextPage } from "next";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   Button,
@@ -11,9 +12,11 @@ import {
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
-
-import { useManageSubscription, useW3iAccount } from "@web3inbox/widget-react";
-
+import {
+  useManageSubscription,
+  useW3iAccount,
+  useWeb3InboxClient,
+} from "@web3inbox/widget-react";
 import {
   useAccount,
   useAccountEffect,
@@ -28,31 +31,23 @@ import Preferences from "../components/Preferences";
 import Messages from "../components/Messages";
 import Subscription from "../components/Subscription";
 import Subscribers from "../components/Subscribers";
+import { sendNotification } from "../utils/fetchNotify";
 
 const Home: NextPage = () => {
-  /** Web3Inbox SDK hooks **/
+  const { address } = useAccount();
+  const { data: w3iClient, isLoading: w3iClientIsLoading } =
+    useWeb3InboxClient();
   const {
-    setAccount,
     data: w3iAccountData,
-    register: registerIdentity,
+    register,
+    setAccount,
     prepareRegistration,
-  } = useW3iAccount();
-
-  console.log(">>> w3iAccountData", w3iAccountData);
-
+  } = useW3iAccount(address);
   const {
-    subscribe,
     data: subscriptionData,
+    subscribe,
     unsubscribe,
   } = useManageSubscription();
-
-  const { address } = useAccount();
-
-  useAccountEffect({
-    onDisconnect() {
-      setAccount("");
-    },
-  });
 
   const { signMessageAsync } = useSignMessage();
   const wagmiPublicClient = usePublicClient();
@@ -65,46 +60,25 @@ const Home: NextPage = () => {
   const [isBlockNotificationEnabled, setIsBlockNotificationEnabled] =
     useState(true);
 
-  const signMessage = useCallback(
-    async (message: string) => {
-      const res = await signMessageAsync({
-        message,
-      });
-
-      return res as string;
-    },
-    [signMessageAsync]
-  );
-
-  // We need to set the account as soon as the user is connected
-  useEffect(() => {
-    if (!Boolean(address)) return;
-    setAccount(`eip155:1:${address}`);
-  }, [signMessage, address, setAccount]);
-
-  const handleRegistration = useCallback(async () => {
-    console.log("Calling handle reg");
+  const handleRegistration = async () => {
     try {
       const { message, registerParams } = await prepareRegistration();
-      const signature = await signMessageAsync({ message: message });
-      await registerIdentity({
+      const signature = await signMessageAsync({
+        message: message,
+      });
+      await register({
         registerParams,
         signature,
       });
     } catch (registerIdentityError) {
       console.error({ registerIdentityError });
     }
-  }, [signMessage, registerIdentity]);
-
-  const handleSubscribe = useCallback(async () => {
-    await subscribe();
-  }, [subscribe]);
+  };
 
   // handleSendNotification will send a notification to the current user and includes error handling.
   // If you don't want to use this hook and want more flexibility, you can use sendNotification.
-  const handleTestNotification = useCallback(async () => {
+  const handleTestNotification = async () => {
     if (subscriptionData?.isSubscribed) {
-      console.log("sending");
       handleSendNotification({
         title: "GM Hacker",
         body: "Hack it until you make it!",
@@ -114,11 +88,11 @@ const Home: NextPage = () => {
         type: "f173f231-a45c-4dc0-aa5d-956eb04f7360",
       });
     }
-  }, [handleSendNotification, subscriptionData]);
+  };
 
   // Example of how to send a notification based on some "automation".
   // sendNotification will make a fetch request to /api/notify
-  const handleBlockNotification = useCallback(async () => {
+  const handleBlockNotification = async () => {
     if (subscriptionData?.isSubscribed && isBlockNotificationEnabled) {
       const blockNumber = await wagmiPublicClient.getBlockNumber();
       if (lastBlock !== blockNumber.toString()) {
@@ -147,17 +121,22 @@ const Home: NextPage = () => {
         }
       }
     }
-  }, [
-    wagmiPublicClient,
-    lastBlock,
-    subscriptionData,
-    toast,
-    isBlockNotificationEnabled,
-  ]);
+  };
 
   useInterval(() => {
     handleBlockNotification();
   }, 12000);
+
+  useAccountEffect({
+    onDisconnect() {
+      setAccount("");
+    },
+  });
+
+  useEffect(() => {
+    if (!address || !w3iClient) return;
+    setAccount(`eip155:1:${address}`);
+  }, [w3iClient, address]);
 
   return (
     <Flex w="full" flexDirection={"column"} maxW="700px">
@@ -174,7 +153,18 @@ const Home: NextPage = () => {
       </Heading>
 
       <Flex flexDirection="column" gap={4}>
-        {subscriptionData?.isSubscribed ? (
+        {w3iClientIsLoading ? (
+          <Button
+            leftIcon={<FaBell />}
+            colorScheme="cyan"
+            rounded="full"
+            variant="outline"
+            w="fit-content"
+            alignSelf="center"
+            isLoading={true}
+            isDisabled={true}
+          ></Button>
+        ) : subscriptionData?.isSubscribed ? (
           <Flex flexDirection={"column"} alignItems="center" gap={4}>
             <Button
               leftIcon={<BsSendFill />}
@@ -223,7 +213,7 @@ const Home: NextPage = () => {
           >
             <Button
               leftIcon={<FaBell />}
-              onClick={handleSubscribe}
+              onClick={subscribe}
               colorScheme="cyan"
               rounded="full"
               variant="outline"
@@ -260,7 +250,6 @@ const Home: NextPage = () => {
             </Button>
           </Tooltip>
         )}
-
         {subscriptionData?.isSubscribed && (
           <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
             <Subscription />

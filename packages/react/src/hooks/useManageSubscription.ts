@@ -27,83 +27,83 @@ export const useManageSubscription = (
   domain?: string
 ): ManageSubscriptionReturn => {
   const {
-    data: web3inboxClientData,
-    isLoading: isClientLoading,
+    data: w3iClient,
+    isLoading: clientLoading,
     error: clientError,
   } = useWeb3InboxClient();
 
   const [subscription, setSubscription] =
     useState<NotifyClientTypes.NotifySubscription | null>(
-      web3inboxClientData?.client.getSubscription(account, domain) ?? null
+      w3iClient?.getSubscription(account, domain) ?? null
     );
 
+  const [watching, setWatching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isUnsubscribing, setIsUnsubscribing] = useState(false);
 
   useEffect(() => {
-    if (!web3inboxClientData) return;
+    if (w3iClient && !clientLoading) {
+      setSubscription(w3iClient.getSubscription(account, domain));
+    }
+  }, [w3iClient, clientLoading]);
 
-    const stopWatching = web3inboxClientData.client?.watchSubscription(
+  useEffect(() => {
+    console.log({ w3iClient });
+    if (!w3iClient || watching) return;
+
+    const stopWatching = w3iClient.watchSubscription(
       (sub) => {
-        console.log(">>> watcher");
         setSubscription(sub);
       },
       account,
       domain
     );
 
-    setSubscription(
-      web3inboxClientData.client.getSubscription(account, domain)
-    );
+    setWatching(true);
+    setSubscription(w3iClient.getSubscription(account, domain));
 
-    return stopWatching;
-  }, [web3inboxClientData, isClientLoading, account, domain]);
+    return () => {
+      setWatching(false);
+      stopWatching();
+    };
+  }, [account, domain, w3iClient]);
 
-  const subscribe = useCallback(async () => {
-    if (web3inboxClientData) {
-      setIsSubscribing(true);
-      try {
-        console.log(">>> subscribing to", account, domain);
-        await web3inboxClientData.client.subscribeToDapp(account, domain);
-      } catch (e) {
-        console.error("Failed to subscribe", e);
-        setError(`Failed to subscribe ${e}`);
-      } finally {
-        setIsSubscribing(false);
-      }
-    } else {
-      console.log(
-        ">>> subscribing to",
-        "Trying to subscribe before Web3Inbox Client was initialized"
-      );
-      console.error(
-        "Trying to subscribe before Web3Inbox Client was initialized"
-      );
+  const subscribe = async () => {
+    if (!w3iClient) {
+      throw new Error("Web3InboxClient is not ready, cannot subscribe");
     }
-  }, [web3inboxClientData, account, domain]);
 
-  const unsubscribe = useCallback(async () => {
-    if (web3inboxClientData) {
-      setIsUnsubscribing(true);
-      try {
-        await web3inboxClientData.client.unsubscribeFromDapp(account, domain);
-      } catch (e) {
-        console.error("Failed to unsubscribe", e);
-        setError("Failed to unsubscribe");
-      } finally {
-        setIsUnsubscribing(false);
-      }
-    } else {
-      console.error(
-        "Trying to unsubscribe before Web3Inbox Client was initialized"
-      );
+    setIsSubscribing(true);
+
+    try {
+      await w3iClient.subscribeToDapp(account, domain);
+    } catch (e) {
+      console.error("Failed to subscribe", e);
+      setError(`Failed to subscribe ${e}`);
+    } finally {
+      setIsSubscribing(false);
     }
-  }, [web3inboxClientData, account, domain]);
+  };
 
-  if (!web3inboxClientData) {
-    console.log(">>> useManageData no client data");
+  const unsubscribe = async () => {
+    if (!w3iClient) {
+      throw new Error("Web3InboxClient is not ready, cannot unsubscribe");
+    }
+
+    setIsUnsubscribing(true);
+
+    try {
+      await w3iClient.unsubscribeFromDapp(account, domain);
+    } catch (e) {
+      console.error("Failed to unsubscribe", e);
+      setError("Failed to unsubscribe");
+    } finally {
+      setIsUnsubscribing(false);
+    }
+  };
+
+  if (!w3iClient) {
     return {
       data: null,
       isLoading: false,
@@ -114,7 +114,6 @@ export const useManageSubscription = (
   }
 
   if (clientError) {
-    console.log(">>> useManageData client error");
     return {
       data: null,
       isLoading: false,
@@ -130,7 +129,6 @@ export const useManageSubscription = (
   }
 
   if (error) {
-    console.log(">>> useManageData error", error);
     return {
       data: null,
       isLoading: false,
@@ -143,13 +141,15 @@ export const useManageSubscription = (
     } as ErrorOf<ManageSubscriptionReturn>;
   }
 
+  const data = {
+    isSubscribing,
+    isUnsubscribing,
+    subscription,
+    isSubscribed: Boolean(subscription),
+  };
+
   return {
-    data: {
-      isSubscribing,
-      isUnsubscribing,
-      subscription,
-      isSubscribed: Boolean(subscription),
-    },
+    data,
     isLoading: false,
     error: null,
     unsubscribe,

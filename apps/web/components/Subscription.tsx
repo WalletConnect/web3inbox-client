@@ -38,7 +38,11 @@ function Subscription() {
           >
             {hooksReturn.isLoading
               ? "Loading.."
-              : JSON.stringify(hooksReturn.error ?? hooksReturn.data?.subscription, undefined, 2)}
+              : JSON.stringify(
+                  hooksReturn.error ?? hooksReturn.data?.subscription,
+                  undefined,
+                  2
+                )}
           </pre>
         </Code>
       </AccordionPanel>

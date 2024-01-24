@@ -2,11 +2,7 @@ import { Web3InboxClient } from "@web3inbox/core";
 import { useEffect, useState } from "react";
 import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 
-type Web3InboxClientReturn = HooksReturn<
-  { client: Web3InboxClient },
-  {},
-  "client"
->;
+type Web3InboxClientReturn = HooksReturn<Web3InboxClient, {}, "client">;
 
 export const useWeb3InboxClient = (): Web3InboxClientReturn => {
   const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
@@ -30,9 +26,7 @@ export const useWeb3InboxClient = (): Web3InboxClientReturn => {
 
   if (isReady && client) {
     return {
-      data: {
-        client,
-      },
+      data: client,
       isLoading: false,
       error: null,
     } as SuccessOf<Web3InboxClientReturn>;

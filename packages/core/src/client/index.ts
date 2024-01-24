@@ -97,6 +97,8 @@ export class Web3InboxClient {
    * @param cb - Callback that gets called when isReady updates
    */
   public static watchIsReady(cb: (isReady: boolean) => void) {
+    cb(Web3InboxClient.clientState.isReady);
+
     return subscribe(Web3InboxClient.clientState, () => {
       cb(Web3InboxClient.clientState.isReady);
     });
@@ -140,11 +142,11 @@ export class Web3InboxClient {
    *
    * @param cb - Callback that gets called when account updates
    */
-  public watchAccount(cb: (acc: string) => void) {
-    const acc = Web3InboxClient.clientState.account;
-    if (!acc) return;
+  public watchAccount(cb: (acc: string | undefined) => void) {
+    cb(Web3InboxClient.clientState.account);
+
     return subscribe(Web3InboxClient.clientState, () => {
-      return cb(acc);
+      return cb(Web3InboxClient.clientState.account);
     });
   }
 
@@ -177,8 +179,10 @@ export class Web3InboxClient {
     account: string,
     cb: (isRegistered: boolean) => void
   ) {
+    this.getAccountIsRegistered(account).then(cb);
+
     return subscribe(Web3InboxClient.clientState, async () => {
-      return cb(await this.getAccountIsRegistered(account));
+      cb(await this.getAccountIsRegistered(account));
     });
   }
 
@@ -238,6 +242,7 @@ export class Web3InboxClient {
     Web3InboxClient.instance.attachEventListeners();
 
     Web3InboxClient.clientState.initting = false;
+
     Web3InboxClient.clientState.isReady = true;
 
     return Web3InboxClient.instance;
@@ -259,7 +264,7 @@ export class Web3InboxClient {
     const domainToSearch = domain ?? this.domain;
 
     console.log(
-      ">>> getSubscription for",
+      ">>>> getSubscription for",
       accountOrInternalAccount,
       domainToSearch
     );
@@ -284,7 +289,7 @@ export class Web3InboxClient {
       accountOrInternalAccount,
       domainToSearch
     );
-    console.log(">>> getSubscription found", subscription);
+    console.log(">>>> getSubscription found", subscription);
 
     return subscription;
   }
@@ -324,6 +329,8 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
+    cb(this.getSubscription(account, domain));
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain));
     });
@@ -339,6 +346,8 @@ export class Web3InboxClient {
     cb: (subscriptions: NotifyClientTypes.NotifySubscription[]) => void,
     account?: string
   ) {
+    cb(this.getSubscriptions(account));
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscriptions(account));
     });
@@ -674,6 +683,8 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
+    cb(this.isSubscribedToDapp(account, domain));
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.isSubscribedToDapp(account, domain));
     });
@@ -692,6 +703,8 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
+    cb(this.getSubscription(account, domain)?.scope ?? {});
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain)?.scope ?? {});
     });
