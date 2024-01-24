@@ -43,10 +43,10 @@ export const useManageSubscription = (
   const [isUnsubscribing, setIsUnsubscribing] = useState(false);
 
   useEffect(() => {
-    if (w3iClient) {
+    if (w3iClient && !clientLoading) {
       setSubscription(w3iClient.getSubscription(account, domain));
     }
-  }, [w3iClient]);
+  }, [w3iClient, clientLoading]);
 
   useEffect(() => {
     console.log({ w3iClient });
