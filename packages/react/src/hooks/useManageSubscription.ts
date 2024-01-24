@@ -44,13 +44,9 @@ export const useManageSubscription = (
 
   useEffect(() => {
     if (w3iClient) {
-      console.log(
-        ">>>>1 stting sub",
-        w3iClient.getSubscription(account, domain)
-      );
       setSubscription(w3iClient.getSubscription(account, domain));
     }
-  }, [clientLoading, w3iClient]);
+  }, [w3iClient]);
 
   useEffect(() => {
     console.log({ w3iClient });
@@ -151,8 +147,6 @@ export const useManageSubscription = (
     subscription,
     isSubscribed: Boolean(subscription),
   };
-
-  console.log(">>>>1 data: ", data);
 
   return {
     data,
