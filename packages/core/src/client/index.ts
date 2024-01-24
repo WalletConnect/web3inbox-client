@@ -5,6 +5,7 @@ import {
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
 import { proxy, subscribe } from "valtio";
+import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 
 export type GetNotificationsReturn = {
   notifications: NotifyClientTypes.NotifyMessage[];
@@ -449,7 +450,7 @@ export class Web3InboxClient {
         ? data.notifications[data.notifications.length - 1].id
         : undefined;
 
-      const fetchedNotificationData = this.getNotificationHistory(
+      const fetchedNotificationData = await this.getNotificationHistory(
         notificationsPerPage,
         lastMessage,
         account,

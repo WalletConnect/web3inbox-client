@@ -1,4 +1,4 @@
-const createPromiseWithTimeout = <T>(
+export const createPromiseWithTimeout = <T>(
   promise: Promise<T>,
   timeoutMs: number,
   actionName: string
