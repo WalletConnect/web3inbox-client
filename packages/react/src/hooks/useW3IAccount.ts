@@ -23,7 +23,7 @@ type W3iAccountReturn = HooksReturn<
   }
 >;
 
-export const useW3iAccount = (address?: string): W3iAccountReturn => {
+export const useW3iAccount = (initialAccount?: string): W3iAccountReturn => {
   const { data: w3iClient } = useWeb3InboxClient();
   const { account, registration } = useClientState();
 
@@ -99,6 +99,12 @@ export const useW3iAccount = (address?: string): W3iAccountReturn => {
 
     setIsRegistered(registrationStatus);
   }, [account, registration]);
+
+  useEffect(() => {
+    if (!initialAccount || !w3iClient) return;
+
+    setAccount(initialAccount);
+  }, [w3iClient, initialAccount]);
 
   if (!w3iClient) {
     return {
