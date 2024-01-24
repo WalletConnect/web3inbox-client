@@ -98,6 +98,7 @@ export class Web3InboxClient {
    */
   public static watchIsReady(cb: (isReady: boolean) => void) {
     cb(Web3InboxClient.clientState.isReady);
+
     return subscribe(Web3InboxClient.clientState, () => {
       cb(Web3InboxClient.clientState.isReady);
     });
@@ -143,6 +144,7 @@ export class Web3InboxClient {
    */
   public watchAccount(cb: (acc: string | undefined) => void) {
     cb(Web3InboxClient.clientState.account);
+
     return subscribe(Web3InboxClient.clientState, () => {
       return cb(Web3InboxClient.clientState.account);
     });
@@ -178,6 +180,7 @@ export class Web3InboxClient {
     cb: (isRegistered: boolean) => void
   ) {
     this.getAccountIsRegistered(account).then(cb);
+
     return subscribe(Web3InboxClient.clientState, async () => {
       cb(await this.getAccountIsRegistered(account));
     });
@@ -326,7 +329,6 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
-    console.log("watching subscription for, ", account);
     cb(this.getSubscription(account, domain));
 
     return subscribe(Web3InboxClient.subscriptionState, () => {
@@ -682,6 +684,7 @@ export class Web3InboxClient {
     domain?: string
   ) {
     cb(this.isSubscribedToDapp(account, domain));
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.isSubscribedToDapp(account, domain));
     });
@@ -701,6 +704,7 @@ export class Web3InboxClient {
     domain?: string
   ) {
     cb(this.getSubscription(account, domain)?.scope ?? {});
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain)?.scope ?? {});
     });
