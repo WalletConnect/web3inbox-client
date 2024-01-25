@@ -65,14 +65,14 @@ export const usePrepareRegistration = (): UsePrepareRegistrationReturn => {
     return {
       data: null,
       isLoading,
-      error,
+      error: null,
       prepareRegistration,
     } as LoadingOf<UsePrepareRegistrationReturn>;
   }
 
   return {
     data,
-    error: null,
+    error,
     isLoading: false,
     prepareRegistration,
   } as SuccessOf<UsePrepareRegistrationReturn>;

@@ -59,7 +59,7 @@ export const useUnsubscribe = (
   if (isLoading) {
     return {
       data: null,
-      error,
+      error: null,
       isLoading,
       unsubscribe,
     } as LoadingOf<UseUnsubscribeReturn>;

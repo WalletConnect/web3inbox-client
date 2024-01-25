@@ -5,8 +5,7 @@ import { Web3InboxClient } from "@web3inbox/core";
 
 type UseSubscribeReturn = HooksReturn<
   boolean,
-  { subscribe: () => ReturnType<Web3InboxClient["subscribeToDapp"]> },
-  "unsubscribe" | "subscribe"
+  { subscribe: () => ReturnType<Web3InboxClient["subscribeToDapp"]> }
 >;
 
 /**
@@ -56,7 +55,7 @@ export const useSubscribe = (
   if (isLoading) {
     return {
       data: null,
-      error,
+      error: null,
       isLoading,
       subscribe,
     } as LoadingOf<UseSubscribeReturn>;

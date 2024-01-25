@@ -4,9 +4,10 @@ import { HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
 type SubscriptionState = NotifyClientTypes.NotifySubscription | null;
-type UseSubscriptionReturn = HooksReturn<SubscriptionState> & {
-  watching: boolean;
-};
+type UseSubscriptionReturn = HooksReturn<
+  SubscriptionState,
+  { watching: boolean }
+>;
 
 /**
  * Hook to get subscription status

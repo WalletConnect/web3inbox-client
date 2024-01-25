@@ -6,11 +6,12 @@ import { useClientState } from "../utils/snapshots";
 type UseWeb3InboxAccountData = string | undefined;
 type UseWeb3InboxAccountReturn = HooksReturn<
   string | undefined,
-  { setAccount: (account: string) => Promise<void> }
-> & {
-  identityKey: string | null;
-  isRegistered: boolean;
-};
+  {
+    identityKey: string | null;
+    isRegistered: boolean;
+    setAccount: (account: string) => Promise<void>;
+  }
+>;
 
 export const useWeb3InboxAccount = (
   initialAccount?: string
@@ -36,7 +37,6 @@ export const useWeb3InboxAccount = (
 
     return w3iClient
       .setAccount(account)
-      .then(() => {})
       .catch((e) => {
         setError(e?.message ?? "Failed to set account");
       })

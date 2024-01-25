@@ -65,14 +65,14 @@ export const useRegister = (): UseRegisterReturn => {
     return {
       data: null,
       isLoading,
-      error,
+      error: null,
       register,
     } as LoadingOf<UseRegisterReturn>;
   }
 
   return {
     data,
-    error: null,
+    error,
     isLoading: false,
     register,
   } as SuccessOf<UseRegisterReturn>;

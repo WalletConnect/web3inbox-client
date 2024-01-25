@@ -59,14 +59,14 @@ export const useUnregister = (): UseUnregisterReturn => {
     return {
       data: null,
       isLoading,
-      error,
+      error: null,
       unregister,
     } as LoadingOf<UseUnregisterReturn>;
   }
 
   return {
     data,
-    error: null,
+    error,
     isLoading: false,
     unregister,
   } as SuccessOf<UseUnregisterReturn>;
