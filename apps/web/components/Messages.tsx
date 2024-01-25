@@ -12,6 +12,7 @@ import {
   Heading,
   Image,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import {
   useNotificationTypes,
