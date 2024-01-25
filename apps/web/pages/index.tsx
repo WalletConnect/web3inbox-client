@@ -11,6 +11,12 @@ import {
   Tooltip,
   useColorMode,
   useToast,
+  Stack,
+  Card,
+  CardHeader,
+  CardBody,
+  Box,
+  StackDivider,
 } from "@chakra-ui/react";
 import {
   useRegister,
@@ -141,20 +147,16 @@ const Home: NextPage = () => {
   }, [w3iClient, address]);
 
   return (
-    <Flex w="full" flexDirection={"column"} maxW="700px">
-      <Image
-        aria-label="WalletConnect"
-        src={
-          colorMode === "dark"
-            ? "/WalletConnect-white.svg"
-            : "/WalletConnect-black.svg"
-        }
-      />
-      <Heading alignSelf={"center"} textAlign={"center"} mb={6}>
-        Web3Inbox hooks - test environment
-      </Heading>
+    <Card
+      marginTop={20}
+      width={"100%"}
+      background={colorMode === "dark" ? "gray.800" : "gray.100"}
+    >
+      <CardHeader>
+        <Heading size="md">Web3Inbox Interactions</Heading>
+      </CardHeader>
 
-      <Flex flexDirection="column" gap={4}>
+      <CardBody>
         {w3iClientIsLoading ? (
           <Button
             leftIcon={<FaBell />}
@@ -172,7 +174,7 @@ const Home: NextPage = () => {
         ) : (
           <React.Fragment>
             {isSubscribed && isRegistered ? (
-              <Flex flexDirection={"column"} alignItems="center" gap={4}>
+              <Flex flexWrap={"wrap"} alignItems="center" gap={4}>
                 <Button
                   leftIcon={<BsSendFill />}
                   variant="outline"
@@ -277,15 +279,23 @@ const Home: NextPage = () => {
           </React.Fragment>
         )}
         {isSubscribed && (
-          <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
+          <Accordion
+            borderRadius={2}
+            backgroundColor={colorMode === "dark" ? "gray.800" : "gray.100"}
+            defaultIndex={[1]}
+            allowToggle
+            mt={10}
+            rounded="xl"
+            borderColor={colorMode === "dark" ? "gray.700" : "gray.200"}
+          >
             <Subscription />
             <Messages />
             <Preferences />
             <Subscribers />
           </Accordion>
         )}
-      </Flex>
-    </Flex>
+      </CardBody>
+    </Card>
   );
 };
 

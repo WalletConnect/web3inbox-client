@@ -1,10 +1,18 @@
 import { Box, Flex, IconButton, useColorMode } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { FaGithub, FaMoon, FaSun } from "react-icons/fa";
+import { ThemeStore } from "../../utils/themeStore";
 
 function Footer() {
   const { colorMode, toggleColorMode } = useColorMode();
+
+  useEffect(() => {
+    if (ThemeStore.state.modal) {
+      ThemeStore.state.modal.setThemeMode(colorMode);
+    }
+  }, [colorMode]);
+
   return (
     <Box justifyContent="flex-end" position="fixed" right="36px" bottom="36px">
       <Flex alignItems="center" gap={2}>

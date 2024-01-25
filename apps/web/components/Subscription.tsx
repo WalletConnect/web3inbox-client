@@ -5,11 +5,13 @@ import {
   AccordionIcon,
   AccordionPanel,
   Code,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useSubscription, useWeb3InboxClient } from "@web3inbox/widget-react";
 import React from "react";
 
 function Subscription() {
+  const { colorMode } = useColorMode();
   const { data: w3iClient } = useWeb3InboxClient();
   const { data } = useSubscription();
 
@@ -18,18 +20,18 @@ function Subscription() {
   }
 
   return (
-    <AccordionItem>
-      <h2>
-        <AccordionButton>
-          <Heading fontSize="md" as="span" flex="1" textAlign="left">
-            Subscription
-          </Heading>
-          <AccordionIcon />
-        </AccordionButton>
-      </h2>
+    <AccordionItem border="none">
+      <AccordionButton>
+        <Heading fontSize="md" as="span" flex="1" textAlign="left">
+          Subscription
+        </Heading>
+        <AccordionIcon />
+      </AccordionButton>
       <AccordionPanel pb={4}>
         <Code
           lang="json"
+          p={4}
+          borderRadius={4}
           maxW={{
             base: "280px",
             sm: "lg",

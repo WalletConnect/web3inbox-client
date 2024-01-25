@@ -12,6 +12,7 @@ import {
   Heading,
   Image,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import {
   useNotifications,
@@ -26,7 +27,7 @@ function Messages() {
 
   return (
     <AccordionItem>
-      <AccordionButton>
+      <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
           Last Messages
         </Heading>

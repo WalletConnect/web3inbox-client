@@ -11,6 +11,7 @@ import {
   Switch,
   Button,
   useToast,
+  useColorMode,
 } from "@chakra-ui/react";
 import { BiSave } from "react-icons/bi";
 import { useForm } from "react-hook-form";
@@ -21,6 +22,7 @@ import {
 
 function Preferences() {
   const toast = useToast();
+  const { colorMode } = useColorMode();
   const { data: scopeData } = useSubscriptionScopes();
   const { update, isLoading: isLoadingUpdate } = useUpdateSubscription();
 
@@ -59,8 +61,8 @@ function Preferences() {
   }, [scopeData, setValue]);
 
   return (
-    <AccordionItem>
-      <AccordionButton>
+    <AccordionItem borderColor={colorMode === "dark" ? "gray.700" : "gray.200"}>
+      <AccordionButton py="4">
         <Heading as="span" fontSize="md" flex="1" textAlign="left">
           Preferences
         </Heading>

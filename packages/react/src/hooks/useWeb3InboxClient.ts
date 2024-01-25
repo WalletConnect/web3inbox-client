@@ -24,17 +24,17 @@ export const useWeb3InboxClient = (): Web3InboxClientReturn => {
     }
   }, [isReady]);
 
-  if (isReady && client) {
+  if (!isReady || !client) {
     return {
-      data: client,
-      isLoading: false,
+      data: null,
+      isLoading: true,
       error: null,
-    } as SuccessOf<Web3InboxClientReturn>;
+    } as LoadingOf<Web3InboxClientReturn>;
   }
 
   return {
-    data: null,
-    isLoading: true,
+    data: client,
+    isLoading: false,
     error: null,
-  } as LoadingOf<Web3InboxClientReturn>;
+  } as SuccessOf<Web3InboxClientReturn>;
 };
