@@ -75,7 +75,7 @@ export const useWeb3InboxAccount = (
   }
 
   return {
-    data: account,
+    data,
     identityKey,
     isRegistered,
     error,
