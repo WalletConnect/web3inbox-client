@@ -6,17 +6,14 @@ import {
   AccordionPanel,
   Code,
 } from "@chakra-ui/react";
-import {
-  useManageSubscription,
-  useWeb3InboxClient,
-} from "@web3inbox/widget-react";
+import { useSubscription, useWeb3InboxClient } from "@web3inbox/widget-react";
 import React from "react";
 
 function Subscription() {
   const { data: w3iClient } = useWeb3InboxClient();
-  const { data } = useManageSubscription();
+  const { data } = useSubscription();
 
-  if (!w3iClient || !data?.subscription) {
+  if (!w3iClient || !data) {
     return null;
   }
 
@@ -40,7 +37,7 @@ function Subscription() {
           }}
         >
           <pre style={{ overflow: "scroll" }}>
-            {JSON.stringify(data?.subscription, null, 2)}
+            {JSON.stringify(data, null, 2)}
           </pre>
         </Code>
       </AccordionPanel>

@@ -1,0 +1,73 @@
+import { Web3InboxClient } from "@web3inbox/core";
+import { useState } from "react";
+import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
+import { useWeb3InboxClient } from "./useWeb3InboxClient";
+import { useClientState } from "../utils/snapshots";
+
+type UnregisterReturnType = Awaited<ReturnType<Web3InboxClient["unregister"]>>;
+type UnregisterData = boolean;
+type UseUnregisterReturn = HooksReturn<
+  boolean,
+  { unregister: (onSign: (m: string) => Promise<string>) => Promise<void> }
+>;
+
+export const useUnregister = (): UseUnregisterReturn => {
+  const { account } = useClientState();
+  const { data: w3iClient } = useWeb3InboxClient();
+
+  const [data, setData] = useState<UnregisterData>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const unregister = async () => {
+    setError(null);
+    setIsLoading(true);
+
+    return new Promise<UnregisterReturnType>(async (resolve, reject) => {
+      if (!account) {
+        const err = new Error("Account not set, cannot prepare registration");
+        setError(err.message);
+        return reject(err);
+      }
+
+      if (!w3iClient) {
+        const err = new Error(
+          "Web3InboxClient is not ready, cannot prepare registration"
+        );
+        setError(err.message);
+        return reject(err);
+      }
+
+      return await w3iClient
+        .unregister({ account })
+        .then((res) => {
+          setData(true);
+          resolve(res);
+        })
+        .catch((e) => {
+          setData(false);
+          setError(e?.message ?? "Failed to unregister");
+          reject(e);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    });
+  };
+
+  if (isLoading) {
+    return {
+      data: null,
+      isLoading,
+      error,
+      unregister,
+    } as LoadingOf<UseUnregisterReturn>;
+  }
+
+  return {
+    data,
+    error: null,
+    isLoading: false,
+    unregister,
+  } as SuccessOf<UseUnregisterReturn>;
+};

@@ -13,8 +13,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import {
-  useManageSubscription,
-  useW3iAccount,
+  useRegister,
+  useSubscribe,
+  useSubscription,
+  useUnregister,
+  useUnsubscribe,
+  useWeb3InboxAccount,
   useWeb3InboxClient,
 } from "@web3inbox/widget-react";
 import {
@@ -26,29 +30,26 @@ import {
 import { FaBell, FaBellSlash, FaPause, FaPlay } from "react-icons/fa";
 import { BsSendFill } from "react-icons/bs";
 import useSendNotification from "../utils/useSendNotification";
-import { useInterval } from "usehooks-ts";
 import Preferences from "../components/Preferences";
 import Messages from "../components/Messages";
 import Subscription from "../components/Subscription";
 import Subscribers from "../components/Subscribers";
 import { sendNotification } from "../utils/fetchNotify";
+import { usePrepareRegistration } from "@web3inbox/widget-react";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
   const { data: w3iClient, isLoading: w3iClientIsLoading } =
     useWeb3InboxClient();
-  const {
-    data: w3iAccountData,
-    register,
-    unregister,
-    setAccount,
-    prepareRegistration,
-  } = useW3iAccount(address);
-  const {
-    data: subscriptionData,
-    subscribe,
-    unsubscribe,
-  } = useManageSubscription();
+  const { isRegistered, setAccount } = useWeb3InboxAccount(address);
+  const { prepareRegistration } = usePrepareRegistration();
+  const { register, isLoading: isLoadingRegister } = useRegister();
+  const { unregister, isLoading: isLoadingUnregister } = useUnregister();
+  const { data: subscriptionData } = useSubscription();
+  const { subscribe, isLoading: isLoadingSubscribe } = useSubscribe();
+  const { unsubscribe, isLoading: isLoadingUnsubscribe } = useUnsubscribe();
+
+  const isSubscribed = Boolean(subscriptionData);
 
   const { signMessageAsync } = useSignMessage();
   const wagmiPublicClient = usePublicClient();
@@ -79,7 +80,7 @@ const Home: NextPage = () => {
   // handleSendNotification will send a notification to the current user and includes error handling.
   // If you don't want to use this hook and want more flexibility, you can use sendNotification.
   const handleTestNotification = async () => {
-    if (subscriptionData?.isSubscribed) {
+    if (isSubscribed) {
       handleSendNotification({
         title: "GM Hacker",
         body: "Hack it until you make it!",
@@ -94,7 +95,7 @@ const Home: NextPage = () => {
   // Example of how to send a notification based on some "automation".
   // sendNotification will make a fetch request to /api/notify
   const handleBlockNotification = async () => {
-    if (subscriptionData?.isSubscribed && isBlockNotificationEnabled) {
+    if (isSubscribed && isBlockNotificationEnabled) {
       const blockNumber = await wagmiPublicClient.getBlockNumber();
       if (lastBlock !== blockNumber.toString()) {
         setLastBlock(blockNumber.toString());
@@ -170,7 +171,7 @@ const Home: NextPage = () => {
           </Button>
         ) : (
           <React.Fragment>
-            {subscriptionData?.isSubscribed && w3iAccountData?.isRegistered ? (
+            {isSubscribed && isRegistered ? (
               <Flex flexDirection={"column"} alignItems="center" gap={4}>
                 <Button
                   leftIcon={<BsSendFill />}
@@ -203,7 +204,7 @@ const Home: NextPage = () => {
                   variant="outline"
                   isDisabled={!address}
                   colorScheme="red"
-                  isLoading={subscriptionData.isUnsubscribing}
+                  isLoading={isLoadingUnsubscribe}
                   loadingText="Unsubscribing..."
                   rounded="full"
                 >
@@ -216,14 +217,14 @@ const Home: NextPage = () => {
                   rounded="full"
                   w="fit-content"
                   alignSelf="center"
-                  isLoading={w3iAccountData?.isUnregistering}
+                  isLoading={isLoadingUnregister}
                   loadingText="Unregistering..."
                   isDisabled={!Boolean(address)}
                 >
                   Unregister
                 </Button>
               </Flex>
-            ) : w3iAccountData?.isRegistered ? (
+            ) : isRegistered ? (
               <React.Fragment>
                 <Tooltip
                   label={
@@ -241,7 +242,7 @@ const Home: NextPage = () => {
                     variant="outline"
                     w="fit-content"
                     alignSelf="center"
-                    isLoading={subscriptionData?.isSubscribing}
+                    isLoading={isLoadingSubscribe}
                     loadingText="Subscribing..."
                     isDisabled={!Boolean(address)}
                   >
@@ -266,7 +267,7 @@ const Home: NextPage = () => {
                   variant="outline"
                   w="fit-content"
                   alignSelf="center"
-                  isLoading={w3iAccountData?.isRegistering}
+                  isLoading={isLoadingRegister}
                   loadingText="Registering..."
                 >
                   Register
@@ -275,7 +276,7 @@ const Home: NextPage = () => {
             )}
           </React.Fragment>
         )}
-        {subscriptionData?.isSubscribed && (
+        {isSubscribed && (
           <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
             <Subscription />
             <Messages />

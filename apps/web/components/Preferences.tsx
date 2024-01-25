@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -14,23 +14,25 @@ import {
 } from "@chakra-ui/react";
 import { BiSave } from "react-icons/bi";
 import { useForm } from "react-hook-form";
-import { useSubscriptionScopes } from "@web3inbox/widget-react";
+import {
+  useSubscriptionScopes,
+  useUpdateSubscription,
+} from "@web3inbox/widget-react";
 
 function Preferences() {
   const toast = useToast();
-
-  const { data: scopeData, updateScopes } = useSubscriptionScopes();
+  const { data: scopeData } = useSubscriptionScopes();
+  const { update, isLoading: isLoadingUpdate } = useUpdateSubscription();
 
   const { register, setValue, handleSubmit } = useForm();
-  const [isSavingPreferences, setIsSavingPreferences] = useState(false);
 
   const onSubmitPreferences = handleSubmit(async (formData) => {
-    setIsSavingPreferences(true);
     const enabledScopes = Object.entries(formData)
       .filter(([key, isEnabled]) => isEnabled)
       .map(([key]) => key);
+
     try {
-      const isUpdated = await updateScopes(enabledScopes);
+      const isUpdated = await update(enabledScopes);
 
       if (isUpdated) {
         toast({
@@ -45,14 +47,12 @@ function Preferences() {
         status: "error",
         variant: "subtle",
       });
-    } finally {
-      setIsSavingPreferences(false);
     }
   });
 
   // Set default values of selected preferences
   useEffect(() => {
-    Object.entries(scopeData?.scopes ?? {}).forEach(([scopeKey, scope]) => {
+    Object.entries(scopeData ?? {}).forEach(([scopeKey, scope]) => {
       const s: any = scope;
       setValue(scopeKey, s.enabled);
     });
@@ -68,7 +68,7 @@ function Preferences() {
       </AccordionButton>
       <AccordionPanel pb={4} display="flex" flexDir="column">
         <VStack as="form" onSubmit={onSubmitPreferences}>
-          {Object.entries(scopeData?.scopes ?? {})?.map(([scopeKey, scope]) => {
+          {Object.entries(scopeData ?? {})?.map(([scopeKey, scope]) => {
             return (
               <FormControl
                 key={scopeKey}
@@ -76,7 +76,7 @@ function Preferences() {
                 justifyContent="space-between"
                 gap={4}
               >
-                <FormLabel htmlFor={scopeKey}>{scope.name}</FormLabel>
+                <FormLabel htmlFor={scopeKey}>{scope?.name}</FormLabel>
                 <Switch
                   id={scopeKey}
                   defaultChecked={(scope as any).enabled}
@@ -92,7 +92,7 @@ function Preferences() {
             colorScheme="blue"
             type="submit"
             rounded="full"
-            isLoading={isSavingPreferences}
+            isLoading={isLoadingUpdate}
             loadingText="Saving..."
           >
             Save preferences

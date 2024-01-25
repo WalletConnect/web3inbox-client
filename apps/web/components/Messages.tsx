@@ -65,7 +65,7 @@ function Messages() {
                 </Flex>
                 <Flex w="60px" justifyContent="center">
                   <Image
-                    src={scopeData?.scopes[message.type ?? ""]?.imageUrls?.md}
+                    src={scopeData?.[message.type ?? ""]?.imageUrls?.md}
                     alt="notification image"
                     height="60px"
                     rounded="full"
