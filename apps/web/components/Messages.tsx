@@ -46,7 +46,7 @@ function Messages() {
             messageData?.notifications.map(({ id, ...message }) => (
               <Alert
                 as={Link}
-                href={message.url}
+                href={message.url ?? "#"}
                 target="_blank"
                 key={id}
                 status="info"

@@ -5,7 +5,7 @@ import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
 type NotificationsReturn = HooksReturn<
   {
-    notifications: NotifyClientTypes.NotifyMessage[];
+    notifications: NotifyClientTypes.NotifyNotification[];
     hasMore: boolean;
   },
   { nextPage: () => void },

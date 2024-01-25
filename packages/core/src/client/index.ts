@@ -8,7 +8,7 @@ import { proxy, subscribe } from "valtio";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 
 export type GetNotificationsReturn = {
-  notifications: NotifyClientTypes.NotifyMessage[];
+  notifications: NotifyClientTypes.NotifyNotification[];
   hasMore: boolean;
 };
 
@@ -495,7 +495,7 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ): Promise<{
-    notifications: NotifyClientTypes.NotifyMessage[];
+    notifications: NotifyClientTypes.NotifyNotification[];
     hasMore: boolean;
   }> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
