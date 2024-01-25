@@ -1,11 +1,20 @@
 {
   "name": "@web3inbox/core",
   "version": "0.0.25",
+  "type": "module",
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "license": "Apache-2.0",
   "scripts": {
     "build": "tsup ",
