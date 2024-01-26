@@ -1,4 +1,4 @@
-# @web3inbox/widget-react
+# @web3inbox/react
 
 ## 0.6.26
 

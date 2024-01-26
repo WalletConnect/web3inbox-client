@@ -7,7 +7,7 @@ import {
   Code,
   useColorMode,
 } from "@chakra-ui/react";
-import { useSubscription, useWeb3InboxClient } from "@web3inbox/widget-react";
+import { useSubscription, useWeb3InboxClient } from "@web3inbox/react";
 import React from "react";
 
 function Subscription() {

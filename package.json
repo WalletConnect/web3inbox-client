@@ -7,8 +7,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "web:dev": "turbo run dev --filter=gm-hackers",
-    "test": "turbo run test --filter=@web3inbox/widget-react"
+    "web:dev": "turbo run dev --filter=hooks-react-sample",
+    "test": "turbo run test --filter=@web3inbox/react"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",

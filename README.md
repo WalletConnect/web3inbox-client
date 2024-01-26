@@ -27,20 +27,4 @@ yarn changeset publish
 
 Refer to [changesets docs](https://github.com/changesets/changesets/tree/main#documentation) for more information.
 
-# Using the widget
-
-## React
-
-### Normal use case
-
-```tsx
-import { W3iWidget } from "@web3inbox/react-widget";
-import "@web3inbox/widget-react/dist/compiled.css";
-...
-
-<W3iWidget
-    account="ep155:1:0xd7..."
-    onSign={() => {}}
-    onConnect={() => {}}
-</W3iWidget>
 ```

@@ -16,7 +16,7 @@ import {
 import {
   useNotificationTypes,
   useNotifications,
-} from "@web3inbox/widget-react";
+} from "@web3inbox/react";
 import Link from "next/link";
 import React from "react";
 

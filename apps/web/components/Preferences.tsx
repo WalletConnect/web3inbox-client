@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { BiSave } from "react-icons/bi";
 import { useForm } from "react-hook-form";
-import { useNotificationTypes } from "@web3inbox/widget-react";
+import { useNotificationTypes } from "@web3inbox/react";
 
 function Preferences() {
   const toast = useToast();

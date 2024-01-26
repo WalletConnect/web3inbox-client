@@ -1,5 +1,5 @@
 {
-  "name": "@web3inbox/widget-react",
+  "name": "@web3inbox/react",
   "version": "0.6.26",
   "type": "module",
   "main": "./dist/index.cjs",

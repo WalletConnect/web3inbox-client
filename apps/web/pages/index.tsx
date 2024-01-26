@@ -22,7 +22,8 @@ import {
   useUnsubscribe,
   useWeb3InboxAccount,
   useWeb3InboxClient,
-} from "@web3inbox/widget-react";
+  usePrepareRegistration 
+} from "@web3inbox/react";
 import {
   useAccount,
   useAccountEffect,
@@ -37,7 +38,6 @@ import Messages from "../components/Messages";
 import Subscription from "../components/Subscription";
 import Subscribers from "../components/Subscribers";
 import { sendNotification } from "../utils/fetchNotify";
-import { usePrepareRegistration } from "@web3inbox/widget-react";
 import { useInterval } from "usehooks-ts";
 
 const Home: NextPage = () => {
