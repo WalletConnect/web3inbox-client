@@ -28,7 +28,6 @@ export const getAllSubscribers = async (): Promise<string[]> => {
 
   const subscribersRes = await result.json();
   const { subscribers } = subscribersRes;
-  console.log({ subscribers });
 
   return subscribers;
 };

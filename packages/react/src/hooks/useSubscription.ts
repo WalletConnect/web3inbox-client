@@ -38,7 +38,6 @@ export const useSubscription = (
 
     const stopWatching = w3iClient.watchSubscription(
       (sub) => {
-	console.log("Pulse watchSubscription", sub)
         setSubscription(sub);
       },
       account,
