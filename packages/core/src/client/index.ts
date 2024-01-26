@@ -423,7 +423,7 @@ export class Web3InboxClient {
   ) => {
     stopWatchingNotifications: () => void;
     data: GetNotificationsReturn;
-    nextPage: () => void;
+    nextPage: () => Promise<void>;
   } {
     const data = proxy<GetNotificationsReturn>({
       notifications: [],

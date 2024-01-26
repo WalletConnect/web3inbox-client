@@ -14,19 +14,19 @@ import {
   Text,
 } from "@chakra-ui/react";
 import {
+  useNotificationTypes,
   useNotifications,
-  useSubscriptionScopes,
 } from "@web3inbox/widget-react";
 import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { data: messageData } = useNotifications(3, false);
-  const { data: scopeData } = useSubscriptionScopes();
+  const { data: notifications } = useNotifications(3, false);
+  const { data: notificationTypes } = useNotificationTypes();
 
   return (
     <AccordionItem>
-      <AccordionButton>
+      <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
           Last Messages
         </Heading>
@@ -40,10 +40,10 @@ function Messages() {
           gap={2}
           position={"relative"}
         >
-          {!messageData?.notifications?.length ? (
+          {!notifications?.length ? (
             <Text>No messages yet.</Text>
           ) : (
-            messageData?.notifications.map(({ id, ...message }) => (
+            notifications.map(({ id, ...message }) => (
               <Alert
                 as={Link}
                 href={message.url ?? "#"}
@@ -65,7 +65,7 @@ function Messages() {
                 </Flex>
                 <Flex w="60px" justifyContent="center">
                   <Image
-                    src={scopeData?.scopes[message.type ?? ""].imageUrls?.md}
+                    src={notificationTypes?.[message.type ?? ""]?.imageUrls?.md}
                     alt="notification image"
                     height="60px"
                     rounded="full"

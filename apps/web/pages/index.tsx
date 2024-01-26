@@ -7,14 +7,20 @@ import {
   Button,
   Flex,
   Heading,
-  Image,
   Tooltip,
   useColorMode,
   useToast,
+  Card,
+  CardHeader,
+  CardBody,
 } from "@chakra-ui/react";
 import {
-  useManageSubscription,
-  useW3iAccount,
+  useRegister,
+  useSubscribe,
+  useSubscription,
+  useUnregister,
+  useUnsubscribe,
+  useWeb3InboxAccount,
   useWeb3InboxClient,
 } from "@web3inbox/widget-react";
 import {
@@ -26,28 +32,27 @@ import {
 import { FaBell, FaBellSlash, FaPause, FaPlay } from "react-icons/fa";
 import { BsSendFill } from "react-icons/bs";
 import useSendNotification from "../utils/useSendNotification";
-import { useInterval } from "usehooks-ts";
 import Preferences from "../components/Preferences";
 import Messages from "../components/Messages";
 import Subscription from "../components/Subscription";
 import Subscribers from "../components/Subscribers";
 import { sendNotification } from "../utils/fetchNotify";
+import { usePrepareRegistration } from "@web3inbox/widget-react";
+import { useInterval } from "usehooks-ts";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
   const { data: w3iClient, isLoading: w3iClientIsLoading } =
     useWeb3InboxClient();
-  const {
-    data: w3iAccountData,
-    register,
-    setAccount,
-    prepareRegistration,
-  } = useW3iAccount(address);
-  const {
-    data: subscriptionData,
-    subscribe,
-    unsubscribe,
-  } = useManageSubscription();
+  const { isRegistered, setAccount } = useWeb3InboxAccount(address);
+  const { prepareRegistration } = usePrepareRegistration();
+  const { register, isLoading: isLoadingRegister } = useRegister();
+  const { unregister, isLoading: isLoadingUnregister } = useUnregister();
+  const { data: subscriptionData } = useSubscription();
+  const { subscribe, isLoading: isLoadingSubscribe } = useSubscribe();
+  const { unsubscribe, isLoading: isLoadingUnsubscribe } = useUnsubscribe();
+
+  const isSubscribed = Boolean(subscriptionData);
 
   const { signMessageAsync } = useSignMessage();
   const wagmiPublicClient = usePublicClient();
@@ -63,14 +68,14 @@ const Home: NextPage = () => {
   const handleRegistration = async () => {
     try {
       const { message, registerParams } = await prepareRegistration();
-      const signature = await signMessageAsync({
-        message: message,
+      const signature = await signMessageAsync({ message: message });
+      await register({ registerParams, signature });
+    } catch (registerIdentityError: any) {
+      toast({
+        title: registerIdentityError?.message || "no message",
+        position: "top",
+        variant: "subtle",
       });
-      await register({
-        registerParams,
-        signature,
-      });
-    } catch (registerIdentityError) {
       console.error({ registerIdentityError });
     }
   };
@@ -78,7 +83,7 @@ const Home: NextPage = () => {
   // handleSendNotification will send a notification to the current user and includes error handling.
   // If you don't want to use this hook and want more flexibility, you can use sendNotification.
   const handleTestNotification = async () => {
-    if (subscriptionData?.isSubscribed) {
+    if (isSubscribed) {
       handleSendNotification({
         title: "GM Hacker",
         body: "Hack it until you make it!",
@@ -93,7 +98,7 @@ const Home: NextPage = () => {
   // Example of how to send a notification based on some "automation".
   // sendNotification will make a fetch request to /api/notify
   const handleBlockNotification = async () => {
-    if (subscriptionData?.isSubscribed && isBlockNotificationEnabled) {
+    if (isSubscribed && isBlockNotificationEnabled) {
       const blockNumber = await wagmiPublicClient.getBlockNumber();
       if (lastBlock !== blockNumber.toString()) {
         setLastBlock(blockNumber.toString());
@@ -139,20 +144,16 @@ const Home: NextPage = () => {
   }, [w3iClient, address]);
 
   return (
-    <Flex w="full" flexDirection={"column"} maxW="700px">
-      <Image
-        aria-label="WalletConnect"
-        src={
-          colorMode === "dark"
-            ? "/WalletConnect-white.svg"
-            : "/WalletConnect-black.svg"
-        }
-      />
-      <Heading alignSelf={"center"} textAlign={"center"} mb={6}>
-        Web3Inbox hooks - test environment
-      </Heading>
+    <Card
+      marginTop={20}
+      width={"100%"}
+      background={colorMode === "dark" ? "gray.800" : "gray.100"}
+    >
+      <CardHeader>
+        <Heading size="md">Web3Inbox Interactions</Heading>
+      </CardHeader>
 
-      <Flex flexDirection="column" gap={4}>
+      <CardBody>
         {w3iClientIsLoading ? (
           <Button
             leftIcon={<FaBell />}
@@ -162,104 +163,136 @@ const Home: NextPage = () => {
             w="fit-content"
             alignSelf="center"
             isLoading={true}
+            loadingText="Client loading..."
             isDisabled={true}
-          ></Button>
-        ) : subscriptionData?.isSubscribed ? (
-          <Flex flexDirection={"column"} alignItems="center" gap={4}>
-            <Button
-              leftIcon={<BsSendFill />}
-              variant="outline"
-              onClick={handleTestNotification}
-              colorScheme="purple"
-              rounded="full"
-              isLoading={isSending}
-              loadingText="Sending..."
-            >
-              Send test notification
-            </Button>
-            <Button
-              leftIcon={isBlockNotificationEnabled ? <FaPause /> : <FaPlay />}
-              variant="outline"
-              onClick={() =>
-                setIsBlockNotificationEnabled((isEnabled) => !isEnabled)
-              }
-              colorScheme={isBlockNotificationEnabled ? "orange" : "blue"}
-              rounded="full"
-            >
-              {isBlockNotificationEnabled ? "Pause" : "Resume"} block
-              notifications
-            </Button>
-            <Button
-              leftIcon={<FaBellSlash />}
-              onClick={unsubscribe}
-              variant="outline"
-              isDisabled={!address}
-              colorScheme="red"
-              isLoading={subscriptionData.isUnsubscribing}
-              loadingText="Unsubscribing..."
-              rounded="full"
-            >
-              Unsubscribe
-            </Button>
-          </Flex>
-        ) : w3iAccountData?.isRegistered ? (
-          <Tooltip
-            label={
-              !Boolean(address)
-                ? "Connect your wallet first."
-                : "Register your account."
-            }
-            hidden={Boolean(address)}
           >
-            <Button
-              leftIcon={<FaBell />}
-              onClick={subscribe}
-              colorScheme="cyan"
-              rounded="full"
-              variant="outline"
-              w="fit-content"
-              alignSelf="center"
-              isLoading={subscriptionData?.isSubscribing}
-              loadingText="Subscribing..."
-              isDisabled={!Boolean(address)}
-            >
-              Subscribe
-            </Button>
-          </Tooltip>
+            Client loading...
+          </Button>
         ) : (
-          <Tooltip
-            label={
-              !Boolean(address)
-                ? "Connect your wallet first."
-                : "Register your account."
-            }
-            hidden={Boolean(address)}
-          >
-            <Button
-              leftIcon={<FaBell />}
-              onClick={handleRegistration}
-              colorScheme="cyan"
-              rounded="full"
-              variant="outline"
-              w="fit-content"
-              alignSelf="center"
-              isLoading={w3iAccountData?.isRegistering}
-              loadingText="Registering..."
-            >
-              Register
-            </Button>
-          </Tooltip>
+          <React.Fragment>
+            {isSubscribed && isRegistered ? (
+              <Flex flexWrap={"wrap"} alignItems="center" gap={4}>
+                <Button
+                  leftIcon={<BsSendFill />}
+                  variant="outline"
+                  onClick={handleTestNotification}
+                  colorScheme="purple"
+                  rounded="full"
+                  isLoading={isSending}
+                  loadingText="Sending..."
+                >
+                  Send test notification
+                </Button>
+                <Button
+                  leftIcon={
+                    isBlockNotificationEnabled ? <FaPause /> : <FaPlay />
+                  }
+                  variant="outline"
+                  onClick={() =>
+                    setIsBlockNotificationEnabled((isEnabled) => !isEnabled)
+                  }
+                  colorScheme={isBlockNotificationEnabled ? "orange" : "blue"}
+                  rounded="full"
+                >
+                  {isBlockNotificationEnabled ? "Pause" : "Resume"} block
+                  notifications
+                </Button>
+                <Button
+                  leftIcon={<FaBellSlash />}
+                  onClick={unsubscribe}
+                  variant="outline"
+                  isDisabled={!address}
+                  colorScheme="red"
+                  isLoading={isLoadingUnsubscribe}
+                  loadingText="Unsubscribing..."
+                  rounded="full"
+                >
+                  Unsubscribe
+                </Button>
+                <Button
+                  onClick={unregister}
+                  variant="outline"
+                  colorScheme="red"
+                  rounded="full"
+                  w="fit-content"
+                  alignSelf="center"
+                  isLoading={isLoadingUnregister}
+                  loadingText="Unregistering..."
+                  isDisabled={!Boolean(address)}
+                >
+                  Unregister
+                </Button>
+              </Flex>
+            ) : isRegistered ? (
+              <React.Fragment>
+                <Tooltip
+                  label={
+                    !Boolean(address)
+                      ? "Connect your wallet first."
+                      : "Register your account."
+                  }
+                  hidden={Boolean(address)}
+                >
+                  <Button
+                    leftIcon={<FaBell />}
+                    onClick={subscribe}
+                    colorScheme="cyan"
+                    rounded="full"
+                    variant="outline"
+                    w="fit-content"
+                    alignSelf="center"
+                    isLoading={isLoadingSubscribe}
+                    loadingText="Subscribing..."
+                    isDisabled={!Boolean(address)}
+                  >
+                    Subscribe
+                  </Button>
+                </Tooltip>
+              </React.Fragment>
+            ) : (
+              <Tooltip
+                label={
+                  !Boolean(address)
+                    ? "Connect your wallet first."
+                    : "Register your account."
+                }
+                hidden={Boolean(address)}
+              >
+                <Button
+                  leftIcon={<FaBell />}
+                  onClick={handleRegistration}
+                  colorScheme="cyan"
+                  rounded="full"
+                  variant="outline"
+                  w="fit-content"
+                  alignSelf="center"
+                  isLoading={isLoadingRegister}
+                  loadingText="Registering..."
+                >
+                  Register
+                </Button>
+              </Tooltip>
+            )}
+          </React.Fragment>
         )}
-        {subscriptionData?.isSubscribed && (
-          <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
+        {isSubscribed && (
+          <Accordion
+            borderRadius={2}
+            backgroundColor={colorMode === "dark" ? "gray.800" : "gray.100"}
+            defaultIndex={[1]}
+            allowToggle
+            mt={10}
+            rounded="xl"
+            borderColor={colorMode === "dark" ? "gray.700" : "gray.200"}
+          >
             <Subscription />
             <Messages />
             <Preferences />
             <Subscribers />
           </Accordion>
         )}
-      </Flex>
-    </Flex>
+      </CardBody>
+    </Card>
   );
 };
 

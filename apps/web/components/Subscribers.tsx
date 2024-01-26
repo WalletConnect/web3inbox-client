@@ -8,6 +8,7 @@ import {
   Box,
   Heading,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { BsPersonCircle } from "react-icons/bs";
@@ -15,6 +16,7 @@ import { getAllSubscribers } from "../utils/fetchNotify";
 import Link from "next/link";
 
 function Subscribers() {
+  const { colorMode } = useColorMode();
   const [subscribers, setSubscribers] = useState<string[]>();
 
   const getSubscribers = useCallback(async () => {
@@ -31,8 +33,11 @@ function Subscribers() {
   }, [getSubscribers]);
 
   return (
-    <AccordionItem>
-      <AccordionButton>
+    <AccordionItem
+      borderColor={colorMode === "dark" ? "gray.700" : "gray.200"}
+      borderBottom={"none"}
+    >
+      <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
           ADMIN - All subscribers
         </Heading>

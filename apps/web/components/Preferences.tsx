@@ -11,26 +11,29 @@ import {
   Switch,
   Button,
   useToast,
+  useColorMode,
 } from "@chakra-ui/react";
 import { BiSave } from "react-icons/bi";
 import { useForm } from "react-hook-form";
-import { useSubscriptionScopes } from "@web3inbox/widget-react";
+import { useNotificationTypes } from "@web3inbox/widget-react";
 
 function Preferences() {
   const toast = useToast();
-
-  const { data: scopeData, updateScopes } = useSubscriptionScopes();
+  const { colorMode } = useColorMode();
+  const { data: notificationTypes, update } = useNotificationTypes();
+  const [loading, setLoading] = useState(false);
 
   const { register, setValue, handleSubmit } = useForm();
-  const [isSavingPreferences, setIsSavingPreferences] = useState(false);
 
   const onSubmitPreferences = handleSubmit(async (formData) => {
-    setIsSavingPreferences(true);
+    setLoading(true);
     const enabledScopes = Object.entries(formData)
       .filter(([key, isEnabled]) => isEnabled)
       .map(([key]) => key);
+
     try {
-      const isUpdated = await updateScopes(enabledScopes);
+      const isUpdated = await update(enabledScopes);
+
       if (isUpdated) {
         toast({
           title: "Preferences updated",
@@ -38,28 +41,28 @@ function Preferences() {
           variant: "subtle",
         });
       }
-    } catch (error) {
+      setLoading(false);
+    } catch (error: any) {
+      setLoading(false);
       toast({
-        title: "Failed to update preferences",
+        title: error?.message as string,
         status: "error",
         variant: "subtle",
       });
-    } finally {
-      setIsSavingPreferences(false);
     }
   });
 
   // Set default values of selected preferences
   useEffect(() => {
-    Object.entries(scopeData?.scopes ?? {}).forEach(([scopeKey, scope]) => {
+    Object.entries(notificationTypes ?? {}).forEach(([scopeKey, scope]) => {
       const s: any = scope;
       setValue(scopeKey, s.enabled);
     });
-  }, [scopeData, setValue]);
+  }, [notificationTypes, setValue]);
 
   return (
-    <AccordionItem>
-      <AccordionButton>
+    <AccordionItem borderColor={colorMode === "dark" ? "gray.700" : "gray.200"}>
+      <AccordionButton py="4">
         <Heading as="span" fontSize="md" flex="1" textAlign="left">
           Preferences
         </Heading>
@@ -67,7 +70,7 @@ function Preferences() {
       </AccordionButton>
       <AccordionPanel pb={4} display="flex" flexDir="column">
         <VStack as="form" onSubmit={onSubmitPreferences}>
-          {Object.entries(scopeData?.scopes ?? {})?.map(([scopeKey, scope]) => {
+          {Object.entries(notificationTypes ?? {})?.map(([scopeKey, scope]) => {
             return (
               <FormControl
                 key={scopeKey}
@@ -75,7 +78,7 @@ function Preferences() {
                 justifyContent="space-between"
                 gap={4}
               >
-                <FormLabel htmlFor={scopeKey}>{scope.name}</FormLabel>
+                <FormLabel htmlFor={scopeKey}>{scope?.name}</FormLabel>
                 <Switch
                   id={scopeKey}
                   defaultChecked={(scope as any).enabled}
@@ -91,7 +94,7 @@ function Preferences() {
             colorScheme="blue"
             type="submit"
             rounded="full"
-            isLoading={isSavingPreferences}
+            isLoading={loading}
             loadingText="Saving..."
           >
             Save preferences
