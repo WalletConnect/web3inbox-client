@@ -49,27 +49,29 @@ export class Web3InboxClient {
     }
   }
 
-  private updateInternalSubscriptions(): void {
-    Web3InboxClient.subscriptionState.subscriptions =
-      this.notifyClient.subscriptions.getAll();
-  }
 
   protected attachEventListeners(): void {
-    this.notifyClient.on("notify_delete", this.updateInternalSubscriptions);
-    this.notifyClient.on("notify_subscription", this.updateInternalSubscriptions);
-    this.notifyClient.on("notify_update", this.updateInternalSubscriptions);
+    const updateInternalSubscriptions = () => {
+      Web3InboxClient.subscriptionState.subscriptions =
+        this.notifyClient.subscriptions.getAll();
+    }
+
+    this.notifyClient.on("notify_delete", updateInternalSubscriptions);
+    this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
+    this.notifyClient.on("notify_update", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
-      this.updateInternalSubscriptions
+      updateInternalSubscriptions
     );
 
     subscribe(Web3InboxClient.clientState, () => {
-      this.updateInternalSubscriptions();
+      console.log("ClientState updated, pulsing")
+      updateInternalSubscriptions();
     })
 
     const clientReadyInterval = setInterval(() => {
       if (this.notifyClient.hasFinishedInitialLoad()) {
-        this.updateInternalSubscriptions();
+        updateInternalSubscriptions();
         clearInterval(clientReadyInterval);
       }
     }, 100);
