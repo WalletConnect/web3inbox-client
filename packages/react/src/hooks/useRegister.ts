@@ -58,8 +58,8 @@ export const useRegister = (): UseRegisterReturn => {
 	  // If failed because of a stale identity, unregister and retry.
 	  if(e?.message.includes("stale identity")) {
 	    const account = getAccountFromDidPkh(params.registerParams.cacaoPayload.iss)
-	    w3iClient.unregister({account}).then(() => {
-	      register(params).then(resolve)
+	    return w3iClient.unregister({account}).then(() => {
+	      w3iClient.register(params).then(resolve)
 	    })
 	  }
 	  else {
