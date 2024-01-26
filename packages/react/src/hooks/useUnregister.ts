@@ -11,6 +11,9 @@ type UseUnregisterReturn = HooksReturn<
   { unregister: () => Promise<void> }
 >;
 
+/*
+ * useUnregister manages registration state and allows user to unregister
+ */
 export const useUnregister = (): UseUnregisterReturn => {
   const { account } = useClientState();
   const { data: w3iClient } = useWeb3InboxClient();

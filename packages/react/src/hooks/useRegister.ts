@@ -3,6 +3,7 @@ import { useState } from "react";
 import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { useClientState } from "../utils/snapshots";
+import { getAccountFromDidPkh } from "../utils/account";
 
 type RegisterReturnType = Awaited<ReturnType<Web3InboxClient["register"]>>;
 type RegisterData = RegisterReturnType | null;
@@ -15,6 +16,9 @@ type UseRegisterReturn = HooksReturn<
   }
 >;
 
+/*
+ * useRegister manages registration state and allows user to register
+ */
 export const useRegister = (): UseRegisterReturn => {
   const { account } = useClientState();
   const { data: w3iClient } = useWeb3InboxClient();
@@ -51,9 +55,18 @@ export const useRegister = (): UseRegisterReturn => {
           resolve(res);
         })
         .catch((e) => {
-          setData(null);
-          setError(e?.message ?? "Failed to subscribe");
-          reject(e);
+	  // If failed because of a stale identity, unregister and retry.
+	  if(e?.message.includes("stale identity")) {
+	    const account = getAccountFromDidPkh(params.registerParams.cacaoPayload.iss)
+	    return w3iClient.unregister({account}).then(() => {
+	      w3iClient.register(params).then(resolve)
+	    })
+	  }
+	  else {
+            setData(null);
+            setError(e?.message ?? "Failed to subscribe");
+            reject(e);
+	  }
         })
         .finally(() => {
           setIsLoading(false);

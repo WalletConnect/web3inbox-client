@@ -17,8 +17,10 @@ type UseNotificationsReturn = HooksReturn<
 /**
  * Hook to watch notifications of a subscription, and fetch more notifications
  *
- * @param {string} [account] - Account to get subscriptions messages from, defaulted to current account
- * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
+ * @param {number} notificationsPerPage - How many notifications to fetch per call
+ * @param {boolean} [isInfiniteScroll] - Whether or not to keep old notifications in the return array or just the current page
+ * @param {string} [account] - Account to get subscriptions notifications from, defaulted to current account
+ * @param {string} [domain] - Domain to get subscription notifications from, defaulted to one set in init.
  */
 export const useNotifications = (
   notificationsPerPage: number,

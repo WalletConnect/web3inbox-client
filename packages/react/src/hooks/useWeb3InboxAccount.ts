@@ -13,6 +13,11 @@ type UseWeb3InboxAccountReturn = HooksReturn<
   }
 >;
 
+/*
+ * useWeb3InboxClient manages the account used within Web3Inbox.
+ * This account is used as a default for other functions, including register.
+ * @param {string} [initialAccount] - Account to set, can be used alternatively to setAccount
+ */
 export const useWeb3InboxAccount = (
   initialAccount?: string
 ): UseWeb3InboxAccountReturn => {

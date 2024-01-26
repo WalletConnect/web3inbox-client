@@ -17,6 +17,12 @@ type UseNotificationTypesReturn = HooksReturn<
   { update: (scope: string[]) => Promise<boolean> }
 >;
 
+/**
+ * Hook to get notification types of a subscription
+ *
+ * @param {string} [account] - Account to get subscription notification from , defaulted to current account
+ * @param {string} [domain] - Domain to get subscription notifications from, defaulted to one set in init.
+ */
 export const useNotificationTypes = (
   account?: string,
   domain?: string
