@@ -1,4 +1,4 @@
-# Web3Inbox Widget
+# Web3Inbox Client
 
 Adds a convenient widget to any dapp that wants to use the functionalities of push and chat without
 any of the hassle.
