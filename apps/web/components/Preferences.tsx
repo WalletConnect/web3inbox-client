@@ -15,16 +15,16 @@ import {
 } from "@chakra-ui/react";
 import { BiSave } from "react-icons/bi";
 import { useForm } from "react-hook-form";
-import {
-  useSubscriptionScopes,
-  useUpdateSubscription,
-} from "@web3inbox/widget-react";
+import { useNotificationTypes } from "@web3inbox/widget-react";
 
 function Preferences() {
   const toast = useToast();
   const { colorMode } = useColorMode();
-  const { data: scopeData } = useSubscriptionScopes();
-  const { update, isLoading: isLoadingUpdate } = useUpdateSubscription();
+  const {
+    data: notificationTypes,
+    update,
+    updateIsLoading,
+  } = useNotificationTypes();
 
   const { register, setValue, handleSubmit } = useForm();
 
@@ -54,11 +54,11 @@ function Preferences() {
 
   // Set default values of selected preferences
   useEffect(() => {
-    Object.entries(scopeData ?? {}).forEach(([scopeKey, scope]) => {
+    Object.entries(notificationTypes ?? {}).forEach(([scopeKey, scope]) => {
       const s: any = scope;
       setValue(scopeKey, s.enabled);
     });
-  }, [scopeData, setValue]);
+  }, [notificationTypes, setValue]);
 
   return (
     <AccordionItem borderColor={colorMode === "dark" ? "gray.700" : "gray.200"}>
@@ -70,7 +70,7 @@ function Preferences() {
       </AccordionButton>
       <AccordionPanel pb={4} display="flex" flexDir="column">
         <VStack as="form" onSubmit={onSubmitPreferences}>
-          {Object.entries(scopeData ?? {})?.map(([scopeKey, scope]) => {
+          {Object.entries(notificationTypes ?? {})?.map(([scopeKey, scope]) => {
             return (
               <FormControl
                 key={scopeKey}
@@ -94,7 +94,7 @@ function Preferences() {
             colorScheme="blue"
             type="submit"
             rounded="full"
-            isLoading={isLoadingUpdate}
+            isLoading={updateIsLoading}
             loadingText="Saving..."
           >
             Save preferences

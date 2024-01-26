@@ -12,18 +12,17 @@ import {
   Heading,
   Image,
   Text,
-  useColorMode,
 } from "@chakra-ui/react";
 import {
+  useNotificationTypes,
   useNotifications,
-  useSubscriptionScopes,
 } from "@web3inbox/widget-react";
 import Link from "next/link";
 import React from "react";
 
 function Messages() {
   const { data: messageData } = useNotifications(3, false);
-  const { data: scopeData } = useSubscriptionScopes();
+  const { data: notificationTypes } = useNotificationTypes();
 
   return (
     <AccordionItem>
@@ -66,7 +65,7 @@ function Messages() {
                 </Flex>
                 <Flex w="60px" justifyContent="center">
                   <Image
-                    src={scopeData?.[message.type ?? ""]?.imageUrls?.md}
+                    src={notificationTypes?.[message.type ?? ""]?.imageUrls?.md}
                     alt="notification image"
                     height="60px"
                     rounded="full"
