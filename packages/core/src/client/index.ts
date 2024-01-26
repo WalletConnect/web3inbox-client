@@ -5,6 +5,12 @@ import {
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
 import { proxy, subscribe } from "valtio";
+import { createPromiseWithTimeout } from "../utils/promiseTimeout";
+
+export type GetNotificationsReturn = {
+  notifications: NotifyClientTypes.NotifyNotification[];
+  hasMore: boolean;
+};
 
 interface IClientState {
   isReady: boolean;
@@ -13,15 +19,13 @@ interface IClientState {
   // state is duplicated to guard against future data races
   registration?: { account: string; identity: string };
 }
+
 export class Web3InboxClient {
+  public static maxTimeout: number = 10_000;
   public static instance: Web3InboxClient | null = null;
   public static subscriptionState: {
     subscriptions: NotifyClientTypes.NotifySubscription[];
-    messages: NotifyClientTypes.NotifyMessageRecord[];
   } = proxy({ subscriptions: [], messages: [] });
-  public static view: { isOpen: boolean } = proxy({
-    isOpen: false,
-  });
   public static clientState = proxy<IClientState>({
     isReady: false,
     initting: false,
@@ -32,17 +36,8 @@ export class Web3InboxClient {
   public constructor(
     private notifyClient: NotifyClient,
     private domain: string,
-    private isLimited: boolean
+    private allApps: boolean
   ) {}
-
-  //TODO: Make more efficient - this is very slow.
-  private static updateMessages() {
-    Web3InboxClient.subscriptionState.messages =
-      Web3InboxClient.instance?.notifyClient.messages
-        .getAll()
-        .filter((m) => m)
-        .flatMap((m) => Object.values(m.messages)) ?? [];
-  }
 
   private getRequiredAccountParam(account?: string) {
     if (account) {
@@ -55,18 +50,27 @@ export class Web3InboxClient {
   }
 
   protected attachEventListeners(): void {
+    console.log(">>> attachEventListener");
     const updateInternalSubscriptions = () => {
+      console.log(">>> updating internal subscriptions");
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
-      Web3InboxClient.updateMessages();
     };
 
-    this.notifyClient.on("notify_message", Web3InboxClient.updateMessages);
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
+    this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
+    this.notifyClient.on("notify_update", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
       updateInternalSubscriptions
     );
+
+    const clientReadyInterval = setInterval(() => {
+      if (this.notifyClient.hasFinishedInitialLoad()) {
+        updateInternalSubscriptions();
+        clearInterval(clientReadyInterval);
+      }
+    }, 100);
   }
 
   /**
@@ -95,6 +99,8 @@ export class Web3InboxClient {
    * @param cb - Callback that gets called when isReady updates
    */
   public static watchIsReady(cb: (isReady: boolean) => void) {
+    cb(Web3InboxClient.clientState.isReady);
+
     return subscribe(Web3InboxClient.clientState, () => {
       cb(Web3InboxClient.clientState.isReady);
     });
@@ -106,9 +112,12 @@ export class Web3InboxClient {
    * @param {string} account
    */
   public async setAccount(account: string) {
+    console.log(">>> Setting account: ", account);
+    const isRegistered = await this.getAccountIsRegistered(account);
+    console.log(">>> isRegistered: ", isRegistered);
     // Account setting is duplicated to ensure it only gets updated once
     // identity state is confirmed
-    if (await this.getAccountIsRegistered(account)) {
+    if (isRegistered) {
       const identity = await this.notifyClient.identityKeys.getIdentity({
         account,
       });
@@ -135,11 +144,11 @@ export class Web3InboxClient {
    *
    * @param cb - Callback that gets called when account updates
    */
-  public watchAccount(cb: (acc: string) => void) {
-    const acc = Web3InboxClient.clientState.account;
-    if (!acc) return;
+  public watchAccount(cb: (acc: string | undefined) => void) {
+    cb(Web3InboxClient.clientState.account);
+
     return subscribe(Web3InboxClient.clientState, () => {
-      return cb(acc);
+      return cb(Web3InboxClient.clientState.account);
     });
   }
 
@@ -152,10 +161,11 @@ export class Web3InboxClient {
    */
   public async getAccountIsRegistered(account: string): Promise<boolean> {
     try {
-      const identity = await this.notifyClient.identityKeys.getIdentity({
+      return this.notifyClient.isRegistered({
         account,
+        allApps: this.allApps,
+        domain: this.domain,
       });
-      return Boolean(identity);
     } catch (e) {
       return false;
     }
@@ -171,8 +181,10 @@ export class Web3InboxClient {
     account: string,
     cb: (isRegistered: boolean) => void
   ) {
+    this.getAccountIsRegistered(account).then(cb);
+
     return subscribe(Web3InboxClient.clientState, async () => {
-      return cb(await this.getAccountIsRegistered(account));
+      cb(await this.getAccountIsRegistered(account));
     });
   }
 
@@ -182,14 +194,14 @@ export class Web3InboxClient {
    * @param {Object} params - the params needed to init the client
    * @param {string} params.projectId - your WalletConnect Cloud project ID
    * @param {string} params.domain - The domain of the default dapp to target for functions.
-   * @param {boolean} params.isLimited - All account's subscriptions accessable if explicitly set to false. Only param.domain's otherwise
+   * @param {boolean} params.allApps - All account's subscriptions accessable if explicitly set to true. Only param.domain's otherwise
    *
    * @returns {Object} Web3InboxClient
    */
   public static async init(params: {
     projectId: string;
     domain?: string;
-    isLimited?: boolean
+    allApps?: boolean;
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -223,7 +235,7 @@ export class Web3InboxClient {
       notifyClient,
       params.domain ?? window.location.host,
       // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
-      params.isLimited ?? true
+      params.allApps ?? false
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -232,6 +244,7 @@ export class Web3InboxClient {
     Web3InboxClient.instance.attachEventListeners();
 
     Web3InboxClient.clientState.initting = false;
+
     Web3InboxClient.clientState.isReady = true;
 
     return Web3InboxClient.instance;
@@ -252,18 +265,35 @@ export class Web3InboxClient {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
     const domainToSearch = domain ?? this.domain;
 
+    console.log(
+      ">>>> getSubscription for",
+      accountOrInternalAccount,
+      domainToSearch
+    );
+
     if (!accountOrInternalAccount) {
       return null;
     }
 
-    return (
+    const subscription =
       Web3InboxClient.subscriptionState.subscriptions.find((sub) => {
         const accountMatch = sub.account === accountOrInternalAccount;
         const domainMatch = sub.metadata.appDomain === domainToSearch;
 
         return accountMatch && domainMatch;
-      }) ?? null
+      }) ?? null;
+
+    console.log(
+      ">>> getSubscriptions",
+      Web3InboxClient.subscriptionState.subscriptions.map(
+        (item) => `${item.account}***${item.metadata.appDomain}`
+      ),
+      accountOrInternalAccount,
+      domainToSearch
     );
+    console.log(">>>> getSubscription found", subscription);
+
+    return subscription;
   }
 
   /**
@@ -301,6 +331,8 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
+    cb(this.getSubscription(account, domain));
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain));
     });
@@ -316,6 +348,8 @@ export class Web3InboxClient {
     cb: (subscriptions: NotifyClientTypes.NotifySubscription[]) => void,
     account?: string
   ) {
+    cb(this.getSubscriptions(account));
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscriptions(account));
     });
@@ -340,10 +374,14 @@ export class Web3InboxClient {
     const sub = this.getSubscription(account, domain);
 
     if (sub) {
-      return this.notifyClient.update({
-        topic: sub.topic,
-        scope,
-      });
+      return createPromiseWithTimeout(
+        this.notifyClient.update({
+          topic: sub.topic,
+          scope,
+        }),
+        Web3InboxClient.maxTimeout,
+        "update"
+      );
     }
 
     return false;
@@ -375,79 +413,186 @@ export class Web3InboxClient {
     return {};
   }
 
+  public pageNotifications(
+    notificationsPerPage: number,
+    isInfiniteScroll?: boolean,
+    account?: string,
+    domain?: string
+  ): (
+    onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void
+  ) => {
+    stopWatchingNotifications: () => void;
+    data: GetNotificationsReturn;
+    nextPage: () => Promise<void>;
+  } {
+    const data = proxy<GetNotificationsReturn>({
+      notifications: [],
+      hasMore: false,
+    });
+
+    this.notifyClient.on("notify_message", async () => {
+      console.log(">>> Notification...");
+      const fetchedNotificationData = await this.getNotificationHistory(
+        notificationsPerPage,
+        undefined,
+        account,
+        domain
+      );
+      const notification = fetchedNotificationData.notifications.shift();
+      if (notification) {
+        console.log(">>> Notification...", notification);
+        data.notifications = [notification, ...data.notifications];
+      }
+    });
+
+    const nextPage = async () => {
+      const lastMessage = data.notifications.length
+        ? data.notifications[data.notifications.length - 1].id
+        : undefined;
+
+      const fetchedNotificationData = await this.getNotificationHistory(
+        notificationsPerPage,
+        lastMessage,
+        account,
+        domain
+      );
+
+      data.notifications = isInfiniteScroll
+        ? [...data.notifications, ...fetchedNotificationData.notifications]
+        : fetchedNotificationData.notifications;
+      data.hasMore = fetchedNotificationData.hasMore;
+    };
+
+    return (
+      onNotificationDataUpdate: (
+        notificationData: GetNotificationsReturn
+      ) => void
+    ) => {
+      return {
+        stopWatchingNotifications: subscribe(data, () => {
+          console.log(">>> updating notification...", data);
+          onNotificationDataUpdate(data);
+        }),
+        data,
+        nextPage,
+      };
+    };
+  }
+
   /**
    * Get message history for a subscription
    *
+   * @param {number} limit - How many notifications to get after `startingAfter`
+   * @param {string} [startingAfter] - ID of the notification to get messages after
    * @param {string} [account] - Account to get subscription message history for, defaulted to current account
    * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
    *
    * @returns {Object[]} messages  - Message Record array
    */
-  public getMessageHistory(
+  public getNotificationHistory(
+    limit: number,
+    startingAfter?: string,
     account?: string,
     domain?: string
-  ): NotifyClientTypes.NotifyMessageRecord[] {
+  ): Promise<{
+    notifications: NotifyClientTypes.NotifyNotification[];
+    hasMore: boolean;
+  }> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
-      return [];
+      return Promise.resolve({
+        hasMore: false,
+        notifications: [],
+      });
     }
 
     const sub = this.getSubscription(account, domain);
 
     if (sub) {
       try {
-        return Web3InboxClient.subscriptionState.messages.filter(
-          (m) => m.topic === sub.topic
+        return createPromiseWithTimeout(
+          this.notifyClient.getNotificationHistory({
+            topic: sub.topic,
+            limit,
+            startingAfter,
+          }),
+          Web3InboxClient.maxTimeout,
+          "getNotificationHistory"
         );
       } catch (e) {
         console.error("Failed to fetch messages", e);
-        return [];
+        return Promise.reject({
+          hasMore: false,
+          notifications: [],
+        });
       }
     }
 
-    return [];
+    return Promise.resolve({
+      hasMore: false,
+      notifications: [],
+    });
   }
 
   /**
-   * Delete message from message history
+   * Prepare a registration for the register function
    *
-   * @param {Object} params - Params to delete a message
-   * @param {number} params.id - ID of message to delete
+   * @param {Object} params - register params
+   * @param {string} params.account - Account to register.
+   *
+   * @returns {Object} preparedRegistration - Prepared Registration
    */
-  public deleteNotifyMessage(params: { id: number }): void {
-    this.notifyClient.deleteNotifyMessage(params);
-    Web3InboxClient.updateMessages();
+  public prepareRegistration(params: {
+    account: string;
+  }): ReturnType<NotifyClient["prepareRegistration"]> {
+    return createPromiseWithTimeout(
+      this.notifyClient.prepareRegistration({
+        account: params.account,
+        domain: this.domain,
+        allApps: this.allApps,
+      }),
+      Web3InboxClient.maxTimeout,
+      "prepareRegistration"
+    );
   }
 
   /**
    * Register account on keyserver, allowing them to subscribe
    *
    * @param {Object} params - register params
-   * @param {string} params.account - Account to register.
-   * @param params.onSign - Signing callback
-   * @param {string} params.[domain] - Domain to register to, defaulted to one set in init.
+   * @param {string} params.registerParams - Prepared params for registration
+   * @param {string} params.signature - Signature of prepared message
    *
    * @returns {string} identityKey  - Registered identity
    */
   public async register(params: {
-    account: string;
-    onSign: (m: string) => Promise<string>;
-    domain?: string;
+    registerParams: NotifyClientTypes.NotifyRegistrationParams;
+    signature: string;
   }): Promise<string> {
     try {
-      const registeredIdentity = await this.notifyClient.register({
-        account: params.account,
-        onSign: params.onSign,
-        domain: params.domain ?? this.domain,
-        isLimited: this.isLimited,
-      });
+      const registeredIdentity = await createPromiseWithTimeout(
+        this.notifyClient.register({
+          registerParams: params.registerParams,
+          signature: params.signature,
+        }),
+        Web3InboxClient.maxTimeout,
+        "register"
+      );
+
+      const account = params.registerParams.cacaoPayload.iss
+        .split(":")
+        .slice(-3)
+        .join(":");
+
+      console.log(">>> registeredIdentity", registeredIdentity);
 
       Web3InboxClient.clientState.registration = {
-        account: params.account,
+        account,
         identity: registeredIdentity,
       };
-      Web3InboxClient.clientState.account = params.account;
+
+      Web3InboxClient.clientState.account = account;
 
       return registeredIdentity;
     } catch (e: any) {
@@ -462,13 +607,15 @@ export class Web3InboxClient {
    * @param {string} params.account - Account to unregister.
    *
    */
-  public async unregister(params: {
-    account: string;
-  }): Promise<void> {
+  public async unregister(params: { account: string }): Promise<void> {
     try {
-      await this.notifyClient.unregister(params);
+      await createPromiseWithTimeout(
+        this.notifyClient.unregister(params),
+        Web3InboxClient.maxTimeout,
+        "unregister"
+      );
 
-      Web3InboxClient.clientState.registration = undefined
+      Web3InboxClient.clientState.registration = undefined;
     } catch (e: any) {
       throw new Error(`Failed to uregister: ${e.message}`);
     }
@@ -501,19 +648,32 @@ export class Web3InboxClient {
   ): Promise<void> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
+    console.log(">>> subscribeToDapp (internally)", {
+      account: accountOrInternalAccount,
+      appDomain: domain ?? this.domain,
+    });
+
     if (!accountOrInternalAccount) {
       console.error("Failed to subscribe since no account has been set");
       return;
     }
 
     if (this.isSubscribedToDapp(accountOrInternalAccount, domain)) {
+      console.log(">>> isSubscribed: true", {
+        account: accountOrInternalAccount,
+        appDomain: domain ?? this.domain,
+      });
       return;
     }
 
-    await this.notifyClient.subscribe({
-      account: accountOrInternalAccount,
-      appDomain: domain ?? this.domain,
-    });
+    await createPromiseWithTimeout(
+      this.notifyClient.subscribe({
+        account: accountOrInternalAccount,
+        appDomain: domain ?? this.domain,
+      }),
+      Web3InboxClient.maxTimeout,
+      "subscribe"
+    );
   }
 
   /**
@@ -534,7 +694,11 @@ export class Web3InboxClient {
     const sub = this.getSubscription(accountOrInternalAccount, domain);
 
     if (sub) {
-      await this.notifyClient.deleteSubscription({ topic: sub.topic });
+      await createPromiseWithTimeout(
+        this.notifyClient.deleteSubscription({ topic: sub.topic }),
+        Web3InboxClient.maxTimeout,
+        "deleteSubscription"
+      );
     }
   }
 
@@ -551,6 +715,8 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
+    cb(this.isSubscribedToDapp(account, domain));
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.isSubscribedToDapp(account, domain));
     });
@@ -569,48 +735,10 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) {
+    cb(this.getSubscription(account, domain)?.scope ?? {});
+
     return subscribe(Web3InboxClient.subscriptionState, () => {
       cb(this.getSubscription(account, domain)?.scope ?? {});
-    });
-  }
-
-  /**
-   * Watch messagees for a subscription
-   *
-   * @param cb - callback that gets called every time messages update
-   * @param {string} [account] - Account to watch subscription's messages for, defaulted to current account
-   * @param {string} [domain] - Domain to watch subscription's messages for, defaulted to one set in init.
-   *
-   */
-  public watchMessages(
-    cb: (messages: NotifyClientTypes.NotifyMessageRecord[]) => void,
-    account?: string,
-    domain?: string
-  ) {
-    return subscribe(Web3InboxClient.subscriptionState, () => {
-      cb(Object.values(this.getMessageHistory(account, domain)));
-    });
-  }
-
-  public openView() {
-    Web3InboxClient.view.isOpen = true;
-  }
-
-  public closeView() {
-    Web3InboxClient.view.isOpen = false;
-  }
-
-  public toggle() {
-    Web3InboxClient.view.isOpen = !Web3InboxClient.view.isOpen;
-  }
-
-  public getViewIsOpen() {
-    return Web3InboxClient.view.isOpen;
-  }
-
-  public watchViewIsOpen(cb: (isOpen: boolean) => void) {
-    return subscribe(Web3InboxClient.view, () => {
-      cb(Web3InboxClient.view.isOpen);
     });
   }
 
