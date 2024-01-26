@@ -16,6 +16,9 @@ type UseRegisterReturn = HooksReturn<
   }
 >;
 
+/*
+ * useRegister manages registration state and allows user to register
+ */
 export const useRegister = (): UseRegisterReturn => {
   const { account } = useClientState();
   const { data: w3iClient } = useWeb3InboxClient();

@@ -4,6 +4,10 @@ import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 
 type Web3InboxClientReturn = HooksReturn<Web3InboxClient, {}, "client">;
 
+/*
+ * useWeb3InboxClient is used to fetch the actual client.
+ * If the client is truthy then it is is ready to use.
+ */
 export const useWeb3InboxClient = (): Web3InboxClientReturn => {
   const [isReady, setIsReady] = useState(Web3InboxClient.getIsReady());
   const [client, setClient] = useState<Web3InboxClient | null>(
