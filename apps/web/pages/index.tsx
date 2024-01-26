@@ -131,9 +131,9 @@ const Home: NextPage = () => {
     }
   };
 
-  // useInterval(() => {
-  //   handleBlockNotification();
-  // }, 12000);
+  useInterval(() => {
+    handleBlockNotification();
+  }, 12000);
 
   useAccountEffect({
     onDisconnect() {

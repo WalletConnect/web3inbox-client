@@ -21,7 +21,7 @@ function Subscription() {
 
   return (
     <AccordionItem border="none">
-      <AccordionButton>
+      <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
           Subscription
         </Heading>
