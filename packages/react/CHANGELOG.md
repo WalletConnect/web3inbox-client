@@ -1,5 +1,16 @@
 # @web3inbox/react
 
+## 1.0.0
+
+### Major Changes
+
+- Stable release
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/core@1.0.0
+
 ## 0.6.26
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.0.0
+
+### Major Changes
+
+- Stable release
+
 ## 0.0.25
 
 ### Patch Changes
