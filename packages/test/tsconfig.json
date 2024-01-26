@@ -1,8 +1,0 @@
-{
-  "extends": "tsconfig/test.json",
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test-d.ts"],
-  "compilerOptions": {
-    "sourceMap": true
-  }
-}

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useWeb3InboxClient } from "./";
+import { useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
 import { renderHook } from "../test/react";
 

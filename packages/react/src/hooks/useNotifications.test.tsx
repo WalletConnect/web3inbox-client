@@ -1,83 +1,31 @@
 "use client";
 
 import { connect } from "@wagmi/core";
-import { expect, test } from "vitest";
+import { beforeAll, expect, test } from "vitest";
 import { config } from "../test/config";
 
 import { waitFor, renderHook } from "../test/react";
-import { Fragment, useEffect } from "react";
-import { WagmiProvider, useSignMessage } from "wagmi";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQueryClient,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-import { render } from "@testing-library/react";
+import { useSignMessage } from "wagmi";
+import { QueryClient } from "@tanstack/react-query";
+import { initWeb3InboxClient } from "../utils";
 
 const connector = config.connectors[0]!;
 
-// beforeAll(() => {
-//   initWeb3InboxClient({
-//     projectId: "df639b5df61c997b9e9be51c802bc5de",
-//     domain: "w3m-dapp.vercel.app",
-//     allApps: true,
-//   });
-// });
-
-async function sendNotification() {
-  await fetch(`https://sdfsdfsdfsd/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer e46e473b-64cb-4019-adae-e2e4fc77371f`,
-    },
-    body: JSON.stringify({
-      accounts: ["eip155:1:0xf5B035287c1465F29C7e08FbB5c3b8a4975Bf831"],
-      notification: {
-        title: `jsdom ${new Date().getTime()}`,
-        body: "test notification from jsdom - description",
-        icon: "https://emojiisland.com/cdn/shop/products/4_large.png?v=1571606116",
-        url: "https://ozturkenes.com",
-        type: "ab137d9e-2836-48a5-aa83-a00afcd67a73",
-      },
-    }),
+beforeAll(() => {
+  initWeb3InboxClient({
+    projectId: "df639b5df61c997b9e9be51c802bc5de",
+    domain: "w3m-dapp.vercel.app",
+    allApps: true,
   });
-}
+});
 
 export const queryClient = new QueryClient();
-
-function Container({ children }: { children: Element }) {
-  return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
-  );
-}
-
-function ExampleComp() {
-  // const { signMessage } = useSignMessage();
-  const { mutate, isSuccess } = useMutation({
-    mutationFn: sendNotification,
-  });
-
-  useEffect(() => {
-    mutate();
-    // signMessage({ message: "foo bar baz" });
-  }, []);
-
-  return <div>{isSuccess ? "success" : "-"}</div>;
-}
 
 test("should fetch the new notification", async () => {
   await connect(config, { connector });
   const { result } = renderHook(() => useSignMessage());
-  // const { container, findByText } = render(<ExampleComp />, {
-  //   wrapper: ({ children }) => <Container>{children}</Container>,
-  // });
 
-  // result.current.signMessage({ message: "foo bar baz" });
+  result.current.signMessage({ message: "foo bar baz" });
   await waitFor(() => expect(result.current.isSuccess).toBe(true));
   // expect(baseElement).toBe(null);
 
