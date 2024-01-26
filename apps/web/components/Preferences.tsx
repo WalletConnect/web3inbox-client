@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -20,15 +20,13 @@ import { useNotificationTypes } from "@web3inbox/widget-react";
 function Preferences() {
   const toast = useToast();
   const { colorMode } = useColorMode();
-  const {
-    data: notificationTypes,
-    update,
-    updateIsLoading,
-  } = useNotificationTypes();
+  const { data: notificationTypes, update } = useNotificationTypes();
+  const [loading, setLoading] = useState(false);
 
   const { register, setValue, handleSubmit } = useForm();
 
   const onSubmitPreferences = handleSubmit(async (formData) => {
+    setLoading(true);
     const enabledScopes = Object.entries(formData)
       .filter(([key, isEnabled]) => isEnabled)
       .map(([key]) => key);
@@ -43,7 +41,9 @@ function Preferences() {
           variant: "subtle",
         });
       }
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       toast({
         title: error?.message as string,
         status: "error",
@@ -94,7 +94,7 @@ function Preferences() {
             colorScheme="blue"
             type="submit"
             rounded="full"
-            isLoading={updateIsLoading}
+            isLoading={loading}
             loadingText="Saving..."
           >
             Save preferences
