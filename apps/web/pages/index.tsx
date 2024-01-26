@@ -54,8 +54,6 @@ const Home: NextPage = () => {
 
   const isSubscribed = Boolean(subscriptionData);
 
-  console.log({subscriptionData})
-
   const { signMessageAsync } = useSignMessage();
   const wagmiPublicClient = usePublicClient();
 
