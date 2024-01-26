@@ -42,7 +42,7 @@ function Preferences() {
         });
       }
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
       toast({
         title: error?.message as string,

@@ -7,16 +7,12 @@ import {
   Button,
   Flex,
   Heading,
-  Image,
   Tooltip,
   useColorMode,
   useToast,
-  Stack,
   Card,
   CardHeader,
   CardBody,
-  Box,
-  StackDivider,
 } from "@chakra-ui/react";
 import {
   useRegister,
@@ -74,7 +70,7 @@ const Home: NextPage = () => {
       const { message, registerParams } = await prepareRegistration();
       const signature = await signMessageAsync({ message: message });
       await register({ registerParams, signature });
-    } catch (registerIdentityError) {
+    } catch (registerIdentityError: any) {
       toast({
         title: registerIdentityError?.message || "no message",
         position: "top",

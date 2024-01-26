@@ -8,7 +8,7 @@ type UnregisterReturnType = Awaited<ReturnType<Web3InboxClient["unregister"]>>;
 type UnregisterData = boolean;
 type UseUnregisterReturn = HooksReturn<
   boolean,
-  { unregister: (onSign: (m: string) => Promise<string>) => Promise<void> }
+  { unregister: () => Promise<void> }
 >;
 
 export const useUnregister = (): UseUnregisterReturn => {
