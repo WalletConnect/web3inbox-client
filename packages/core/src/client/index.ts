@@ -49,25 +49,27 @@ export class Web3InboxClient {
     }
   }
 
-  protected attachEventListeners(): void {
-    console.log(">>> attachEventListener");
-    const updateInternalSubscriptions = () => {
-      console.log(">>> updating internal subscriptions");
-      Web3InboxClient.subscriptionState.subscriptions =
-        this.notifyClient.subscriptions.getAll();
-    };
+  private updateInternalSubscriptions(): void {
+    Web3InboxClient.subscriptionState.subscriptions =
+      this.notifyClient.subscriptions.getAll();
+  }
 
-    this.notifyClient.on("notify_delete", updateInternalSubscriptions);
-    this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
-    this.notifyClient.on("notify_update", updateInternalSubscriptions);
+  protected attachEventListeners(): void {
+    this.notifyClient.on("notify_delete", this.updateInternalSubscriptions);
+    this.notifyClient.on("notify_subscription", this.updateInternalSubscriptions);
+    this.notifyClient.on("notify_update", this.updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
-      updateInternalSubscriptions
+      this.updateInternalSubscriptions
     );
+
+    subscribe(Web3InboxClient.clientState, () => {
+      this.updateInternalSubscriptions();
+    })
 
     const clientReadyInterval = setInterval(() => {
       if (this.notifyClient.hasFinishedInitialLoad()) {
-        updateInternalSubscriptions();
+        this.updateInternalSubscriptions();
         clearInterval(clientReadyInterval);
       }
     }, 100);
@@ -616,6 +618,7 @@ export class Web3InboxClient {
       );
 
       Web3InboxClient.clientState.registration = undefined;
+
     } catch (e: any) {
       throw new Error(`Failed to uregister: ${e.message}`);
     }

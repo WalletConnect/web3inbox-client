@@ -2,6 +2,7 @@ import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useEffect, useState } from "react";
 import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
+import { useSubscriptionState } from "../utils/snapshots";
 
 type SubscriptionState = NotifyClientTypes.NotifySubscription | null;
 type UseSubscriptionReturn = HooksReturn<
@@ -37,6 +38,7 @@ export const useSubscription = (
 
     const stopWatching = w3iClient.watchSubscription(
       (sub) => {
+	console.log("Pulse watchSubscription", sub)
         setSubscription(sub);
       },
       account,
