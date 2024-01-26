@@ -14,12 +14,7 @@ type GetNotificationTypesReturnType = Awaited<
 type UseNotificationTypesData = GetNotificationTypesReturnType;
 type UseNotificationTypesReturn = HooksReturn<
   UseNotificationTypesData,
-  {
-    update: (scope: string[]) => Promise<boolean>;
-    updateData: UpdateSubscriptionData;
-    updateError: string | null;
-    updateIsLoading: boolean;
-  }
+  { update: (scope: string[]) => Promise<boolean> }
 >;
 
 export const useNotificationTypes = (
@@ -33,37 +28,23 @@ export const useNotificationTypes = (
     w3iClient?.getNotificationTypes(account) ?? {}
   );
 
-  const [updateData, setUpdateData] = useState<UpdateSubscriptionData>(null);
-  const [updateError, setUpdateError] = useState<string | null>(null);
-  const [updateIsLoading, setUpdateIsLoading] = useState<boolean>(false);
-
   const update = async (scope: string[]) => {
-    setUpdateIsLoading(true);
-    setUpdateError(null);
-
     return new Promise<UpdateSubscriptionReturnType>(
       async (resolve, reject) => {
         if (!w3iClient) {
           const err = new Error(
             "Web3InboxClient is not ready, cannot subscribe"
           );
-          setUpdateError(err.message);
           return reject(err);
         }
 
         return await w3iClient
           .update(scope, account, domain)
           .then((res) => {
-            setUpdateData(res);
             resolve(res);
           })
           .catch((e) => {
-            setUpdateData(null);
-            setUpdateError(e?.message ?? "Failed to subscribe");
             reject(e);
-          })
-          .finally(() => {
-            setUpdateIsLoading(false);
           });
       }
     );
@@ -80,8 +61,5 @@ export const useNotificationTypes = (
     error: null,
     isLoading: false,
     update,
-    updateData,
-    updateError,
-    updateIsLoading,
   } as SuccessOf<UseNotificationTypesReturn>;
 };
