@@ -1,21 +1,21 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useEffect, useState } from "react";
-import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
+import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
-type NotificationsState = SuccessOf<UseNotificationsReturn>["data"];
-type NextPageState = (() => void) | undefined;
+type UseNotificationsData = NotifyClientTypes.NotifyNotification[];
+type NextPageState = (() => Promise<void>) | undefined;
 type UseNotificationsReturn = HooksReturn<
+  NotifyClientTypes.NotifyNotification[],
   {
-    notifications: NotifyClientTypes.NotifyNotification[];
     hasMore: boolean;
-  },
-  { nextPage: NextPageState },
-  "getMessages"
+    isLoadingNextPage: boolean;
+    fetchNextPage: NextPageState;
+  }
 >;
 
 /**
- * Hook to watch notifications of a subscription, and delete them
+ * Hook to watch notifications of a subscription, and fetch more notifications
  *
  * @param {string} [account] - Account to get subscriptions messages from, defaulted to current account
  * @param {string} [domain] - Domain to get subscription messages from, defaulted to one set in init.
@@ -26,11 +26,14 @@ export const useNotifications = (
   account?: string,
   domain?: string
 ): UseNotificationsReturn => {
-  const { data: w3iClient, error: w3iClientError } = useWeb3InboxClient();
+  const { data: w3iClient } = useWeb3InboxClient();
 
   const [nextPage, setNextPage] = useState<NextPageState>(undefined);
+  const [data, setData] = useState<UseNotificationsData>([]);
+  const [isLoadingNextPage, setIsLoadingNextPage] = useState<boolean>(false);
+  const [errorNextPage, setErrorNextPage] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(false);
   const [error, setError] = useState<null | string>(null);
-  const [notifications, setNotifications] = useState<NotificationsState>();
 
   useEffect(() => {
     if (!w3iClient) return;
@@ -42,8 +45,9 @@ export const useNotifications = (
           isInfiniteScroll,
           account,
           domain
-        )((notifications) => {
-          setNotifications(notifications);
+        )((data) => {
+          setData(data.notifications);
+          setHasMore(data.hasMore);
         });
 
       setNextPage(nextPageFunc);
@@ -54,48 +58,59 @@ export const useNotifications = (
     } catch (e: any) {
       setError(e.message);
     }
-  }, [
-    account,
-    domain,
-    notificationsPerPage,
-    isInfiniteScroll,
-    w3iClient,
-    setNotifications,
-  ]);
+  }, [account, domain, notificationsPerPage, isInfiniteScroll, w3iClient]);
 
-  if (!w3iClient) {
+  const fetchNextPage = async () => {
+    setErrorNextPage(null);
+    setIsLoadingNextPage(true);
+
+    return new Promise(async (resolve, reject) => {
+      if (!nextPage) {
+        const err = new Error("No more pages to fetch");
+        setErrorNextPage(err.message);
+        return reject(err);
+      }
+
+      return await nextPage()
+        .then((res) => {
+          resolve(res);
+          setIsLoadingNextPage(false);
+        })
+        .catch((e) => {
+          setErrorNextPage(e?.message ?? "Failed to fetch next page");
+          setIsLoadingNextPage(false);
+        });
+    });
+  };
+
+  if (isLoadingNextPage) {
     return {
-      data: null,
+      data,
+      hasMore,
       error: null,
-      isLoading: true,
-      nextPage,
-    };
+      isLoading: false,
+      isLoadingNextPage: isLoadingNextPage,
+      fetchNextPage,
+    } as SuccessOf<UseNotificationsReturn>;
   }
 
-  if (w3iClientError) {
+  if (errorNextPage || error) {
     return {
-      data: null,
-      error: {
-        client: w3iClientError.client,
-      },
+      data,
+      hasMore,
+      error: errorNextPage ?? error,
       isLoading: false,
-      nextPage,
-    } as ErrorOf<UseNotificationsReturn>;
-  }
-
-  if (error) {
-    return {
-      data: null,
-      error: { getMessages: { message: error } },
-      isLoading: false,
-      nextPage,
+      isLoadingNextPage: false,
+      fetchNextPage,
     } as ErrorOf<UseNotificationsReturn>;
   }
 
   return {
-    data: notifications,
+    data,
+    hasMore,
     error: null,
     isLoading: false,
-    nextPage,
+    isLoadingNextPage: false,
+    fetchNextPage,
   } as SuccessOf<UseNotificationsReturn>;
 };

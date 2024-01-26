@@ -21,7 +21,7 @@ import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { data: messageData } = useNotifications(3, false);
+  const { data: notifications } = useNotifications(3, false);
   const { data: notificationTypes } = useNotificationTypes();
 
   return (
@@ -40,10 +40,10 @@ function Messages() {
           gap={2}
           position={"relative"}
         >
-          {!messageData?.notifications?.length ? (
+          {!notifications?.length ? (
             <Text>No messages yet.</Text>
           ) : (
-            messageData?.notifications.map(({ id, ...message }) => (
+            notifications.map(({ id, ...message }) => (
               <Alert
                 as={Link}
                 href={message.url ?? "#"}
