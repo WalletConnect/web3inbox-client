@@ -55,8 +55,7 @@ export const useRegister = (): UseRegisterReturn => {
           resolve(res);
         })
         .catch((e) => {
-          setData(null);
-	  // If it's because of a stale identity, unregister and retry.
+	  // If failed because of a stale identity, unregister and retry.
 	  if(e?.message.includes("stale identity")) {
 	    const account = getAccountFromDidPkh(params.registerParams.cacaoPayload.iss)
 	    w3iClient.unregister({account}).then(() => {
@@ -64,6 +63,7 @@ export const useRegister = (): UseRegisterReturn => {
 	    })
 	  }
 	  else {
+            setData(null);
             setError(e?.message ?? "Failed to subscribe");
             reject(e);
 	  }
