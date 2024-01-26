@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": ["."],
+  "include": [".", "../../../../../../tmp/!home!clinenerd!dev!widget-web3inbox!packages!react!src!utils!account.ts~"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "outDir": "dist"

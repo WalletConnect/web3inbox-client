@@ -3,6 +3,7 @@ import { useState } from "react";
 import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { useClientState } from "../utils/snapshots";
+import { getAccountFromDidPkh } from "../utils/account";
 
 type RegisterReturnType = Awaited<ReturnType<Web3InboxClient["register"]>>;
 type RegisterData = RegisterReturnType | null;
@@ -14,10 +15,6 @@ type UseRegisterReturn = HooksReturn<
     ) => Promise<string | null>;
   }
 >;
-
-const getAccountFromDidPkh = (didPkh: string) => {
-  return didPkh.split(":").slice(-3).join(":");
-}
 
 export const useRegister = (): UseRegisterReturn => {
   const { account } = useClientState();
