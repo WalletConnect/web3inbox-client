@@ -42,6 +42,7 @@ import Subscription from "../components/Subscription";
 import Subscribers from "../components/Subscribers";
 import { sendNotification } from "../utils/fetchNotify";
 import { usePrepareRegistration } from "@web3inbox/widget-react";
+import { useInterval } from "usehooks-ts";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
