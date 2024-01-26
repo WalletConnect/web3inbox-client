@@ -1,6 +1,6 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useEffect, useState } from "react";
-import { HooksReturn, SuccessOf } from "../types/hooks";
+import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
 type SubscriptionState = NotifyClientTypes.NotifySubscription | null;
@@ -51,6 +51,15 @@ export const useSubscription = (
       stopWatching();
     };
   }, [account, domain, w3iClient]);
+
+  if (isLoadingClient) {
+    return {
+      data: null,
+      error: null,
+      isLoading: true,
+      watching: false,
+    } as LoadingOf<UseSubscriptionReturn>;
+  }
 
   return {
     data: subscription,
