@@ -1,7 +1,7 @@
 "use client";
 
 import type { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   Button,
@@ -26,7 +26,6 @@ import {
 } from "@web3inbox/react";
 import {
   useAccount,
-  useAccountEffect,
   usePublicClient,
   useSignMessage,
 } from "wagmi";
@@ -161,6 +160,8 @@ const Home: NextPage = () => {
           <React.Fragment>
             {isSubscribed && isRegistered ? (
               <Flex flexWrap={"wrap"} alignItems="center" gap={4}>
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>API Call</span>
                 <Button
                   leftIcon={<BsSendFill />}
                   variant="outline"
@@ -172,6 +173,9 @@ const Home: NextPage = () => {
                 >
                   Send test notification
                 </Button>
+		  </Flex>
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>Internal State</span>
                 <Button
                   leftIcon={
                     isBlockNotificationEnabled ? <FaPause /> : <FaPlay />
@@ -186,6 +190,9 @@ const Home: NextPage = () => {
                   {isBlockNotificationEnabled ? "Pause" : "Resume"} block
                   notifications
                 </Button>
+		  </Flex>
+		  <Flex alignItems="center" justifyContent="center" flexDir="column">
+		  <span>useUnsubscribe</span>
                 <Button
                   leftIcon={<FaBellSlash />}
                   onClick={unsubscribe}
@@ -198,6 +205,9 @@ const Home: NextPage = () => {
                 >
                   Unsubscribe
                 </Button>
+		  </Flex>
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>useUnregister</span>
                 <Button
                   onClick={unregister}
                   variant="outline"
@@ -211,6 +221,8 @@ const Home: NextPage = () => {
                 >
                   Unregister
                 </Button>
+
+		    </Flex>
               </Flex>
             ) : isRegistered ? (
               <React.Fragment>
@@ -222,6 +234,8 @@ const Home: NextPage = () => {
                   }
                   hidden={Boolean(address)}
                 >
+		  <Flex alignItems="center" justifyContent="center" flexDir="column">
+		  <span>useSubscribe</span>
                   <Button
                     leftIcon={<FaBell />}
                     onClick={subscribe}
@@ -236,6 +250,7 @@ const Home: NextPage = () => {
                   >
                     Subscribe
                   </Button>
+		    </Flex>
                 </Tooltip>
               </React.Fragment>
             ) : (
@@ -247,6 +262,8 @@ const Home: NextPage = () => {
                 }
                 hidden={Boolean(address)}
               >
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>useRegister</span>
                 <Button
                   leftIcon={<FaBell />}
                   onClick={handleRegistration}
@@ -260,6 +277,7 @@ const Home: NextPage = () => {
                 >
                   Register
                 </Button>
+		  </Flex>
               </Tooltip>
             )}
           </React.Fragment>

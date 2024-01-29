@@ -28,7 +28,7 @@ function Preferences() {
   const onSubmitPreferences = handleSubmit(async (formData) => {
     setLoading(true);
     const enabledScopes = Object.entries(formData)
-      .filter(([key, isEnabled]) => isEnabled)
+      .filter(([, isEnabled]) => isEnabled)
       .map(([key]) => key);
 
     try {
@@ -64,7 +64,7 @@ function Preferences() {
     <AccordionItem borderColor={colorMode === "dark" ? "gray.700" : "gray.200"}>
       <AccordionButton py="4">
         <Heading as="span" fontSize="md" flex="1" textAlign="left">
-          Preferences
+          Preferences (useNotificationTypes)
         </Heading>
         <AccordionIcon />
       </AccordionButton>

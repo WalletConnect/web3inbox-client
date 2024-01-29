@@ -23,7 +23,7 @@ function Subscription() {
     <AccordionItem border="none">
       <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
-          Subscription
+          Subscription (useSubscription)
         </Heading>
         <AccordionIcon />
       </AccordionButton>

@@ -28,7 +28,7 @@ function Messages() {
     <AccordionItem>
       <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
-          Last Messages
+          Last Notifications (useNotifications)
         </Heading>
         <AccordionIcon />
       </AccordionButton>
