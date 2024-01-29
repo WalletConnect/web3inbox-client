@@ -44,7 +44,7 @@ const Home: NextPage = () => {
   const { address } = useAccount();
   const { data: w3iClient, isLoading: w3iClientIsLoading } =
     useWeb3InboxClient();
-  const { isRegistered, setAccount } = useWeb3InboxAccount(address);
+  const { isRegistered } = useWeb3InboxAccount(address? `eip155:1:${address}` : undefined);
   const { prepareRegistration } = usePrepareRegistration();
   const { register, isLoading: isLoadingRegister } = useRegister();
   const { unregister, isLoading: isLoadingUnregister } = useUnregister();
@@ -131,17 +131,6 @@ const Home: NextPage = () => {
   useInterval(() => {
     handleBlockNotification();
   }, 12000);
-
-  useAccountEffect({
-    onDisconnect() {
-      setAccount("");
-    },
-  });
-
-  useEffect(() => {
-    if (!address || !w3iClient) return;
-    setAccount(`eip155:1:${address}`);
-  }, [w3iClient, address]);
 
   return (
     <Card

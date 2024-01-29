@@ -5,6 +5,7 @@ import {
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
 import { proxy, subscribe } from "valtio";
+import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 
 export type GetNotificationsReturn = {
@@ -414,6 +415,9 @@ export class Web3InboxClient {
       notifications: [],
       hasMore: false,
     });
+    
+    const currentNotificationIds = proxySet<string>([])
+
 
     this.notifyClient.on("notify_message", async () => {
       const fetchedNotificationData = await this.getNotificationHistory(
@@ -423,8 +427,9 @@ export class Web3InboxClient {
         domain
       );
       const notification = fetchedNotificationData.notifications.shift();
-      if (notification) {
+      if (notification && !currentNotificationIds.has(notification.id)) {
         data.notifications = [notification, ...data.notifications];
+	currentNotificationIds.add(notification.id)
       }
     });
 
@@ -441,8 +446,13 @@ export class Web3InboxClient {
       );
 
       data.notifications = isInfiniteScroll
-        ? [...data.notifications, ...fetchedNotificationData.notifications]
+        ? [...data.notifications, ...fetchedNotificationData.notifications.filter(n => !currentNotificationIds.has(n.id))]
         : fetchedNotificationData.notifications;
+
+      for(const notification of fetchedNotificationData.notifications) {
+	currentNotificationIds.add(notification.id)
+      }
+
       data.hasMore = fetchedNotificationData.hasMore;
     };
 
