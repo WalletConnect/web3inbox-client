@@ -12,11 +12,6 @@ export type GetNotificationsReturn = {
   hasMore: boolean;
 };
 
-export type GetNotificationsReturn = {
-  notifications: NotifyClientTypes.NotifyMessage[];
-  hasMore: boolean;
-};
-
 interface IClientState {
   isReady: boolean;
   initting: boolean;
@@ -555,28 +550,6 @@ export class Web3InboxClient {
       hasMore: false,
       notifications: [],
     });
-  }
-
-  /**
-   * Prepare a registration for the register function
-   *
-   * @param {Object} params - register params
-   * @param {string} params.account - Account to register.
-   *
-   * @returns {Object} preparedRegistration - Prepared Registration
-   */
-  public prepareRegistration(params: {
-    account: string;
-  }): ReturnType<NotifyClient["prepareRegistration"]> {
-    return createPromiseWithTimeout(
-      this.notifyClient.prepareRegistration({
-        account: params.account,
-        domain: this.domain,
-        allApps: this.allApps,
-      }),
-      Web3InboxClient.maxTimeout,
-      "prepareRegistration"
-    );
   }
 
   /**
