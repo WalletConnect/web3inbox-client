@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": ["."],
+  "include": [".", "../../vitest.config.ts", "../test"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "outDir": "dist"

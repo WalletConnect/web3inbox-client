@@ -1,16 +1,20 @@
 {
+  "name": "widget-web3inbox",
+  "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
     "build": "turbo run build",
     "build:packages": "turbo run build --filter=@web3inbox",
     "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=gm-hackers",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "web:dev": "turbo run dev --filter=gm-hackers",
     "test": "turbo run test --filter=@web3inbox/widget-react"
   },
   "devDependencies": {
+    "@tanstack/react-query": "5.0.5",
+    "@testing-library/react": "14.0.0",
     "@changesets/cli": "^2.26.2",
     "@turbo/gen": "^1.9.7",
     "eslint": "^7.32.0",
@@ -19,10 +23,8 @@
     "turbo": "latest",
     "vitest": "^0.34.6"
   },
-  "name": "widget-web3inbox",
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "version": "0.0.0"
+  ]
 }

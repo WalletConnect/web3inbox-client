@@ -60,6 +60,8 @@ export class Web3InboxClient {
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
     this.notifyClient.on("notify_update", updateInternalSubscriptions);
+    this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
+    this.notifyClient.on("notify_update", updateInternalSubscriptions);
     this.notifyClient.on(
       "notify_subscriptions_changed",
       updateInternalSubscriptions
@@ -445,6 +447,21 @@ export class Web3InboxClient {
       }
     });
 
+    this.notifyClient.on("notify_message", async () => {
+      console.log(">>> Notification...");
+      const fetchedNotificationData = await this.getNotificationHistory(
+        notificationsPerPage,
+        undefined,
+        account,
+        domain
+      );
+      const notification = fetchedNotificationData.notifications.shift();
+      if (notification) {
+        console.log(">>> Notification...", notification);
+        data.notifications = [notification, ...data.notifications];
+      }
+    });
+
     const nextPage = async () => {
       const lastMessage = data.notifications.length
         ? data.notifications[data.notifications.length - 1].id
@@ -546,15 +563,11 @@ export class Web3InboxClient {
   public prepareRegistration(params: {
     account: string;
   }): ReturnType<NotifyClient["prepareRegistration"]> {
-    return createPromiseWithTimeout(
-      this.notifyClient.prepareRegistration({
-        account: params.account,
-        domain: this.domain,
-        allApps: this.allApps,
-      }),
-      Web3InboxClient.maxTimeout,
-      "prepareRegistration"
-    );
+    return this.notifyClient.prepareRegistration({
+      account: params.account,
+      domain: this.domain,
+      allApps: this.allApps,
+    });
   }
 
   /**
@@ -584,8 +597,6 @@ export class Web3InboxClient {
         .split(":")
         .slice(-3)
         .join(":");
-
-      console.log(">>> registeredIdentity", registeredIdentity);
 
       Web3InboxClient.clientState.registration = {
         account,
