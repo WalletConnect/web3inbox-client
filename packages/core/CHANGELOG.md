@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.0.1
+
+### Patch Changes
+
+- Fix bug with duplicate notifications
+
 ## 1.0.0
 
 ### Major Changes
