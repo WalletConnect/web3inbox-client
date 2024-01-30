@@ -712,7 +712,7 @@ export class Web3InboxClient {
    * @param {string} [domain] - Domain to watch subscription's scope map for, defaulted to one set in init.
    *
    */
-  public watchScopeMap(
+  public watchNotificationTypes(
     cb: (scopeMap: NotifyClientTypes.ScopeMap) => void,
     account?: string,
     domain?: string
