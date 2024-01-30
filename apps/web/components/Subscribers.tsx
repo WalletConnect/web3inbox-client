@@ -24,7 +24,7 @@ function Subscribers() {
       const allSubscribers = await getAllSubscribers();
       setSubscribers(allSubscribers);
     } catch (getSubscribersError) {
-      console.log({ getSubscribersError });
+      alert({ getSubscribersError });
     }
   }, []);
 

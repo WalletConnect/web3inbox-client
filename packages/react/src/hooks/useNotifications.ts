@@ -62,8 +62,6 @@ export const useNotifications = (
           setHasMore(data.hasMore);
         });
 
-      console.log("Setting nextPageFunc", nextPageFunc)
-
       setNextPage(() => nextPageFunc);
 
       return () => {
@@ -73,8 +71,6 @@ export const useNotifications = (
       setError(e.message);
     }
   }, [account, domain, notificationsPerPage, isInfiniteScroll, w3iClient]);
-
-      console.log({nextPage})
 
   const fetchNextPage = async () => {
     setErrorNextPage(null);

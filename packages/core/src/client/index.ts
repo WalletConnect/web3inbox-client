@@ -418,7 +418,6 @@ export class Web3InboxClient {
     
     const currentNotificationIds = proxySet<string>([])
 
-
     this.notifyClient.on("notify_message", async () => {
       const fetchedNotificationData = await this.getNotificationHistory(
         notificationsPerPage,
@@ -433,6 +432,8 @@ export class Web3InboxClient {
       }
     });
 
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
     const nextPage = async () => {
       const lastMessage = data.notifications.length
         ? data.notifications[data.notifications.length - 1].id
@@ -441,8 +442,8 @@ export class Web3InboxClient {
       const fetchedNotificationData = await this.getNotificationHistory(
         notificationsPerPage,
         lastMessage,
-        account,
-        domain
+        accountOrInternalAccount,
+        domain ?? this.domain
       );
 
       data.notifications = isInfiniteScroll
@@ -496,13 +497,10 @@ export class Web3InboxClient {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
-      return Promise.resolve({
-        hasMore: false,
-        notifications: [],
-      });
+      return Promise.reject("No account configured");
     }
 
-    const sub = this.getSubscription(account, domain);
+    const sub = this.getSubscription(accountOrInternalAccount, domain ?? this.domain);
 
     if (sub) {
       try {
@@ -523,11 +521,9 @@ export class Web3InboxClient {
         });
       }
     }
-
-    return Promise.resolve({
-      hasMore: false,
-      notifications: [],
-    });
+    else {
+      return Promise.reject(`No sub found for account ${account} and domain ${domain ?? this.domain}`)
+    }
   }
 
   /**
