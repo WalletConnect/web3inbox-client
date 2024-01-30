@@ -305,7 +305,7 @@ describe("Web3Inbox Core Client", () => {
 
         let scopeMap: NotifyClientTypes.NotifySubscription["scope"] = {};
 
-        w3iClient.watchScopeMap((watchedScopeMap) => {
+        w3iClient.watchNotificationTypes((watchedScopeMap) => {
           scopeMap = watchedScopeMap;
         });
 
