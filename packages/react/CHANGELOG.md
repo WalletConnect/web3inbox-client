@@ -1,5 +1,11 @@
 # @web3inbox/react
 
+## 1.0.1
+
+### Patch Changes
+
+- Update README and docs
+
 ## 1.0.0
 
 ### Major Changes
