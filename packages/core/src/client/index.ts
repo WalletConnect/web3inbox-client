@@ -456,6 +456,9 @@ export class Web3InboxClient {
       data.hasMore = fetchedNotificationData.hasMore;
     };
 
+    // Get the initial next page
+    nextPage();
+
     return (
       onNotificationDataUpdate: (
         notificationData: GetNotificationsReturn

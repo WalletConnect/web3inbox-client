@@ -6,6 +6,7 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  Button,
   AlertTitle,
   Box,
   Flex,
@@ -21,7 +22,7 @@ import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { data: notifications } = useNotifications(3, false);
+  const { data: notifications, fetchNextPage, isLoadingNextPage } = useNotifications(3, true);
   const { data: notificationTypes } = useNotificationTypes();
 
   return (
@@ -40,6 +41,8 @@ function Messages() {
           gap={2}
           position={"relative"}
         >
+	  <Button onClick={fetchNextPage} isLoading={isLoadingNextPage}>Get next page</Button>
+
           {!notifications?.length ? (
             <Text>No messages yet.</Text>
           ) : (
