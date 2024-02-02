@@ -6,6 +6,7 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  Button,
   AlertTitle,
   Box,
   Flex,
@@ -16,19 +17,19 @@ import {
 import {
   useNotificationTypes,
   useNotifications,
-} from "@web3inbox/widget-react";
+} from "@web3inbox/react";
 import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { data: notifications } = useNotifications(3, false);
+  const { data: notifications, fetchNextPage, isLoadingNextPage } = useNotifications(3, true);
   const { data: notificationTypes } = useNotificationTypes();
 
   return (
     <AccordionItem>
       <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
-          Last Messages
+          Last Notifications (useNotifications)
         </Heading>
         <AccordionIcon />
       </AccordionButton>
@@ -40,6 +41,8 @@ function Messages() {
           gap={2}
           position={"relative"}
         >
+	  <Button onClick={fetchNextPage} isLoading={isLoadingNextPage}>Get next page</Button>
+
           {!notifications?.length ? (
             <Text>No messages yet.</Text>
           ) : (
@@ -65,7 +68,7 @@ function Messages() {
                 </Flex>
                 <Flex w="60px" justifyContent="center">
                   <Image
-                    src={notificationTypes?.[message.type ?? ""]?.imageUrls?.md}
+                    src={notificationTypes?.[message.type]?.imageUrls?.md}
                     alt="notification image"
                     height="60px"
                     rounded="full"

@@ -3,8 +3,18 @@ import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
+const waitFor = async (condition: () => boolean) => {
+  return new Promise<void>((resolve) => {
+    setInterval(() => {
+      if(condition()) {
+	resolve()
+      }
+    }, 100)
+  })
+}
+
 type UseNotificationsData = NotifyClientTypes.NotifyNotification[];
-type NextPageState = (() => Promise<void>) | undefined;
+type NextPageState = () => Promise<void>;
 type UseNotificationsReturn = HooksReturn<
   NotifyClientTypes.NotifyNotification[],
   {
@@ -30,7 +40,7 @@ export const useNotifications = (
 ): UseNotificationsReturn => {
   const { data: w3iClient } = useWeb3InboxClient();
 
-  const [nextPage, setNextPage] = useState<NextPageState>(undefined);
+  const [nextPage, setNextPage] = useState<NextPageState>();
   const [data, setData] = useState<UseNotificationsData>([]);
   const [isLoadingNextPage, setIsLoadingNextPage] = useState<boolean>(false);
   const [errorNextPage, setErrorNextPage] = useState<string | null>(null);
@@ -52,7 +62,7 @@ export const useNotifications = (
           setHasMore(data.hasMore);
         });
 
-      setNextPage(nextPageFunc);
+      setNextPage(() => nextPageFunc);
 
       return () => {
         stopWatchingNotifications();
@@ -66,14 +76,17 @@ export const useNotifications = (
     setErrorNextPage(null);
     setIsLoadingNextPage(true);
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
+      // wait for the next page function to be ready
       if (!nextPage) {
-        const err = new Error("No more pages to fetch");
-        setErrorNextPage(err.message);
-        return reject(err);
+	await waitFor(() => Boolean(nextPage))
       }
 
-      return await nextPage()
+      // It is now guaranteed to be truthy.
+      const nextPageFunc = nextPage as NextPageState;
+      
+      
+      return await nextPageFunc()
         .then((res) => {
           resolve(res);
           setIsLoadingNextPage(false);

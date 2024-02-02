@@ -1,7 +1,7 @@
 "use client";
 
 import type { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   Button,
@@ -22,10 +22,10 @@ import {
   useUnsubscribe,
   useWeb3InboxAccount,
   useWeb3InboxClient,
-} from "@web3inbox/widget-react";
+  usePrepareRegistration 
+} from "@web3inbox/react";
 import {
   useAccount,
-  useAccountEffect,
   usePublicClient,
   useSignMessage,
 } from "wagmi";
@@ -37,14 +37,13 @@ import Messages from "../components/Messages";
 import Subscription from "../components/Subscription";
 import Subscribers from "../components/Subscribers";
 import { sendNotification } from "../utils/fetchNotify";
-import { usePrepareRegistration } from "@web3inbox/widget-react";
 import { useInterval } from "usehooks-ts";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
   const { data: w3iClient, isLoading: w3iClientIsLoading } =
     useWeb3InboxClient();
-  const { isRegistered, setAccount } = useWeb3InboxAccount(address);
+  const { isRegistered } = useWeb3InboxAccount(address? `eip155:1:${address}` : undefined);
   const { prepareRegistration } = usePrepareRegistration();
   const { register, isLoading: isLoadingRegister } = useRegister();
   const { unregister, isLoading: isLoadingUnregister } = useUnregister();
@@ -132,17 +131,6 @@ const Home: NextPage = () => {
     handleBlockNotification();
   }, 12000);
 
-  useAccountEffect({
-    onDisconnect() {
-      setAccount("");
-    },
-  });
-
-  useEffect(() => {
-    if (!address || !w3iClient) return;
-    setAccount(`eip155:1:${address}`);
-  }, [w3iClient, address]);
-
   return (
     <Card
       marginTop={20}
@@ -172,6 +160,8 @@ const Home: NextPage = () => {
           <React.Fragment>
             {isSubscribed && isRegistered ? (
               <Flex flexWrap={"wrap"} alignItems="center" gap={4}>
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>API Call</span>
                 <Button
                   leftIcon={<BsSendFill />}
                   variant="outline"
@@ -183,6 +173,9 @@ const Home: NextPage = () => {
                 >
                   Send test notification
                 </Button>
+		  </Flex>
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>Internal State</span>
                 <Button
                   leftIcon={
                     isBlockNotificationEnabled ? <FaPause /> : <FaPlay />
@@ -197,6 +190,9 @@ const Home: NextPage = () => {
                   {isBlockNotificationEnabled ? "Pause" : "Resume"} block
                   notifications
                 </Button>
+		  </Flex>
+		  <Flex alignItems="center" justifyContent="center" flexDir="column">
+		  <span>useUnsubscribe</span>
                 <Button
                   leftIcon={<FaBellSlash />}
                   onClick={unsubscribe}
@@ -209,6 +205,9 @@ const Home: NextPage = () => {
                 >
                   Unsubscribe
                 </Button>
+		  </Flex>
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>useUnregister</span>
                 <Button
                   onClick={unregister}
                   variant="outline"
@@ -222,6 +221,8 @@ const Home: NextPage = () => {
                 >
                   Unregister
                 </Button>
+
+		    </Flex>
               </Flex>
             ) : isRegistered ? (
               <React.Fragment>
@@ -233,6 +234,8 @@ const Home: NextPage = () => {
                   }
                   hidden={Boolean(address)}
                 >
+		  <Flex alignItems="center" justifyContent="center" flexDir="column">
+		  <span>useSubscribe</span>
                   <Button
                     leftIcon={<FaBell />}
                     onClick={subscribe}
@@ -247,6 +250,7 @@ const Home: NextPage = () => {
                   >
                     Subscribe
                   </Button>
+		    </Flex>
                 </Tooltip>
               </React.Fragment>
             ) : (
@@ -258,6 +262,8 @@ const Home: NextPage = () => {
                 }
                 hidden={Boolean(address)}
               >
+               <Flex alignItems="center" justifyContent="center" flexDir="column">
+		<span>useRegister</span>
                 <Button
                   leftIcon={<FaBell />}
                   onClick={handleRegistration}
@@ -271,6 +277,7 @@ const Home: NextPage = () => {
                 >
                   Register
                 </Button>
+		  </Flex>
               </Tooltip>
             )}
           </React.Fragment>
