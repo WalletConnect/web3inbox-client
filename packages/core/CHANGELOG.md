@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.0.3
+
+### Patch Changes
+
+- Make log level customizable
+
 ## 1.0.2
 
 ### Patch Changes
