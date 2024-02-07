@@ -204,6 +204,7 @@ export class Web3InboxClient {
     projectId: string;
     domain?: string;
     allApps?: boolean;
+    logLevel?: "error" | "info" | "debug"
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -228,7 +229,7 @@ export class Web3InboxClient {
       core,
       keyserverUrl: DEFAULT_KEYSERVER_URL,
       projectId: params.projectId,
-      logger: "debug",
+      logger: params.logLevel ?? "error",
     };
 
     const notifyClient = await NotifyClient.init(notifyParams);
