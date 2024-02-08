@@ -4,6 +4,7 @@ interface IInitWeb3InboxClient {
   projectId: string;
   domain?: string;
   allApps?: boolean;
+  logLevel?: "info" | "error" | "debug"
 }
 
 /**
@@ -18,6 +19,7 @@ export const initWeb3InboxClient = ({
   projectId,
   domain,
   allApps,
+  logLevel
 }: IInitWeb3InboxClient) => {
-  return Web3InboxClient.init({ projectId, domain, allApps });
+  return Web3InboxClient.init({ projectId, domain, allApps, logLevel });
 };
