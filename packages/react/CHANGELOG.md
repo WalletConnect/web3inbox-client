@@ -1,5 +1,11 @@
 # @web3inbox/react
 
+## 1.0.3
+
+### Patch Changes
+
+- Expose log level flag
+
 ## 1.0.2
 
 ### Patch Changes
