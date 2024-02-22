@@ -1,5 +1,16 @@
 # @web3inbox/react
 
+## 2.0.0
+
+### Minor Changes
+
+- Add support for eip1271 validation
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/core@1.1.0
+
 ## 1.0.3
 
 ### Patch Changes

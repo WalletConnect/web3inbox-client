@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.1.0
+
+### Minor Changes
+
+- Add support for eip1271 validation
+
 ## 1.0.3
 
 ### Patch Changes
