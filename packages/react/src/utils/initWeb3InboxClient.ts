@@ -5,6 +5,7 @@ interface IInitWeb3InboxClient {
   domain?: string;
   allApps?: boolean;
   logLevel?: "info" | "error" | "debug"
+  rpcUrl?: string
 }
 
 /**
@@ -19,7 +20,8 @@ export const initWeb3InboxClient = ({
   projectId,
   domain,
   allApps,
-  logLevel
+  logLevel,
+  rpcUrl
 }: IInitWeb3InboxClient) => {
-  return Web3InboxClient.init({ projectId, domain, allApps, logLevel });
+  return Web3InboxClient.init({ projectId, domain, allApps, logLevel, rpcUrl });
 };
