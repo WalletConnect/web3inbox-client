@@ -7,6 +7,9 @@ import {
 import { proxy, subscribe } from "valtio";
 import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
+import { isSmartWallet } from "../utils/address";
+
+const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/"
 
 export type GetNotificationsReturn = {
   notifications: NotifyClientTypes.NotifyNotification[];
@@ -37,7 +40,8 @@ export class Web3InboxClient {
   public constructor(
     private notifyClient: NotifyClient,
     private domain: string,
-    private allApps: boolean
+    private allApps: boolean,
+    private rpcUrl: string
   ) {}
 
   private getRequiredAccountParam(account?: string) {
@@ -49,7 +53,6 @@ export class Web3InboxClient {
       return;
     }
   }
-
 
   protected attachEventListeners(): void {
     const updateInternalSubscriptions = () => {
@@ -205,6 +208,7 @@ export class Web3InboxClient {
     domain?: string;
     allApps?: boolean;
     logLevel?: "error" | "info" | "debug"
+    rpcUrl?: string;
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -238,7 +242,8 @@ export class Web3InboxClient {
       notifyClient,
       params.domain ?? window.location.host,
       // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
-      params.allApps ?? false
+      params.allApps ?? false,
+      params.rpcUrl ?? DEFAULT_RPC_URL
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -563,19 +568,29 @@ export class Web3InboxClient {
     signature: string;
   }): Promise<string> {
     try {
-      const registeredIdentity = await createPromiseWithTimeout(
-        this.notifyClient.register({
-          registerParams: params.registerParams,
-          signature: params.signature,
-        }),
-        Web3InboxClient.maxTimeout,
-        "register"
-      );
-
       const account = params.registerParams.cacaoPayload.iss
         .split(":")
         .slice(-3)
         .join(":");
+
+      const [chainPrefix,chain,address] = account.split(':')
+
+      const isEip1271Signature = await isSmartWallet(
+	address,
+	`${chainPrefix}:${chain}`,
+	this.notifyClient?.core?.projectId ?? "",
+	this.rpcUrl
+      )
+
+      const registeredIdentity = await createPromiseWithTimeout(
+        this.notifyClient.register({
+          registerParams: params.registerParams,
+          signature: params.signature,
+	  signatureType: isEip1271Signature? 'eip1271' : 'eip191'
+        }),
+        Web3InboxClient.maxTimeout,
+        "register"
+      );
 
       Web3InboxClient.clientState.registration = {
         account,
