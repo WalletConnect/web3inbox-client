@@ -22,13 +22,9 @@ import {
   useUnsubscribe,
   useWeb3InboxAccount,
   useWeb3InboxClient,
-  usePrepareRegistration 
+  usePrepareRegistration,
 } from "@web3inbox/react";
-import {
-  useAccount,
-  usePublicClient,
-  useSignMessage,
-} from "wagmi";
+import { useAccount, usePublicClient, useSignMessage } from "wagmi";
 import { FaBell, FaBellSlash, FaPause, FaPlay } from "react-icons/fa";
 import { BsSendFill } from "react-icons/bs";
 import useSendNotification from "../utils/useSendNotification";
@@ -43,7 +39,9 @@ const Home: NextPage = () => {
   const { address } = useAccount();
   const { data: w3iClient, isLoading: w3iClientIsLoading } =
     useWeb3InboxClient();
-  const { isRegistered } = useWeb3InboxAccount(address? `eip155:1:${address}` : undefined);
+  const { isRegistered } = useWeb3InboxAccount(
+    address ? `eip155:1:${address}` : undefined
+  );
   const { prepareRegistration } = usePrepareRegistration();
   const { register, isLoading: isLoadingRegister } = useRegister();
   const { unregister, isLoading: isLoadingUnregister } = useUnregister();
@@ -160,69 +158,84 @@ const Home: NextPage = () => {
           <React.Fragment>
             {isSubscribed && isRegistered ? (
               <Flex flexWrap={"wrap"} alignItems="center" gap={4}>
-               <Flex alignItems="center" justifyContent="center" flexDir="column">
-		<span>API Call</span>
-                <Button
-                  leftIcon={<BsSendFill />}
-                  variant="outline"
-                  onClick={handleTestNotification}
-                  colorScheme="purple"
-                  rounded="full"
-                  isLoading={isSending}
-                  loadingText="Sending..."
+                <Flex
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDir="column"
                 >
-                  Send test notification
-                </Button>
-		  </Flex>
-               <Flex alignItems="center" justifyContent="center" flexDir="column">
-		<span>Internal State</span>
-                <Button
-                  leftIcon={
-                    isBlockNotificationEnabled ? <FaPause /> : <FaPlay />
-                  }
-                  variant="outline"
-                  onClick={() =>
-                    setIsBlockNotificationEnabled((isEnabled) => !isEnabled)
-                  }
-                  colorScheme={isBlockNotificationEnabled ? "orange" : "blue"}
-                  rounded="full"
+                  <span>API Call</span>
+                  <Button
+                    leftIcon={<BsSendFill />}
+                    variant="outline"
+                    onClick={handleTestNotification}
+                    colorScheme="purple"
+                    rounded="full"
+                    isLoading={isSending}
+                    loadingText="Sending..."
+                  >
+                    Send test notification
+                  </Button>
+                </Flex>
+                <Flex
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDir="column"
                 >
-                  {isBlockNotificationEnabled ? "Pause" : "Resume"} block
-                  notifications
-                </Button>
-		  </Flex>
-		  <Flex alignItems="center" justifyContent="center" flexDir="column">
-		  <span>useUnsubscribe</span>
-                <Button
-                  leftIcon={<FaBellSlash />}
-                  onClick={unsubscribe}
-                  variant="outline"
-                  isDisabled={!address}
-                  colorScheme="red"
-                  isLoading={isLoadingUnsubscribe}
-                  loadingText="Unsubscribing..."
-                  rounded="full"
+                  <span>Internal State</span>
+                  <Button
+                    leftIcon={
+                      isBlockNotificationEnabled ? <FaPause /> : <FaPlay />
+                    }
+                    variant="outline"
+                    onClick={() =>
+                      setIsBlockNotificationEnabled((isEnabled) => !isEnabled)
+                    }
+                    colorScheme={isBlockNotificationEnabled ? "orange" : "blue"}
+                    rounded="full"
+                  >
+                    {isBlockNotificationEnabled ? "Pause" : "Resume"} block
+                    notifications
+                  </Button>
+                </Flex>
+                <Flex
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDir="column"
                 >
-                  Unsubscribe
-                </Button>
-		  </Flex>
-               <Flex alignItems="center" justifyContent="center" flexDir="column">
-		<span>useUnregister</span>
-                <Button
-                  onClick={unregister}
-                  variant="outline"
-                  colorScheme="red"
-                  rounded="full"
-                  w="fit-content"
-                  alignSelf="center"
-                  isLoading={isLoadingUnregister}
-                  loadingText="Unregistering..."
-                  isDisabled={!Boolean(address)}
+                  <span>useUnsubscribe</span>
+                  <Button
+                    leftIcon={<FaBellSlash />}
+                    onClick={unsubscribe}
+                    variant="outline"
+                    isDisabled={!address}
+                    colorScheme="red"
+                    isLoading={isLoadingUnsubscribe}
+                    loadingText="Unsubscribing..."
+                    rounded="full"
+                  >
+                    Unsubscribe
+                  </Button>
+                </Flex>
+                <Flex
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDir="column"
                 >
-                  Unregister
-                </Button>
-
-		    </Flex>
+                  <span>useUnregister</span>
+                  <Button
+                    onClick={unregister}
+                    variant="outline"
+                    colorScheme="red"
+                    rounded="full"
+                    w="fit-content"
+                    alignSelf="center"
+                    isLoading={isLoadingUnregister}
+                    loadingText="Unregistering..."
+                    isDisabled={!Boolean(address)}
+                  >
+                    Unregister
+                  </Button>
+                </Flex>
               </Flex>
             ) : isRegistered ? (
               <React.Fragment>
@@ -234,23 +247,27 @@ const Home: NextPage = () => {
                   }
                   hidden={Boolean(address)}
                 >
-		  <Flex alignItems="center" justifyContent="center" flexDir="column">
-		  <span>useSubscribe</span>
-                  <Button
-                    leftIcon={<FaBell />}
-                    onClick={subscribe}
-                    colorScheme="cyan"
-                    rounded="full"
-                    variant="outline"
-                    w="fit-content"
-                    alignSelf="center"
-                    isLoading={isLoadingSubscribe}
-                    loadingText="Subscribing..."
-                    isDisabled={!Boolean(address)}
+                  <Flex
+                    alignItems="center"
+                    justifyContent="center"
+                    flexDir="column"
                   >
-                    Subscribe
-                  </Button>
-		    </Flex>
+                    <span>useSubscribe</span>
+                    <Button
+                      leftIcon={<FaBell />}
+                      onClick={subscribe}
+                      colorScheme="cyan"
+                      rounded="full"
+                      variant="outline"
+                      w="fit-content"
+                      alignSelf="center"
+                      isLoading={isLoadingSubscribe}
+                      loadingText="Subscribing..."
+                      isDisabled={!Boolean(address)}
+                    >
+                      Subscribe
+                    </Button>
+                  </Flex>
                 </Tooltip>
               </React.Fragment>
             ) : (
@@ -262,22 +279,26 @@ const Home: NextPage = () => {
                 }
                 hidden={Boolean(address)}
               >
-               <Flex alignItems="center" justifyContent="center" flexDir="column">
-		<span>useRegister</span>
-                <Button
-                  leftIcon={<FaBell />}
-                  onClick={handleRegistration}
-                  colorScheme="cyan"
-                  rounded="full"
-                  variant="outline"
-                  w="fit-content"
-                  alignSelf="center"
-                  isLoading={isLoadingRegister}
-                  loadingText="Registering..."
+                <Flex
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDir="column"
                 >
-                  Register
-                </Button>
-		  </Flex>
+                  <span>useRegister</span>
+                  <Button
+                    leftIcon={<FaBell />}
+                    onClick={handleRegistration}
+                    colorScheme="cyan"
+                    rounded="full"
+                    variant="outline"
+                    w="fit-content"
+                    alignSelf="center"
+                    isLoading={isLoadingRegister}
+                    loadingText="Registering..."
+                  >
+                    Register
+                  </Button>
+                </Flex>
               </Tooltip>
             )}
           </React.Fragment>

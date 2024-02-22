@@ -6,12 +6,12 @@ import { useWeb3InboxClient } from "./useWeb3InboxClient";
 const waitFor = async (condition: () => boolean) => {
   return new Promise<void>((resolve) => {
     setInterval(() => {
-      if(condition()) {
-	resolve()
+      if (condition()) {
+        resolve();
       }
-    }, 100)
-  })
-}
+    }, 100);
+  });
+};
 
 type UseNotificationsData = NotifyClientTypes.NotifyNotification[];
 type NextPageState = () => Promise<void>;
@@ -79,13 +79,12 @@ export const useNotifications = (
     return new Promise(async (resolve) => {
       // wait for the next page function to be ready
       if (!nextPage) {
-	await waitFor(() => Boolean(nextPage))
+        await waitFor(() => Boolean(nextPage));
       }
 
       // It is now guaranteed to be truthy.
       const nextPageFunc = nextPage as NextPageState;
-      
-      
+
       return await nextPageFunc()
         .then((res) => {
           resolve(res);
