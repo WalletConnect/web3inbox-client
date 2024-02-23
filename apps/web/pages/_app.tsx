@@ -67,7 +67,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
           <Layout>
-	    <DevTimeStamp />
+            <DevTimeStamp />
             <Component {...pageProps} />
             <GridItem area={"footer"}>
               <Footer />

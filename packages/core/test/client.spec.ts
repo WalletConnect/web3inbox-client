@@ -149,9 +149,7 @@ describe("Web3Inbox Core Client", () => {
       expect(Web3InboxClient.clientState.initting).toEqual(true);
 
       await waitForEvent(() => {
-        return (
-          Web3InboxClient.clientState.isReady
-        );
+        return Web3InboxClient.clientState.isReady;
       });
 
       expect(Web3InboxClient.clientState.isReady).toEqual(true);

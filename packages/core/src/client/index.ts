@@ -7,6 +7,9 @@ import {
 import { proxy, subscribe } from "valtio";
 import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
+import { isSmartWallet } from "../utils/address";
+
+const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
 export type GetNotificationsReturn = {
   notifications: NotifyClientTypes.NotifyNotification[];
@@ -37,7 +40,8 @@ export class Web3InboxClient {
   public constructor(
     private notifyClient: NotifyClient,
     private domain: string,
-    private allApps: boolean
+    private allApps: boolean,
+    private rpcUrlBuilder: (chainId: string) => string
   ) {}
 
   private getRequiredAccountParam(account?: string) {
@@ -50,12 +54,11 @@ export class Web3InboxClient {
     }
   }
 
-
   protected attachEventListeners(): void {
     const updateInternalSubscriptions = () => {
       Web3InboxClient.subscriptionState.subscriptions =
         this.notifyClient.subscriptions.getAll();
-    }
+    };
 
     this.notifyClient.on("notify_delete", updateInternalSubscriptions);
     this.notifyClient.on("notify_subscription", updateInternalSubscriptions);
@@ -67,7 +70,7 @@ export class Web3InboxClient {
 
     subscribe(Web3InboxClient.clientState, () => {
       updateInternalSubscriptions();
-    })
+    });
 
     const clientReadyInterval = setInterval(() => {
       if (this.notifyClient.hasFinishedInitialLoad()) {
@@ -204,7 +207,8 @@ export class Web3InboxClient {
     projectId: string;
     domain?: string;
     allApps?: boolean;
-    logLevel?: "error" | "info" | "debug"
+    logLevel?: "error" | "info" | "debug";
+    rpcUrlBuilder?: Web3InboxClient['rpcUrlBuilder'];
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -238,7 +242,9 @@ export class Web3InboxClient {
       notifyClient,
       params.domain ?? window.location.host,
       // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
-      params.allApps ?? false
+      params.allApps ?? false,
+      params.rpcUrlBuilder
+	?? ((chainId: string) => `${DEFAULT_RPC_URL}?projectId=${params.projectId}&chainId=${chainId}`)
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -416,8 +422,8 @@ export class Web3InboxClient {
       notifications: [],
       hasMore: false,
     });
-    
-    const currentNotificationIds = proxySet<string>([])
+
+    const currentNotificationIds = proxySet<string>([]);
 
     this.notifyClient.on("notify_message", async () => {
       const fetchedNotificationData = await this.getNotificationHistory(
@@ -429,7 +435,7 @@ export class Web3InboxClient {
       const notification = fetchedNotificationData.notifications.shift();
       if (notification && !currentNotificationIds.has(notification.id)) {
         data.notifications = [notification, ...data.notifications];
-	currentNotificationIds.add(notification.id)
+        currentNotificationIds.add(notification.id);
       }
     });
 
@@ -448,11 +454,16 @@ export class Web3InboxClient {
       );
 
       data.notifications = isInfiniteScroll
-        ? [...data.notifications, ...fetchedNotificationData.notifications.filter(n => !currentNotificationIds.has(n.id))]
+        ? [
+            ...data.notifications,
+            ...fetchedNotificationData.notifications.filter(
+              (n) => !currentNotificationIds.has(n.id)
+            ),
+          ]
         : fetchedNotificationData.notifications;
 
-      for(const notification of fetchedNotificationData.notifications) {
-	currentNotificationIds.add(notification.id)
+      for (const notification of fetchedNotificationData.notifications) {
+        currentNotificationIds.add(notification.id);
       }
 
       data.hasMore = fetchedNotificationData.hasMore;
@@ -501,7 +512,10 @@ export class Web3InboxClient {
       return Promise.reject("No account configured");
     }
 
-    const sub = this.getSubscription(accountOrInternalAccount, domain ?? this.domain);
+    const sub = this.getSubscription(
+      accountOrInternalAccount,
+      domain ?? this.domain
+    );
 
     if (sub) {
       try {
@@ -521,9 +535,12 @@ export class Web3InboxClient {
           notifications: [],
         });
       }
-    }
-    else {
-      return Promise.reject(`No sub found for account ${account} and domain ${domain ?? this.domain}`)
+    } else {
+      return Promise.reject(
+        `No sub found for account ${account} and domain ${
+          domain ?? this.domain
+        }`
+      );
     }
   }
 
@@ -563,19 +580,33 @@ export class Web3InboxClient {
     signature: string;
   }): Promise<string> {
     try {
-      const registeredIdentity = await createPromiseWithTimeout(
-        this.notifyClient.register({
-          registerParams: params.registerParams,
-          signature: params.signature,
-        }),
-        Web3InboxClient.maxTimeout,
-        "register"
-      );
-
       const account = params.registerParams.cacaoPayload.iss
         .split(":")
         .slice(-3)
         .join(":");
+
+      const [chainPrefix, chain, address] = account.split(":");
+      const projectId = this.notifyClient?.core?.projectId;
+
+      if(!projectId) {
+	throw new Error("Project ID needs to be supplied")
+      }
+
+      const isEip1271Signature = await isSmartWallet(
+        address,
+        `${chainPrefix}:${chain}`,
+        this.rpcUrlBuilder
+      );
+
+      const registeredIdentity = await createPromiseWithTimeout(
+        this.notifyClient.register({
+          registerParams: params.registerParams,
+          signature: params.signature,
+          signatureType: isEip1271Signature ? "eip1271" : "eip191",
+        }),
+        Web3InboxClient.maxTimeout,
+        "register"
+      );
 
       Web3InboxClient.clientState.registration = {
         account,
@@ -606,7 +637,6 @@ export class Web3InboxClient {
       );
 
       Web3InboxClient.clientState.registration = undefined;
-
     } catch (e: any) {
       throw new Error(`Failed to uregister: ${e.message}`);
     }
