@@ -41,7 +41,7 @@ export class Web3InboxClient {
     private notifyClient: NotifyClient,
     private domain: string,
     private allApps: boolean,
-    private rpcUrl: string
+    private rpcUrlBuilder: (chainId: string) => string
   ) {}
 
   private getRequiredAccountParam(account?: string) {
@@ -208,7 +208,7 @@ export class Web3InboxClient {
     domain?: string;
     allApps?: boolean;
     logLevel?: "error" | "info" | "debug";
-    rpcUrl?: string;
+    rpcUrlBuilder?: Web3InboxClient['rpcUrlBuilder'];
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -243,7 +243,8 @@ export class Web3InboxClient {
       params.domain ?? window.location.host,
       // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
       params.allApps ?? false,
-      params.rpcUrl ?? DEFAULT_RPC_URL
+      params.rpcUrlBuilder
+	?? ((chainId: string) => `${DEFAULT_RPC_URL}?projectId=${params.projectId}&chainId=${chainId}`)
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -585,12 +586,16 @@ export class Web3InboxClient {
         .join(":");
 
       const [chainPrefix, chain, address] = account.split(":");
+      const projectId = this.notifyClient?.core?.projectId;
+
+      if(!projectId) {
+	throw new Error("Project ID needs to be supplied")
+      }
 
       const isEip1271Signature = await isSmartWallet(
         address,
         `${chainPrefix}:${chain}`,
-        this.notifyClient?.core?.projectId ?? "",
-        this.rpcUrl
+        this.rpcUrlBuilder
       );
 
       const registeredIdentity = await createPromiseWithTimeout(

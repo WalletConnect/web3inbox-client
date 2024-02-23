@@ -1,12 +1,13 @@
 const fetchByteCodeFromRpc = async (
   address: string,
   chainId: string,
-  projectId: string,
-  rpcUrl: string
+  rpcUrlBuilder: (chainId: string) => string
 ): Promise<{ result: string }> => {
+
+  const rpcUrl = rpcUrlBuilder(chainId)
   try {
     const result = await fetch(
-      `${rpcUrl}?chainId=${chainId}&projectId=${projectId}`,
+      rpcUrl,
       {
         method: "POST",
         headers: {
@@ -22,9 +23,9 @@ const fetchByteCodeFromRpc = async (
     ).then((response) => response.json());
 
     return result;
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(
-      `Failed to fetch bytecode of address ${address} from RPC ${rpcUrl}`
+      `Failed to fetch bytecode of address ${address} from RPC ${rpcUrl}. Error: ${e.message}`
     );
   }
 };
@@ -32,14 +33,12 @@ const fetchByteCodeFromRpc = async (
 export const isSmartWallet = async (
   address: string,
   chainId: string,
-  projectId: string,
-  rpcUrl: string
+  rpcUrlBuilder: (chainId: string) => string
 ) => {
   const { result: bytecode } = await fetchByteCodeFromRpc(
     address,
     chainId,
-    projectId,
-    rpcUrl
+    rpcUrlBuilder
   );
 
   const nonContractBytecode =
