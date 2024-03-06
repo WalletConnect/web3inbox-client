@@ -11,6 +11,8 @@ import { isSmartWallet } from "../utils/address";
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
+const ECHO_URL = "https://echo.walletconnect.com"
+
 export type GetNotificationsReturn = {
   notifications: NotifyClientTypes.NotifyNotification[];
   hasMore: boolean;
@@ -425,19 +427,23 @@ export class Web3InboxClient {
 
     const currentNotificationIds = proxySet<string>([]);
 
-    this.notifyClient.on("notify_message", async () => {
+    const notifyMessageListener = async () => {
       const fetchedNotificationData = await this.getNotificationHistory(
         notificationsPerPage,
         undefined,
         account,
         domain
       );
+      console.log(">>>", { fetchedNotificationData })
       const notification = fetchedNotificationData.notifications.shift();
+      console.log(">>> notify_message > notif", notification)
       if (notification && !currentNotificationIds.has(notification.id)) {
         data.notifications = [notification, ...data.notifications];
         currentNotificationIds.add(notification.id);
       }
-    });
+    }
+
+    this.notifyClient.on("notify_message", notifyMessageListener);
 
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -472,15 +478,21 @@ export class Web3InboxClient {
     // Get the initial next page
     nextPage();
 
+
     return (
       onNotificationDataUpdate: (
         notificationData: GetNotificationsReturn
       ) => void
     ) => {
+      const unsub = subscribe(data, () => {
+        onNotificationDataUpdate(data);
+      })
+
       return {
-        stopWatchingNotifications: subscribe(data, () => {
-          onNotificationDataUpdate(data);
-        }),
+        stopWatchingNotifications: () => {
+	  this.notifyClient.off("notify_message", notifyMessageListener)
+	  unsub();
+	},
         data,
         nextPage,
       };
@@ -516,6 +528,12 @@ export class Web3InboxClient {
       accountOrInternalAccount,
       domain ?? this.domain
     );
+
+    console.log(">>> fetching with", {
+      topic: sub?.topic,
+      limit,
+      startingAfter,
+    })
 
     if (sub) {
       try {
@@ -712,6 +730,39 @@ export class Web3InboxClient {
         "deleteSubscription"
       );
     }
+  }
+
+  /**
+   * Register with a push server to allow for push notifications.
+   *
+   * @param {string} token - APNS or FCM token.
+   * @param {string} [type] - Whether the token is APNS or FCM. Defaulted to fcm.
+   *
+   */
+  public async registerWithPushServer(token: string, type: "fcm" | "apns" = "fcm") {
+    const projectId = this.notifyClient.core.projectId
+    const clientId = await this.notifyClient.core.crypto.getClientId()
+
+    const echoUrl = `${ECHO_URL}/${projectId}/clients`
+
+    const echoResponse = await fetch(echoUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        type,
+        token
+      })
+    })
+
+    if (echoResponse.status === 200) {
+      return true;
+    }
+
+    throw new Error(`Registration with push server failed, status: ${echoResponse.status}, response: ${await echoResponse.text()}`)
+  
   }
 
   /**

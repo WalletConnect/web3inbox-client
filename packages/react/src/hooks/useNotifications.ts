@@ -1,6 +1,6 @@
 import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useEffect, useState } from "react";
-import { ErrorOf, HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
+import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 
 const waitFor = async (condition: () => boolean) => {
@@ -51,6 +51,7 @@ export const useNotifications = (
     if (!w3iClient) return;
 
     try {
+      setIsLoadingNextPage(true);
       const { nextPage: nextPageFunc, stopWatchingNotifications } =
         w3iClient.pageNotifications(
           notificationsPerPage,
@@ -59,6 +60,7 @@ export const useNotifications = (
           domain
         )((data) => {
           setData(data.notifications);
+	  setIsLoadingNextPage(false);
           setHasMore(data.hasMore);
         });
 

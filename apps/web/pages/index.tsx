@@ -255,7 +255,7 @@ const Home: NextPage = () => {
                     <span>useSubscribe</span>
                     <Button
                       leftIcon={<FaBell />}
-                      onClick={subscribe}
+                      onClick={() => subscribe()}
                       colorScheme="cyan"
                       rounded="full"
                       variant="outline"
