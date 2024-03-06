@@ -39,11 +39,12 @@ export class Web3InboxClient {
     registration: undefined,
   });
 
-  public constructor(
+  private constructor(
     private notifyClient: NotifyClient,
     private domain: string,
     private allApps: boolean,
-    private rpcUrlBuilder: (chainId: string) => string
+    private rpcUrlBuilder: (chainId: string) => string,
+    private projectId: string
   ) {}
 
   private getRequiredAccountParam(account?: string) {
@@ -246,7 +247,8 @@ export class Web3InboxClient {
       // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
       params.allApps ?? false,
       params.rpcUrlBuilder
-	?? ((chainId: string) => `${DEFAULT_RPC_URL}?projectId=${params.projectId}&chainId=${chainId}`)
+	?? ((chainId: string) => `${DEFAULT_RPC_URL}?projectId=${params.projectId}&chainId=${chainId}`),
+      params.projectId
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -732,10 +734,9 @@ export class Web3InboxClient {
    *
    */
   public async registerWithPushServer(token: string, type: "fcm" | "apns" = "fcm") {
-    const projectId = this.notifyClient.core.projectId
     const clientId = await this.notifyClient.core.crypto.getClientId()
 
-    const echoUrl = `${ECHO_URL}/${projectId}/clients`
+    const echoUrl = `${ECHO_URL}/${this.projectId}/clients`
 
     const echoResponse = await fetch(echoUrl, {
       method: 'POST',
