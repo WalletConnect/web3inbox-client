@@ -434,9 +434,7 @@ export class Web3InboxClient {
         account,
         domain
       );
-      console.log(">>>", { fetchedNotificationData })
       const notification = fetchedNotificationData.notifications.shift();
-      console.log(">>> notify_message > notif", notification)
       if (notification && !currentNotificationIds.has(notification.id)) {
         data.notifications = [notification, ...data.notifications];
         currentNotificationIds.add(notification.id);
@@ -528,12 +526,6 @@ export class Web3InboxClient {
       accountOrInternalAccount,
       domain ?? this.domain
     );
-
-    console.log(">>> fetching with", {
-      topic: sub?.topic,
-      limit,
-      startingAfter,
-    })
 
     if (sub) {
       try {
