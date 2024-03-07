@@ -478,7 +478,6 @@ export class Web3InboxClient {
     // Get the initial next page
     nextPage();
 
-
     return (
       onNotificationDataUpdate: (
         notificationData: GetNotificationsReturn
