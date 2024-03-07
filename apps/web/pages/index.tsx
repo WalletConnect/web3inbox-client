@@ -37,7 +37,7 @@ import { useInterval } from "usehooks-ts";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
-  const { data: w3iClient, isLoading: w3iClientIsLoading } =
+  const { isLoading: w3iClientIsLoading } =
     useWeb3InboxClient();
   const { isRegistered } = useWeb3InboxAccount(
     address ? `eip155:1:${address}` : undefined
