@@ -70,6 +70,6 @@ export const useSubscription = (
     error: null,
     isLoading: false,
     watching,
-    getSubscription: w3iClient!.getSubscription
+    getSubscription: (account, domain) => w3iClient!.getSubscription(account, domain)
   } as SuccessOf<UseSubscriptionReturn>;
 };
