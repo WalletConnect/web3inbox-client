@@ -731,8 +731,9 @@ export class Web3InboxClient {
    * @param {string} token - APNS or FCM token.
    * @param {string} [type] - Whether the token is APNS or FCM. Defaulted to fcm.
    *
+   * @returns {string} clientId - Client ID that successfully registered with echo
    */
-  public async registerWithPushServer(token: string, type: "fcm" | "apns" = "fcm") {
+  public async registerWithPushServer(token: string, type: "fcm" | "apns" = "fcm"): Promise<string> {
     const clientId = await this.notifyClient.core.crypto.getClientId()
 
     const echoUrl = `${ECHO_URL}/${this.projectId}/clients`
@@ -750,7 +751,7 @@ export class Web3InboxClient {
     })
 
     if (echoResponse.status === 200) {
-      return true;
+      return clientId;
     }
 
     throw new Error(`Registration with push server failed, status: ${echoResponse.status}, response: ${await echoResponse.text()}`)
