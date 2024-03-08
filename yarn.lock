@@ -3137,6 +3137,22 @@
     axios "^1.4.0"
     jwt-decode "^3.1.2"
 
+"@walletconnect/notify-client@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-1.1.2.tgz#c9655f2c7cf742be41200313eeb68968ccda7e14"
+  integrity sha512-M96SzudXYO7qTXjZaOpylKCdp1NPpH+xmc03ai/3zlmQgAz9ftWDbDgiTG1s3wzUJjJYxNHXtqLBkwxD5h4t6w==
+  dependencies:
+    "@noble/ed25519" "^1.7.3"
+    "@walletconnect/cacao" "1.0.2"
+    "@walletconnect/core" "^2.11.0-canary.0"
+    "@walletconnect/did-jwt" "2.0.1"
+    "@walletconnect/identity-keys" "^2.0.1"
+    "@walletconnect/jsonrpc-utils" "1.0.7"
+    "@walletconnect/time" "1.0.2"
+    "@walletconnect/utils" "^2.11.0"
+    axios "^1.4.0"
+    jwt-decode "^3.1.2"
+
 "@walletconnect/relay-api@^1.0.9":
   version "1.0.9"
   resolved "https://registry.npmjs.org/@walletconnect/relay-api/-/relay-api-1.0.9.tgz"
@@ -3279,6 +3295,22 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
+
+"@web3inbox/core@*":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@web3inbox/core/-/core-1.1.0.tgz#f00a13f37d186ddd61e5dcfe32feed63372fda23"
+  integrity sha512-dckukl3H3r9TZ7rFXpQeIbLbofdtPo3h8+s3LfADonPQx8ZahRZJSgmN8pre5lZnMz8AmBsbd8ehtpcH/h+aaA==
+  dependencies:
+    "@walletconnect/core" "2.11.0"
+    "@walletconnect/notify-client" "^1.1.1"
+    valtio "^1.11.2"
+
+"@web3inbox/react@*":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@web3inbox/react/-/react-1.1.0.tgz#01d3276bfea76c4d2f89080963c5e9ab08f83dde"
+  integrity sha512-A3pVpYt6UUPkyJfx4y67OJXX5BpqgUm2UIyxFhA74rmwvsEWTdp4nGkdM7KMBQshHjZ4m95sOMSAETK0+0O9PQ==
+  dependencies:
+    react "^18.2.0"
 
 "@web3modal/common@4.0.0-alpha.0":
   version "4.0.0-alpha.0"
