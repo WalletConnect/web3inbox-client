@@ -99,6 +99,12 @@ export const useNotifications = (
     });
   };
 
+  // If the domain of the account change, all previous data is invalidated.
+  useEffect(() => {
+    setData([])
+    setHasMore(false)
+  }, [domain, account])
+
   if (isLoadingNextPage) {
     return {
       data,
