@@ -1,5 +1,12 @@
 # @web3inbox/react
 
+## 1.2.0
+
+### Minor Changes
+
+- Feature complete for wallets
+- Expose `getSubscription` and add optional overrides in `subscribe`
+
 ## 1.1.0
 
 ### Minor Changes
