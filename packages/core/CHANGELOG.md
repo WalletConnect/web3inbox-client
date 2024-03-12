@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.2.0
+
+### Minor Changes
+
+- Feature complete for wallets
+
 ## 1.1.0
 
 ### Minor Changes

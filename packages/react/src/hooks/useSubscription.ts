@@ -6,7 +6,10 @@ import { useWeb3InboxClient } from "./useWeb3InboxClient";
 type SubscriptionState = NotifyClientTypes.NotifySubscription | null;
 type UseSubscriptionReturn = HooksReturn<
   SubscriptionState,
-  { watching: boolean }
+  {
+    watching: boolean,
+    getSubscription: (account?: string, domain?: string) => SubscriptionState
+  }
 >;
 
 /**
@@ -30,7 +33,7 @@ export const useSubscription = (
     if (w3iClient && !isLoadingClient) {
       setSubscription(w3iClient.getSubscription(account, domain));
     }
-  }, [w3iClient, isLoadingClient]);
+  }, [w3iClient, domain, account, isLoadingClient]);
 
   useEffect(() => {
     if (!w3iClient || watching) return;
@@ -58,6 +61,7 @@ export const useSubscription = (
       error: null,
       isLoading: true,
       watching: false,
+      getSubscription: () => null
     } as LoadingOf<UseSubscriptionReturn>;
   }
 
@@ -66,5 +70,6 @@ export const useSubscription = (
     error: null,
     isLoading: false,
     watching,
+    getSubscription: (account, domain) => w3iClient!.getSubscription(account, domain)
   } as SuccessOf<UseSubscriptionReturn>;
 };

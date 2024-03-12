@@ -11,6 +11,8 @@ import { isSmartWallet } from "../utils/address";
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
+const ECHO_URL = "https://echo.walletconnect.com"
+
 export type GetNotificationsReturn = {
   notifications: NotifyClientTypes.NotifyNotification[];
   hasMore: boolean;
@@ -37,11 +39,12 @@ export class Web3InboxClient {
     registration: undefined,
   });
 
-  public constructor(
+  private constructor(
     private notifyClient: NotifyClient,
     private domain: string,
     private allApps: boolean,
-    private rpcUrlBuilder: (chainId: string) => string
+    private rpcUrlBuilder: (chainId: string) => string,
+    private projectId: string
   ) {}
 
   private getRequiredAccountParam(account?: string) {
@@ -244,7 +247,8 @@ export class Web3InboxClient {
       // isLimited is defaulted to true, therefore null/undefined values are defaulted to true.
       params.allApps ?? false,
       params.rpcUrlBuilder
-	?? ((chainId: string) => `${DEFAULT_RPC_URL}?projectId=${params.projectId}&chainId=${chainId}`)
+	?? ((chainId: string) => `${DEFAULT_RPC_URL}?projectId=${params.projectId}&chainId=${chainId}`),
+      params.projectId
     );
 
     Web3InboxClient.subscriptionState.subscriptions =
@@ -425,7 +429,7 @@ export class Web3InboxClient {
 
     const currentNotificationIds = proxySet<string>([]);
 
-    this.notifyClient.on("notify_message", async () => {
+    const notifyMessageListener = async () => {
       const fetchedNotificationData = await this.getNotificationHistory(
         notificationsPerPage,
         undefined,
@@ -437,7 +441,9 @@ export class Web3InboxClient {
         data.notifications = [notification, ...data.notifications];
         currentNotificationIds.add(notification.id);
       }
-    });
+    }
+
+    this.notifyClient.on("notify_message", notifyMessageListener);
 
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -477,10 +483,15 @@ export class Web3InboxClient {
         notificationData: GetNotificationsReturn
       ) => void
     ) => {
+      const unsub = subscribe(data, () => {
+        onNotificationDataUpdate(data);
+      })
+
       return {
-        stopWatchingNotifications: subscribe(data, () => {
-          onNotificationDataUpdate(data);
-        }),
+        stopWatchingNotifications: () => {
+	  this.notifyClient.off("notify_message", notifyMessageListener)
+	  unsub();
+	},
         data,
         nextPage,
       };
@@ -712,6 +723,39 @@ export class Web3InboxClient {
         "deleteSubscription"
       );
     }
+  }
+
+  /**
+   * Register with a push server to allow for push notifications.
+   *
+   * @param {string} token - APNS or FCM token.
+   * @param {string} [type] - Whether the token is APNS or FCM. Defaulted to fcm.
+   *
+   * @returns {string} clientId - Client ID that successfully registered with echo
+   */
+  public async registerWithPushServer(token: string, type: "fcm" | "apns" = "fcm"): Promise<string> {
+    const clientId = await this.notifyClient.core.crypto.getClientId()
+
+    const echoUrl = `${ECHO_URL}/${this.projectId}/clients`
+
+    const echoResponse = await fetch(echoUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        type,
+        token
+      })
+    })
+
+    if (echoResponse.status === 200) {
+      return clientId;
+    }
+
+    throw new Error(`Registration with push server failed, status: ${echoResponse.status}, response: ${await echoResponse.text()}`)
+  
   }
 
   /**
