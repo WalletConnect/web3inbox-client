@@ -8,6 +8,7 @@ import { proxy, subscribe } from "valtio";
 import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 import { isSmartWallet } from "../utils/address";
+import { Logger } from 'pino'
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
@@ -216,6 +217,7 @@ export class Web3InboxClient {
     domain?: string;
     allApps?: boolean;
     logLevel?: "error" | "info" | "debug";
+    customerLogger: Logger
     rpcUrlBuilder?: Web3InboxClient['rpcUrlBuilder'];
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
