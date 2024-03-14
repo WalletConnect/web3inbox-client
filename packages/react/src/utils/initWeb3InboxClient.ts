@@ -1,13 +1,4 @@
-import { Web3InboxClient } from "@web3inbox/core";
-
-interface IInitWeb3InboxClient {
-  projectId: string;
-  domain?: string;
-  allApps?: boolean;
-  logLevel?: "info" | "error" | "debug";
-  logStream?: { write: (chunk: any) => void }
-  rpcUrlBuilder?: (chainId: string) => string;
-}
+import { Web3InboxClient, Web3InboxClientInitOptions } from "@web3inbox/core";
 
 /**
  * Init a singleton instance of the Web3InboxClient
@@ -17,13 +8,6 @@ interface IInitWeb3InboxClient {
  * @param {string} params.domain - The domain of the default dapp to target for functions.
  * @param {boolean} params.allApps - All account's subscriptions accessable if explicitly set to true. Only param.domain's otherwise
  */
-export const initWeb3InboxClient = ({
-  projectId,
-  domain,
-  allApps,
-  logLevel,
-  logStream,
-  rpcUrlBuilder,
-}: IInitWeb3InboxClient) => {
-  return Web3InboxClient.init({ projectId, domain, allApps, logLevel, logStream, rpcUrlBuilder });
+export const initWeb3InboxClient = (options: Web3InboxClientInitOptions) => {
+  return Web3InboxClient.init(options);
 };
