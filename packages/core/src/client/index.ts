@@ -8,7 +8,6 @@ import { proxy, subscribe } from "valtio";
 import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 import { isSmartWallet } from "../utils/address";
-import pino from "pino"
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
@@ -26,6 +25,16 @@ interface IClientState {
   // state is duplicated to guard against future data races
   registration?: { account: string; identity: string };
 }
+
+type LoggingOptions =
+ { logLevel?: string, logger?: never } | { logger?: NotifyClient['logger'], logLevel?: never }
+
+export type Web3InboxClientInitOptions = {
+  projectId: string;
+  domain?: string;
+  allApps?: boolean;
+  rpcUrlBuilder?: Web3InboxClient['rpcUrlBuilder'];
+} & LoggingOptions
 
 export class Web3InboxClient {
   public static maxTimeout: number = 10_000;
@@ -207,14 +216,7 @@ export class Web3InboxClient {
    *
    * @returns {Object} Web3InboxClient
    */
-  public static async init(params: {
-    projectId: string;
-    domain?: string;
-    allApps?: boolean;
-    logLevel?: "error" | "info" | "debug";
-    logStream?: { write: (chunk: any) => void }
-    rpcUrlBuilder?: Web3InboxClient['rpcUrlBuilder'];
-  }): Promise<Web3InboxClient> {
+  public static async init(params: Web3InboxClientInitOptions): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
         subscribe(Web3InboxClient.clientState, () => {
@@ -234,16 +236,17 @@ export class Web3InboxClient {
       projectId: params.projectId,
     });
 
-    const pinoOpts = { level: params.logLevel ?? "error" };
 
     const notifyParams = {
       core,
       keyserverUrl: DEFAULT_KEYSERVER_URL,
       projectId: params.projectId,
-      logger: params.logStream ? pino(pinoOpts, params.logStream) : pino(pinoOpts)
     };
 
-    const notifyClient = await NotifyClient.init(notifyParams);
+    const notifyClient = await NotifyClient.init({
+      ...notifyParams,
+      logger: params.logger ?? params.logLevel ?? "error"
+    });
 
     Web3InboxClient.instance = new Web3InboxClient(
       notifyClient,
