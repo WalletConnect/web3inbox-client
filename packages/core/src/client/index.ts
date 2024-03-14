@@ -1,5 +1,4 @@
 import { Core } from "@walletconnect/core";
-import { Writable } from 'stream'
 import {
   DEFAULT_KEYSERVER_URL,
   NotifyClient,
@@ -213,7 +212,7 @@ export class Web3InboxClient {
     domain?: string;
     allApps?: boolean;
     logLevel?: "error" | "info" | "debug";
-    logStream?: Writable;
+    logStream?: { write: (chunk: any) => void }
     rpcUrlBuilder?: Web3InboxClient['rpcUrlBuilder'];
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
