@@ -93,6 +93,10 @@ export class Web3InboxClient {
     }, 100);
   }
 
+  public async getClientId() {
+    return this.notifyClient.core.crypto.getClientId()
+  }
+
   /**
    * Get singleton instance of Web3InboxClient
    */
