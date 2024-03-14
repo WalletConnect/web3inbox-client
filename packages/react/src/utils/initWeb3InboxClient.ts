@@ -1,10 +1,12 @@
 import { Web3InboxClient } from "@web3inbox/core";
+import { Writable } from 'stream'
 
 interface IInitWeb3InboxClient {
   projectId: string;
   domain?: string;
   allApps?: boolean;
   logLevel?: "info" | "error" | "debug";
+  logStream?: Writable
   rpcUrlBuilder?: (chainId: string) => string;
 }
 
@@ -21,7 +23,8 @@ export const initWeb3InboxClient = ({
   domain,
   allApps,
   logLevel,
+  logStream,
   rpcUrlBuilder,
 }: IInitWeb3InboxClient) => {
-  return Web3InboxClient.init({ projectId, domain, allApps, logLevel, rpcUrlBuilder });
+  return Web3InboxClient.init({ projectId, domain, allApps, logLevel, logStream, rpcUrlBuilder });
 };

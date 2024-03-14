@@ -1,4 +1,5 @@
 import { Core } from "@walletconnect/core";
+import { Writable } from 'stream'
 import {
   DEFAULT_KEYSERVER_URL,
   NotifyClient,
@@ -8,6 +9,7 @@ import { proxy, subscribe } from "valtio";
 import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 import { isSmartWallet } from "../utils/address";
+import pino from "pino"
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
@@ -211,6 +213,7 @@ export class Web3InboxClient {
     domain?: string;
     allApps?: boolean;
     logLevel?: "error" | "info" | "debug";
+    logStream?: Writable;
     rpcUrlBuilder?: Web3InboxClient['rpcUrlBuilder'];
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
@@ -232,11 +235,13 @@ export class Web3InboxClient {
       projectId: params.projectId,
     });
 
+    const pinoOpts = { level: params.logLevel ?? "error" };
+
     const notifyParams = {
       core,
       keyserverUrl: DEFAULT_KEYSERVER_URL,
       projectId: params.projectId,
-      logger: params.logLevel ?? "error",
+      logger: params.logStream ? pino(pinoOpts, params.logStream) : pino(pinoOpts)
     };
 
     const notifyClient = await NotifyClient.init(notifyParams);
