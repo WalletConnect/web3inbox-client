@@ -1,12 +1,11 @@
 import { Web3InboxClient } from "@web3inbox/core";
-import { Writable } from 'stream'
 
 interface IInitWeb3InboxClient {
   projectId: string;
   domain?: string;
   allApps?: boolean;
   logLevel?: "info" | "error" | "debug";
-  logStream?: Writable
+  logStream?: { write: (chunk: any) => void }
   rpcUrlBuilder?: (chainId: string) => string;
 }
 
