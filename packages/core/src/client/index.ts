@@ -75,8 +75,13 @@ export class Web3InboxClient {
       updateInternalSubscriptions();
     });
 
+
     const clientReadyInterval = setInterval(() => {
       if (this.notifyClient.hasFinishedInitialLoad()) {
+
+	Web3InboxClient.clientState.initting = false;
+	Web3InboxClient.clientState.isReady = true;
+
         updateInternalSubscriptions();
         clearInterval(clientReadyInterval);
       }
@@ -256,9 +261,8 @@ export class Web3InboxClient {
 
     Web3InboxClient.instance.attachEventListeners();
 
-    Web3InboxClient.clientState.initting = false;
-
-    Web3InboxClient.clientState.isReady = true;
+    Web3InboxClient.clientState.initting = !notifyClient.hasFinishedInitialLoad();
+    Web3InboxClient.clientState.isReady = notifyClient.hasFinishedInitialLoad();
 
     return Web3InboxClient.instance;
   }

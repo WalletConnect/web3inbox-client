@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.2.1
+
+### Patch Changes
+
+- Fix bug where init state is unclear
+
 ## 1.2.0
 
 ### Minor Changes
