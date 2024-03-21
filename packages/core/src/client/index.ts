@@ -503,6 +503,90 @@ export class Web3InboxClient {
   }
 
   /**
+   * Mark specified notifications as read for a account & domain subscription
+   * @param {string[]} notificationIds - Account to get subscription message history for, defaulted to current account
+   * @param {string} [account] - Account to get subscription message history for, defaulted to current account
+   * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
+   */
+  public markNotificationsAsRead(notificationIds: string[], account?: string, domain?: string) {
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      return Promise.reject("No account configured");
+    }
+
+    const sub = this.getSubscription(
+      accountOrInternalAccount,
+      domain ?? this.domain
+    );
+
+    if(sub) {
+      try {
+        return createPromiseWithTimeout(
+          this.notifyClient.markNotificationsAsRead({
+            topic: sub.topic,
+	    notificationIds
+          }),
+          Web3InboxClient.maxTimeout,
+          "markNotificationsAsRead"
+        );
+      } catch (e) {
+        this.notifyClient.core.logger.error("Failed to mark notifications as read", e);
+        return Promise.reject();
+      }
+      
+    } else {
+      return Promise.reject(
+        `No sub found for account ${account} and domain ${
+          domain ?? this.domain
+        }`
+      );
+    }
+    
+  }
+
+  /**
+   * Mark all notifications as read for a given account & domain subscription
+   * @param {string} [account] - Account to get subscription message history for, defaulted to current account
+   * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
+   */
+  public markAllNotificationsAsRead(account?: string, domain?: string) {
+    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    if (!accountOrInternalAccount) {
+      return Promise.reject("No account configured");
+    }
+
+    const sub = this.getSubscription(
+      accountOrInternalAccount,
+      domain ?? this.domain
+    );
+
+    if(sub) {
+      try {
+        return createPromiseWithTimeout(
+          this.notifyClient.markAllNotificationsAsRead({
+            topic: sub.topic,
+          }),
+          Web3InboxClient.maxTimeout,
+          "markAllNotificationsAsRead"
+        );
+      } catch (e) {
+        this.notifyClient.core.logger.error("Failed to mark all notifications as read", e);
+        return Promise.reject();
+      }
+      
+    } else {
+      return Promise.reject(
+        `No sub found for account ${account} and domain ${
+          domain ?? this.domain
+        }`
+      );
+    }
+    
+  }
+
+  /**
    * Get message history for a subscription
    *
    * @param {number} limit - How many notifications to get after `startingAfter`
@@ -518,8 +602,9 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ): Promise<{
-    notifications: NotifyClientTypes.NotifyNotification[];
+    notifications: (NotifyClientTypes.NotifyNotification & { read: () => void })[];
     hasMore: boolean;
+    hasMoreUnread: boolean;
   }> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -539,7 +624,14 @@ export class Web3InboxClient {
             topic: sub.topic,
             limit,
             startingAfter,
-          }),
+          }).then(({hasMore, hasMoreUnread, notifications}) => ({
+	    hasMore,
+	    hasMoreUnread,
+	    notifications: notifications.map(notification => ({
+	      ...notification,
+	      read: () => this.markNotificationsAsRead([notification.id], account, domain)
+	    }))
+	  })),
           Web3InboxClient.maxTimeout,
           "getNotificationHistory"
         );
@@ -547,6 +639,7 @@ export class Web3InboxClient {
         console.error("Failed to fetch messages", e);
         return Promise.reject({
           hasMore: false,
+          hasMoreUnread: false,
           notifications: [],
         });
       }

@@ -2,6 +2,7 @@ import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
+import { Web3InboxClient } from "@web3inbox/core";
 
 const waitFor = async (condition: () => boolean) => {
   return new Promise<void>((resolve) => {
@@ -21,6 +22,8 @@ type UseNotificationsReturn = HooksReturn<
     hasMore: boolean;
     isLoadingNextPage: boolean;
     fetchNextPage: NextPageState;
+    markNotificationsAsRead: Web3InboxClient['markNotificationsAsRead'],
+    markAllNotificationsAsRead: Web3InboxClient['markAllNotificationsAsRead'],
   }
 >;
 
@@ -99,6 +102,35 @@ export const useNotifications = (
     });
   };
 
+
+  const markNotificationsAsRead = async (notificationIds: string[]) => {
+    await waitFor(() => Boolean(w3iClient))
+    const w3iClientTruthy = w3iClient as Web3InboxClient;
+
+    w3iClientTruthy.markNotificationsAsRead(notificationIds, account, domain).catch(setError).then(() => {
+      setData(notifications => 
+	notifications.map(notification => ({
+	  ...notification,
+	  isRead: notificationIds.includes(notification.id)
+	}))
+      )
+    })
+  }
+
+  const markAllNotificationsAsRead = async () => {
+    await waitFor(() => Boolean(w3iClient))
+    const w3iClientTruthy = w3iClient as Web3InboxClient;
+
+    w3iClientTruthy.markAllNotificationsAsRead(account, domain).catch(setError).then(() => {
+      setData(notifications => 
+	notifications.map(notification => ({
+	  ...notification,
+	  isRead: true
+	}))
+      )
+    })
+  }
+
   // If the domain of the account change, all previous data is invalidated.
   useEffect(() => {
     setData([])
@@ -113,6 +145,8 @@ export const useNotifications = (
       isLoading: false,
       isLoadingNextPage: isLoadingNextPage,
       fetchNextPage,
+      markNotificationsAsRead,
+      markAllNotificationsAsRead,
     } as SuccessOf<UseNotificationsReturn>;
   }
 
@@ -124,6 +158,8 @@ export const useNotifications = (
       isLoading: false,
       isLoadingNextPage: false,
       fetchNextPage,
+      markNotificationsAsRead,
+      markAllNotificationsAsRead,
     } as ErrorOf<UseNotificationsReturn>;
   }
 
@@ -134,5 +170,7 @@ export const useNotifications = (
     isLoading: false,
     isLoadingNextPage: false,
     fetchNextPage,
+    markNotificationsAsRead,
+    markAllNotificationsAsRead,
   } as SuccessOf<UseNotificationsReturn>;
 };
