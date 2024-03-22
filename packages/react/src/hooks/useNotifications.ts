@@ -4,6 +4,7 @@ import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { Web3InboxClient } from "@web3inbox/core";
 import { GetNotificationsReturn } from "@web3inbox/core";
+import { debounce } from 'lodash'
 
 const waitFor = async (condition: () => boolean) => {
   return new Promise<void>((resolve) => {
@@ -78,13 +79,14 @@ export const useNotifications = (
           domain
         )((data) => {
           setData(mapNotifications(data.notifications,
-          (notification) => {
+	    // Debounce this as it might be called frequently.
+            debounce((notification) => {
 	    setData(notifications => notifications.map(mappedNotification => ({
 	      ...mappedNotification ,
 	      isRead: mappedNotification.id === notification.id
 	    })))
 	    notification.read()
-	    }
+	    }, 100)
 	  ));
           setIsLoadingNextPage(false);
           setHasMore(data.hasMore);
