@@ -22,8 +22,8 @@ type UseNotificationsReturn = HooksReturn<
     hasMore: boolean;
     isLoadingNextPage: boolean;
     fetchNextPage: NextPageState;
-    markNotificationsAsRead: Web3InboxClient['markNotificationsAsRead'],
-    markAllNotificationsAsRead: Web3InboxClient['markAllNotificationsAsRead'],
+    markNotificationsAsRead: Web3InboxClient["markNotificationsAsRead"];
+    markAllNotificationsAsRead: Web3InboxClient["markAllNotificationsAsRead"];
   }
 >;
 
@@ -63,7 +63,7 @@ export const useNotifications = (
           domain
         )((data) => {
           setData(data.notifications);
-	  setIsLoadingNextPage(false);
+          setIsLoadingNextPage(false);
           setHasMore(data.hasMore);
         });
 
@@ -102,40 +102,45 @@ export const useNotifications = (
     });
   };
 
-
   const markNotificationsAsRead = async (notificationIds: string[]) => {
-    await waitFor(() => Boolean(w3iClient))
+    await waitFor(() => Boolean(w3iClient));
     const w3iClientTruthy = w3iClient as Web3InboxClient;
 
-    w3iClientTruthy.markNotificationsAsRead(notificationIds, account, domain).catch(setError).then(() => {
-      setData(notifications => 
-	notifications.map(notification => ({
-	  ...notification,
-	  isRead: notificationIds.includes(notification.id)
-	}))
-      )
-    })
-  }
+    w3iClientTruthy
+      .markNotificationsAsRead(notificationIds, account, domain)
+      .catch(setError)
+      .then(() => {
+        setData((notifications) =>
+          notifications.map((notification) => ({
+            ...notification,
+            isRead: notificationIds.includes(notification.id),
+          }))
+        );
+      });
+  };
 
   const markAllNotificationsAsRead = async () => {
-    await waitFor(() => Boolean(w3iClient))
+    await waitFor(() => Boolean(w3iClient));
     const w3iClientTruthy = w3iClient as Web3InboxClient;
 
-    w3iClientTruthy.markAllNotificationsAsRead(account, domain).catch(setError).then(() => {
-      setData(notifications => 
-	notifications.map(notification => ({
-	  ...notification,
-	  isRead: true
-	}))
-      )
-    })
-  }
+    w3iClientTruthy
+      .markAllNotificationsAsRead(account, domain)
+      .catch(setError)
+      .then(() => {
+        setData((notifications) =>
+          notifications.map((notification) => ({
+            ...notification,
+            isRead: true,
+          }))
+        );
+      });
+  };
 
   // If the domain of the account change, all previous data is invalidated.
   useEffect(() => {
-    setData([])
-    setHasMore(false)
-  }, [domain, account])
+    setData([]);
+    setHasMore(false);
+  }, [domain, account]);
 
   if (isLoadingNextPage) {
     return {

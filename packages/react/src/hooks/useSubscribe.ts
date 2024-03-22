@@ -5,7 +5,12 @@ import { Web3InboxClient } from "@web3inbox/core";
 
 type UseSubscribeReturn = HooksReturn<
   boolean,
-  { subscribe: (accountOverride?: string, domainOverride?: string) => ReturnType<Web3InboxClient["subscribeToDapp"]> }
+  {
+    subscribe: (
+      accountOverride?: string,
+      domainOverride?: string
+    ) => ReturnType<Web3InboxClient["subscribeToDapp"]>;
+  }
 >;
 
 /**
@@ -24,7 +29,10 @@ export const useSubscribe = (
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const subscribe = async (accountOverride?: string, domainOverride?: string) => {
+  const subscribe = async (
+    accountOverride?: string,
+    domainOverride?: string
+  ) => {
     setError(null);
     setIsLoading(true);
 
