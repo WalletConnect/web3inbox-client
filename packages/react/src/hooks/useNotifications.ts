@@ -83,7 +83,7 @@ export const useNotifications = (
             debounce((notification) => {
 	    setData(notifications => notifications.map(mappedNotification => ({
 	      ...mappedNotification ,
-	      isRead: mappedNotification.id === notification.id
+	      isRead: mappedNotification.isRead || mappedNotification.id === notification.id
 	    })))
 	    notification.read()
 	    }, 100)
@@ -138,7 +138,7 @@ export const useNotifications = (
         setData((notifications) =>
           notifications.map((notification) => ({
             ...notification,
-            isRead: notificationIds.includes(notification.id),
+            isRead: notification.isRead || notificationIds.includes(notification.id),
           }))
         );
       });
