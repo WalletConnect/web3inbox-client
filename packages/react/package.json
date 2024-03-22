@@ -1,6 +1,6 @@
 {
   "name": "@web3inbox/react",
-  "version": "1.3.0-f4e0d8b",
+  "version": "1.3.0-9db3420",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
