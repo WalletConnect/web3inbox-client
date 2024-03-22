@@ -4,7 +4,6 @@ import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { Web3InboxClient } from "@web3inbox/core";
 import { GetNotificationsReturn } from "@web3inbox/core";
-import { debounce } from 'lodash'
 
 const waitFor = async (condition: () => boolean) => {
   return new Promise<void>((resolve) => {
@@ -17,20 +16,22 @@ const waitFor = async (condition: () => boolean) => {
 };
 
 const mapNotifications = (
-  notifications: GetNotificationsReturn['notifications'],
-  onRead: (notification: GetNotificationsReturn['notifications'][0]) => void
+  notifications: GetNotificationsReturn["notifications"],
+  onRead: (notification: GetNotificationsReturn["notifications"][0]) => void
 ) => {
-  return notifications.map(notification => ({
+  return notifications.map((notification) => ({
     ...notification,
     read: () => {
-      if(notification.isRead) {
-        onRead(notification)
+      if (!notification.isRead) {
+        onRead(notification);
       }
     },
-  }))
-}
+  }));
+};
 
-type UseNotificationsData = (NotifyClientTypes.NotifyNotification & { read: () => void })[];
+type UseNotificationsData = (NotifyClientTypes.NotifyNotification & {
+  read: () => void;
+})[];
 type NextPageState = () => Promise<void>;
 type UseNotificationsReturn = HooksReturn<
   UseNotificationsData,
@@ -78,16 +79,22 @@ export const useNotifications = (
           account,
           domain
         )((data) => {
-          setData(mapNotifications(data.notifications,
-	    // Debounce this as it might be called frequently.
-            debounce((notification) => {
-	    setData(notifications => notifications.map(mappedNotification => ({
-	      ...mappedNotification ,
-	      isRead: mappedNotification.isRead || mappedNotification.id === notification.id
-	    })))
-	    notification.read()
-	    }, 100)
-	  ));
+          setData(
+            mapNotifications(
+              data.notifications,
+              (notification) => {
+                setData((notifications) =>
+                  notifications.map((mappedNotification) => ({
+                    ...mappedNotification,
+                    isRead:
+                      mappedNotification.isRead ||
+                      mappedNotification.id === notification.id,
+                  }))
+                );
+                notification.read();
+              }
+            )
+          );
           setIsLoadingNextPage(false);
           setHasMore(data.hasMore);
         });
@@ -138,7 +145,8 @@ export const useNotifications = (
         setData((notifications) =>
           notifications.map((notification) => ({
             ...notification,
-            isRead: notification.isRead || notificationIds.includes(notification.id),
+            isRead:
+              notification.isRead || notificationIds.includes(notification.id),
           }))
         );
       });
