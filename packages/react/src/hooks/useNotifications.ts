@@ -21,7 +21,11 @@ const mapNotifications = (
 ) => {
   return notifications.map(notification => ({
     ...notification,
-    read: () => onRead(notification),
+    read: () => {
+      if(notification.isRead) {
+        onRead(notification)
+      }
+    },
   }))
 }
 
