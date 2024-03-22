@@ -14,10 +14,10 @@ const waitFor = async (condition: () => boolean) => {
   });
 };
 
-type UseNotificationsData = NotifyClientTypes.NotifyNotification[];
+type UseNotificationsData = (NotifyClientTypes.NotifyNotification & { read: () => void })[];
 type NextPageState = () => Promise<void>;
 type UseNotificationsReturn = HooksReturn<
-  NotifyClientTypes.NotifyNotification[],
+  UseNotificationsData,
   {
     hasMore: boolean;
     isLoadingNextPage: boolean;
