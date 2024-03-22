@@ -16,6 +16,7 @@ const ECHO_URL = "https://echo.walletconnect.com";
 export type GetNotificationsReturn = {
   notifications: (NotifyClientTypes.NotifyNotification & { read: () => void })[];
   hasMore: boolean;
+  hasMoreUnread: boolean;
 };
 
 interface IClientState {
@@ -429,6 +430,7 @@ export class Web3InboxClient {
     const data = proxy<GetNotificationsReturn>({
       notifications: [],
       hasMore: false,
+      hasMoreUnread: false
     });
 
     const currentNotificationIds = proxySet<string>([]);
@@ -607,13 +609,7 @@ export class Web3InboxClient {
     startingAfter?: string,
     account?: string,
     domain?: string
-  ): Promise<{
-    notifications: (NotifyClientTypes.NotifyNotification & {
-      read: () => void;
-    })[];
-    hasMore: boolean;
-    hasMoreUnread: boolean;
-  }> {
+  ): Promise<GetNotificationsReturn> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {

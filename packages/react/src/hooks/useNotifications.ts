@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { Web3InboxClient } from "@web3inbox/core";
+import { GetNotificationsReturn } from "@web3inbox/core";
 
 const waitFor = async (condition: () => boolean) => {
   return new Promise<void>((resolve) => {
@@ -13,6 +14,16 @@ const waitFor = async (condition: () => boolean) => {
     }, 100);
   });
 };
+
+const mapNotifications = (
+  notifications: GetNotificationsReturn['notifications'],
+  onRead: (notification: GetNotificationsReturn['notifications'][0]) => void
+) => {
+  return notifications.map(notification => ({
+    ...notification,
+    read: () => onRead(notification),
+  }))
+}
 
 type UseNotificationsData = (NotifyClientTypes.NotifyNotification & { read: () => void })[];
 type NextPageState = () => Promise<void>;
@@ -62,7 +73,15 @@ export const useNotifications = (
           account,
           domain
         )((data) => {
-          setData(data.notifications);
+          setData(mapNotifications(data.notifications,
+          (notification) => {
+	    setData(notifications => notifications.map(mappedNotification => ({
+	      ...mappedNotification ,
+	      isRead: mappedNotification.id === notification.id
+	    })))
+	    notification.read()
+	    }
+	  ));
           setIsLoadingNextPage(false);
           setHasMore(data.hasMore);
         });
