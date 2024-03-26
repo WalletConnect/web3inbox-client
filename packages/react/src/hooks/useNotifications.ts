@@ -80,20 +80,17 @@ export const useNotifications = (
           domain
         )((data) => {
           setData(
-            mapNotifications(
-              data.notifications,
-              (notification) => {
-                setData((notifications) =>
-                  notifications.map((mappedNotification) => ({
-                    ...mappedNotification,
-                    isRead:
-                      mappedNotification.isRead ||
-                      mappedNotification.id === notification.id,
-                  }))
-                );
-                notification.read();
-              }
-            )
+            mapNotifications(data.notifications, (notification) => {
+              setData((notifications) =>
+                notifications.map((mappedNotification) => ({
+                  ...mappedNotification,
+                  isRead:
+                    mappedNotification.isRead ||
+                    mappedNotification.id === notification.id,
+                }))
+              );
+              notification.read();
+            })
           );
           setIsLoadingNextPage(false);
           setHasMore(data.hasMore);
