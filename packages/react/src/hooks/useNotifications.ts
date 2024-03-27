@@ -140,11 +140,16 @@ export const useNotifications = (
       .catch(setError)
       .then(() => {
         setData((notifications) =>
-          notifications.map((notification) => ({
-            ...notification,
-            isRead:
-              notification.isRead || notificationIds.includes(notification.id),
-          }))
+          notifications.map((notification) => {
+            if (notificationIds.includes(notification.id)) {
+              return {
+                ...notification,
+                isRead: true,
+              };
+            } else {
+              return notification;
+            }
+          })
         );
       });
   };
