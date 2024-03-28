@@ -421,7 +421,8 @@ export class Web3InboxClient {
     notificationsPerPage: number,
     isInfiniteScroll?: boolean,
     account?: string,
-    domain?: string
+    domain?: string,
+    unreadFirst: boolean = true
   ): (
     onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void
   ) => {
@@ -442,7 +443,8 @@ export class Web3InboxClient {
         notificationsPerPage,
         undefined,
         account,
-        domain
+        domain,
+	unreadFirst
       );
       const notification = fetchedNotificationData.notifications.shift();
       if (notification && !currentNotificationIds.has(notification.id)) {
@@ -610,7 +612,8 @@ export class Web3InboxClient {
     limit: number,
     startingAfter?: string,
     account?: string,
-    domain?: string
+    domain?: string,
+    unreadFirst: boolean = true
   ): Promise<GetNotificationsReturn> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -631,6 +634,7 @@ export class Web3InboxClient {
               topic: sub.topic,
               limit,
               startingAfter,
+	      unreadFirst
             })
             .then(({ hasMore, hasMoreUnread, notifications }) => ({
               hasMore,

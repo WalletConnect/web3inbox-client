@@ -56,7 +56,8 @@ export const useNotifications = (
   notificationsPerPage: number,
   isInfiniteScroll?: boolean,
   account?: string,
-  domain?: string
+  domain?: string,
+  unreadFirst = true
 ): UseNotificationsReturn => {
   const { data: w3iClient } = useWeb3InboxClient();
 
@@ -77,7 +78,8 @@ export const useNotifications = (
           notificationsPerPage,
           isInfiniteScroll,
           account,
-          domain
+          domain,
+	  unreadFirst
         )((data) => {
           setData(
             mapNotifications(data.notifications, (notification) => {
