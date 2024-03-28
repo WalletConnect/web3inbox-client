@@ -2,6 +2,8 @@ import type { NotifyClientTypes } from "@walletconnect/notify-client";
 import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
+import { Web3InboxClient } from "@web3inbox/core";
+import { GetNotificationsReturn } from "@web3inbox/core";
 
 const waitFor = async (condition: () => boolean) => {
   return new Promise<void>((resolve) => {
@@ -13,14 +15,32 @@ const waitFor = async (condition: () => boolean) => {
   });
 };
 
-type UseNotificationsData = NotifyClientTypes.NotifyNotification[];
+const mapNotifications = (
+  notifications: GetNotificationsReturn["notifications"],
+  onRead: (notification: GetNotificationsReturn["notifications"][0]) => void
+) => {
+  return notifications.map((notification) => ({
+    ...notification,
+    read: () => {
+      if (!notification.isRead) {
+        onRead(notification);
+      }
+    },
+  }));
+};
+
+type UseNotificationsData = (NotifyClientTypes.NotifyNotification & {
+  read: () => void;
+})[];
 type NextPageState = () => Promise<void>;
 type UseNotificationsReturn = HooksReturn<
-  NotifyClientTypes.NotifyNotification[],
+  UseNotificationsData,
   {
     hasMore: boolean;
     isLoadingNextPage: boolean;
     fetchNextPage: NextPageState;
+    markNotificationsAsRead: Web3InboxClient["markNotificationsAsRead"];
+    markAllNotificationsAsRead: Web3InboxClient["markAllNotificationsAsRead"];
   }
 >;
 
@@ -36,7 +56,8 @@ export const useNotifications = (
   notificationsPerPage: number,
   isInfiniteScroll?: boolean,
   account?: string,
-  domain?: string
+  domain?: string,
+  unreadFirst = true
 ): UseNotificationsReturn => {
   const { data: w3iClient } = useWeb3InboxClient();
 
@@ -57,10 +78,23 @@ export const useNotifications = (
           notificationsPerPage,
           isInfiniteScroll,
           account,
-          domain
+          domain,
+	  unreadFirst
         )((data) => {
-          setData(data.notifications);
-	  setIsLoadingNextPage(false);
+          setData(
+            mapNotifications(data.notifications, (notification) => {
+              setData((notifications) =>
+                notifications.map((mappedNotification) => ({
+                  ...mappedNotification,
+                  isRead:
+                    mappedNotification.isRead ||
+                    mappedNotification.id === notification.id,
+                }))
+              );
+              notification.read();
+            })
+          );
+          setIsLoadingNextPage(false);
           setHasMore(data.hasMore);
         });
 
@@ -99,11 +133,51 @@ export const useNotifications = (
     });
   };
 
+  const markNotificationsAsRead = async (notificationIds: string[]) => {
+    await waitFor(() => Boolean(w3iClient));
+    const w3iClientTruthy = w3iClient as Web3InboxClient;
+
+    w3iClientTruthy
+      .markNotificationsAsRead(notificationIds, account, domain)
+      .catch(setError)
+      .then(() => {
+        setData((notifications) =>
+          notifications.map((notification) => {
+            if (notificationIds.includes(notification.id)) {
+              return {
+                ...notification,
+                isRead: true,
+              };
+            } else {
+              return notification;
+            }
+          })
+        );
+      });
+  };
+
+  const markAllNotificationsAsRead = async () => {
+    await waitFor(() => Boolean(w3iClient));
+    const w3iClientTruthy = w3iClient as Web3InboxClient;
+
+    w3iClientTruthy
+      .markAllNotificationsAsRead(account, domain)
+      .catch(setError)
+      .then(() => {
+        setData((notifications) =>
+          notifications.map((notification) => ({
+            ...notification,
+            isRead: true,
+          }))
+        );
+      });
+  };
+
   // If the domain of the account change, all previous data is invalidated.
   useEffect(() => {
-    setData([])
-    setHasMore(false)
-  }, [domain, account])
+    setData([]);
+    setHasMore(false);
+  }, [domain, account]);
 
   if (isLoadingNextPage) {
     return {
@@ -113,6 +187,8 @@ export const useNotifications = (
       isLoading: false,
       isLoadingNextPage: isLoadingNextPage,
       fetchNextPage,
+      markNotificationsAsRead,
+      markAllNotificationsAsRead,
     } as SuccessOf<UseNotificationsReturn>;
   }
 
@@ -124,6 +200,8 @@ export const useNotifications = (
       isLoading: false,
       isLoadingNextPage: false,
       fetchNextPage,
+      markNotificationsAsRead,
+      markAllNotificationsAsRead,
     } as ErrorOf<UseNotificationsReturn>;
   }
 
@@ -134,5 +212,7 @@ export const useNotifications = (
     isLoading: false,
     isLoadingNextPage: false,
     fetchNextPage,
+    markNotificationsAsRead,
+    markAllNotificationsAsRead,
   } as SuccessOf<UseNotificationsReturn>;
 };

@@ -7,8 +7,8 @@ type SubscriptionState = NotifyClientTypes.NotifySubscription | null;
 type UseSubscriptionReturn = HooksReturn<
   SubscriptionState,
   {
-    watching: boolean,
-    getSubscription: (account?: string, domain?: string) => SubscriptionState
+    watching: boolean;
+    getSubscription: (account?: string, domain?: string) => SubscriptionState;
   }
 >;
 
@@ -61,7 +61,7 @@ export const useSubscription = (
       error: null,
       isLoading: true,
       watching: false,
-      getSubscription: () => null
+      getSubscription: () => null,
     } as LoadingOf<UseSubscriptionReturn>;
   }
 
@@ -70,6 +70,7 @@ export const useSubscription = (
     error: null,
     isLoading: false,
     watching,
-    getSubscription: (account, domain) => w3iClient!.getSubscription(account, domain)
+    getSubscription: (account, domain) =>
+      w3iClient!.getSubscription(account, domain),
   } as SuccessOf<UseSubscriptionReturn>;
 };
