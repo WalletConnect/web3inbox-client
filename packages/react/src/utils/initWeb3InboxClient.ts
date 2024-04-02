@@ -23,5 +23,11 @@ export const initWeb3InboxClient = ({
   logLevel,
   rpcUrlBuilder,
 }: IInitWeb3InboxClient) => {
-  return Web3InboxClient.init({ projectId, domain, allApps, logLevel, rpcUrlBuilder });
+  return Web3InboxClient.init({
+    projectId,
+    domain,
+    allApps,
+    logLevel,
+    rpcUrlBuilder,
+  });
 };
