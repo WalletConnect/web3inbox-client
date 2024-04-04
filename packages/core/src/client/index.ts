@@ -427,7 +427,7 @@ export class Web3InboxClient {
    * @param {boolean} [unreadFirst] - Should unread notifications be ordered on top regardless of recency
    * @param {boolean} [onRead] - Function to call when reading a message
    *
-   * @returns {Object[]} messages  - Message Record array
+   * @returns {Object[]} Notifications  - Notification Record array
    */
   public pageNotifications(
     notificationsPerPage: number,
@@ -632,7 +632,7 @@ export class Web3InboxClient {
    * @param {boolean} [unreadFirst] - Should unread notifications be ordered on top regardless of recency
    * @param {boolean} [onRead] - Function to call when reading a message
    *
-   * @returns {Object[]} messages  - Message Record array
+   * @returns {Object[]} notifications  - Notification Record array
    */
   public getNotificationHistory(
     limit: number,
