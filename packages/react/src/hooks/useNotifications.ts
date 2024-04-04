@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { ErrorOf, HooksReturn, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { Web3InboxClient } from "@web3inbox/core";
-import { GetNotificationsReturn } from "@web3inbox/core";
 
 const waitFor = async (condition: () => boolean) => {
   return new Promise<void>((resolve) => {
@@ -15,28 +14,17 @@ const waitFor = async (condition: () => boolean) => {
   });
 };
 
-const mapNotifications = (
-  notifications: GetNotificationsReturn["notifications"],
-  onRead: (notification: GetNotificationsReturn["notifications"][0]) => void
-) => {
-  return notifications.map((notification) => ({
-    ...notification,
-    read: () => {
-      if (!notification.isRead) {
-        onRead(notification);
-      }
-    },
-  }));
-};
 
 type UseNotificationsData = (NotifyClientTypes.NotifyNotification & {
   read: () => void;
 })[];
+
 type NextPageState = () => Promise<void>;
 type UseNotificationsReturn = HooksReturn<
   UseNotificationsData,
   {
     hasMore: boolean;
+    hasMoreUnread: boolean;
     isLoadingNextPage: boolean;
     fetchNextPage: NextPageState;
     markNotificationsAsRead: Web3InboxClient["markNotificationsAsRead"];
@@ -57,7 +45,7 @@ export const useNotifications = (
   isInfiniteScroll?: boolean,
   account?: string,
   domain?: string,
-  unreadFirst = true
+  unreadFirst: boolean = true
 ): UseNotificationsReturn => {
   const { data: w3iClient } = useWeb3InboxClient();
 
@@ -66,6 +54,7 @@ export const useNotifications = (
   const [isLoadingNextPage, setIsLoadingNextPage] = useState<boolean>(false);
   const [errorNextPage, setErrorNextPage] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(false);
+  const [hasMoreUnread, setHasMoreUnread] = useState<boolean>(false);
   const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
@@ -79,23 +68,22 @@ export const useNotifications = (
           isInfiniteScroll,
           account,
           domain,
-	  unreadFirst
-        )((data) => {
-          setData(
-            mapNotifications(data.notifications, (notification) => {
-              setData((notifications) =>
-                notifications.map((mappedNotification) => ({
-                  ...mappedNotification,
-                  isRead:
-                    mappedNotification.isRead ||
-                    mappedNotification.id === notification.id,
-                }))
-              );
-              notification.read();
-            })
-          );
+	  unreadFirst,
+	  (notificationId) => {
+            setData((notifications) =>
+              notifications.map((mappedNotification) => ({
+                ...mappedNotification,
+                isRead:
+                  mappedNotification.isRead ||
+                  mappedNotification.id === notificationId,
+              }))
+            );
+	  }
+        )((newData) => {
+          setData(newData.notifications);
           setIsLoadingNextPage(false);
-          setHasMore(data.hasMore);
+          setHasMore(newData.hasMore);
+          setHasMoreUnread(newData.hasMoreUnread);
         });
 
       setNextPage(() => nextPageFunc);
@@ -183,6 +171,7 @@ export const useNotifications = (
     return {
       data,
       hasMore,
+      hasMoreUnread,
       error: null,
       isLoading: false,
       isLoadingNextPage: isLoadingNextPage,
@@ -196,6 +185,7 @@ export const useNotifications = (
     return {
       data,
       hasMore,
+      hasMoreUnread,
       error: errorNextPage ?? error,
       isLoading: false,
       isLoadingNextPage: false,
@@ -208,6 +198,7 @@ export const useNotifications = (
   return {
     data,
     hasMore,
+    hasMoreUnread,
     error: null,
     isLoading: false,
     isLoadingNextPage: false,

@@ -417,12 +417,25 @@ export class Web3InboxClient {
     return {};
   }
 
+  /**
+   * Page notification history for a subscription
+   *
+   * @param {number} notificationsPerPage - How many notifications to get when calling next page
+   * @param {boolean} [isInfiniteScroll] - Keep previously fetched notifications when calling next page
+   * @param {string} [account] - Account to get subscription message history for, defaulted to current account
+   * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
+   * @param {boolean} [unreadFirst] - Should unread notifications be ordered on top regardless of recency
+   * @param {boolean} [onRead] - Function to call when reading a message
+   *
+   * @returns {Object[]} messages  - Message Record array
+   */
   public pageNotifications(
     notificationsPerPage: number,
     isInfiniteScroll?: boolean,
     account?: string,
     domain?: string,
-    unreadFirst: boolean = true
+    unreadFirst: boolean = true,
+    onRead: (notificationId: string) => void = () => {}
   ): (
     onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void
   ) => {
@@ -444,7 +457,14 @@ export class Web3InboxClient {
         undefined,
         account,
         domain,
-	unreadFirst
+	unreadFirst,
+	(notificationId) => {
+	  const notificationIdx = data.notifications.findIndex(n => n.id === notificationId);
+	  if(notificationId) {
+	    data.notifications[notificationIdx].isRead = true;
+	    onRead(notificationId)
+	  }
+	}
       );
       const notification = fetchedNotificationData.notifications.shift();
       if (notification && !currentNotificationIds.has(notification.id)) {
@@ -605,6 +625,8 @@ export class Web3InboxClient {
    * @param {string} [startingAfter] - ID of the notification to get messages after
    * @param {string} [account] - Account to get subscription message history for, defaulted to current account
    * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
+   * @param {boolean} [unreadFirst] - Should unread notifications be ordered on top regardless of recency
+   * @param {boolean} [onRead] - Function to call when reading a message
    *
    * @returns {Object[]} messages  - Message Record array
    */
@@ -613,7 +635,8 @@ export class Web3InboxClient {
     startingAfter?: string,
     account?: string,
     domain?: string,
-    unreadFirst: boolean = true
+    unreadFirst: boolean = true,
+    onRead: (notificationId: string) => void = () => {}
   ): Promise<GetNotificationsReturn> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -641,12 +664,14 @@ export class Web3InboxClient {
               hasMoreUnread,
               notifications: notifications.map((notification) => ({
                 ...notification,
-                read: () =>
+                read: () => {
+                  onRead(notification.id);
                   this.markNotificationsAsRead(
                     [notification.id],
                     account,
                     domain
-                  ),
+                  )
+		},
               })),
             })),
           Web3InboxClient.maxTimeout,
