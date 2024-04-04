@@ -676,6 +676,7 @@ export class Web3InboxClient {
               notifications: notifications.map((notification) => ({
                 ...notification,
                 read: () => {
+		  if (notification.isRead) return;
 		  if (onRead) onRead(notification.id);
                   this.markNotificationsAsRead(
                     [notification.id],
