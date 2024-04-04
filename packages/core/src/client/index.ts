@@ -451,6 +451,14 @@ export class Web3InboxClient {
 
     const currentNotificationIds = proxySet<string>([]);
 
+    const onReadWrapper = (notificationId: string) => {
+      const notificationIdx = data.notifications.findIndex(n => n.id === notificationId);
+      if(notificationIdx > -1) {
+        data.notifications[notificationIdx].isRead = true;
+        onRead(notificationId)
+      }
+    }
+
     const notifyMessageListener = async () => {
       const fetchedNotificationData = await this.getNotificationHistory(
         notificationsPerPage,
@@ -458,13 +466,7 @@ export class Web3InboxClient {
         account,
         domain,
 	unreadFirst,
-	(notificationId) => {
-	  const notificationIdx = data.notifications.findIndex(n => n.id === notificationId);
-	  if(notificationId) {
-	    data.notifications[notificationIdx].isRead = true;
-	    onRead(notificationId)
-	  }
-	}
+	onReadWrapper
       );
       const notification = fetchedNotificationData.notifications.shift();
       if (notification && !currentNotificationIds.has(notification.id)) {
@@ -486,7 +488,9 @@ export class Web3InboxClient {
         notificationsPerPage,
         lastMessage,
         accountOrInternalAccount,
-        domain ?? this.domain
+        domain ?? this.domain,
+	unreadFirst,
+	onReadWrapper
       );
 
       data.notifications = isInfiniteScroll
@@ -636,7 +640,7 @@ export class Web3InboxClient {
     account?: string,
     domain?: string,
     unreadFirst: boolean = true,
-    onRead: (notificationId: string) => void = () => {}
+    onRead?: (notificationId: string) => void
   ): Promise<GetNotificationsReturn> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -665,7 +669,7 @@ export class Web3InboxClient {
               notifications: notifications.map((notification) => ({
                 ...notification,
                 read: () => {
-                  onRead(notification.id);
+		  if (onRead) onRead(notification.id);
                   this.markNotificationsAsRead(
                     [notification.id],
                     account,
