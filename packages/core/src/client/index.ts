@@ -448,7 +448,7 @@ export class Web3InboxClient {
     unreadFirst: boolean = true,
     onRead: (notificationId: string) => void = () => {}
   ): (
-    onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void
+    onNotificationDataUpdate: (notificationData: PageNotificationsReturn) => void
   ) => {
     stopWatchingNotifications: () => void;
     data: PageNotificationsReturn;
@@ -540,7 +540,7 @@ export class Web3InboxClient {
 
     return (
       onNotificationDataUpdate: (
-        notificationData: GetNotificationsReturn
+        notificationData: PageNotificationsReturn
       ) => void
     ) => {
       const unsub = subscribe(data, () => {
