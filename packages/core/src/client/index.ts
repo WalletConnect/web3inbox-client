@@ -221,7 +221,7 @@ export class Web3InboxClient {
     projectId: string;
     domain?: string;
     allApps?: boolean;
-    logLevel?: "error" | "info" | "debug";
+    logLevel?: "error" | "info" | "debug" | "trace";
     rpcUrlBuilder?: Web3InboxClient["rpcUrlBuilder"];
     sdkVersionMapEntries?: Record<string, string>
   }): Promise<Web3InboxClient> {
@@ -470,6 +470,11 @@ export class Web3InboxClient {
 
     const onReadWrapper = (notification: NotifyClientTypes.NotifyNotification) => {
       if(readNotifications[notification.id]) return;
+
+      if(notification.isRead) {
+        readNotifications[notification.id] = true;
+	return;
+      }
 
       this.markNotificationsAsRead(
         [notification.id],
