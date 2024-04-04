@@ -15,12 +15,16 @@ const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 const ECHO_URL = "https://echo.walletconnect.com";
 
 export type GetNotificationsReturn = {
-  notifications: (NotifyClientTypes.NotifyNotification & {
-    read: () => void;
-  })[];
+  notifications: NotifyClientTypes.NotifyNotification[];
   hasMore: boolean;
   hasMoreUnread: boolean;
 };
+
+export type PageNotificationsReturn = GetNotificationsReturn & {
+  notifications: (NotifyClientTypes.NotifyNotification & {
+    read: () => void
+  })[];
+}
 
 interface IClientState {
   isReady: boolean;
@@ -447,10 +451,10 @@ export class Web3InboxClient {
     onNotificationDataUpdate: (notificationData: GetNotificationsReturn) => void
   ) => {
     stopWatchingNotifications: () => void;
-    data: GetNotificationsReturn;
+    data: PageNotificationsReturn;
     nextPage: () => Promise<void>;
   } {
-    const data = proxy<GetNotificationsReturn>({
+    const data = proxy<PageNotificationsReturn>({
       notifications: [],
       hasMore: false,
       hasMoreUnread: false,
@@ -458,12 +462,21 @@ export class Web3InboxClient {
 
     const currentNotificationIds = proxySet<string>([]);
 
-    const onReadWrapper = (notificationId: string) => {
-      const notificationIdx = data.notifications.findIndex(n => n.id === notificationId);
+    const onReadWrapper = (notification: NotifyClientTypes.NotifyNotification) => {
+      if (notification.isRead) return;
+
+      this.markNotificationsAsRead(
+        [notification.id],
+        account,
+        domain
+      )
+
+      const notificationIdx = data.notifications.findIndex(n => n.id === notification.id);
       if(notificationIdx > -1) {
         data.notifications[notificationIdx].isRead = true;
-        onRead(notificationId)
       }
+
+      if (onRead) onRead(notification.id);
     }
 
     const notifyMessageListener = async () => {
@@ -473,11 +486,13 @@ export class Web3InboxClient {
         account,
         domain,
 	unreadFirst,
-	onReadWrapper
       );
       const notification = fetchedNotificationData.notifications.shift();
       if (notification && !currentNotificationIds.has(notification.id)) {
-        data.notifications = [notification, ...data.notifications];
+        data.notifications = [{
+	  ...notification,
+	  read: () => onReadWrapper(notification)
+	}, ...data.notifications];
         currentNotificationIds.add(notification.id);
       }
     };
@@ -497,19 +512,23 @@ export class Web3InboxClient {
         accountOrInternalAccount,
         domain ?? this.domain,
 	unreadFirst,
-	onReadWrapper
       );
+
+      const mappedNotifications = fetchedNotificationData.notifications.map(notification => ({
+	...notification,
+	read: () => onReadWrapper(notification)
+      }))
 
       data.notifications = isInfiniteScroll
         ? [
             ...data.notifications,
-            ...fetchedNotificationData.notifications.filter(
+            ...mappedNotifications.filter(
               (n) => !currentNotificationIds.has(n.id)
             ),
           ]
-        : fetchedNotificationData.notifications;
+        : mappedNotifications;
 
-      for (const notification of fetchedNotificationData.notifications) {
+      for (const notification of mappedNotifications) {
         currentNotificationIds.add(notification.id);
       }
 
@@ -637,7 +656,6 @@ export class Web3InboxClient {
    * @param {string} [account] - Account to get subscription message history for, defaulted to current account
    * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
    * @param {boolean} [unreadFirst] - Should unread notifications be ordered on top regardless of recency
-   * @param {boolean} [onRead] - Function to call when reading a message
    *
    * @returns {Object[]} notifications  - Notification Record array
    */
@@ -647,7 +665,6 @@ export class Web3InboxClient {
     account?: string,
     domain?: string,
     unreadFirst: boolean = true,
-    onRead?: (notificationId: string) => void
   ): Promise<GetNotificationsReturn> {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
@@ -675,15 +692,6 @@ export class Web3InboxClient {
               hasMoreUnread,
               notifications: notifications.map((notification) => ({
                 ...notification,
-                read: () => {
-		  if (notification.isRead) return;
-		  if (onRead) onRead(notification.id);
-                  this.markNotificationsAsRead(
-                    [notification.id],
-                    account,
-                    domain
-                  )
-		},
               })),
             })),
           Web3InboxClient.maxTimeout,
