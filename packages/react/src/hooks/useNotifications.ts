@@ -51,7 +51,14 @@ export const useNotifications = (
   const { data: w3iClient } = useWeb3InboxClient();
 
   const [nextPage, setNextPage] = useState<NextPageState>();
-  const [data, setData] = useState<UseNotificationsData>([]);
+
+  // Using a wrapper because `pageNotifications` delivers the same object reference on update
+  // so `setDataWrapper` won't trigger `useEffect`s to update when it is called. This is because
+  // it is receiving the same valtio object. To mitigate this we wrap data in an object
+  // and create a new object with the data. The alternative would have been to spread the array
+  // coming from pageNotifications but that is unnecessarily inefficient. 
+  const [dataWrapper, setDataWrapper] = useState<{data: UseNotificationsData}>({data: []});
+
   const [isLoadingNextPage, setIsLoadingNextPage] = useState<boolean>(false);
   const [errorNextPage, setErrorNextPage] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(false);
@@ -70,18 +77,8 @@ export const useNotifications = (
           account,
           domain,
 	  unreadFirst,
-	  (notificationId) => {
-            setData((notifications) =>
-              notifications.map((mappedNotification) => ({
-                ...mappedNotification,
-                isRead:
-                  mappedNotification.isRead ||
-                  mappedNotification.id === notificationId,
-              }))
-            );
-	  }
         )((newData) => {
-          setData(newData.notifications);
+          setDataWrapper({data: newData.notifications});
           setIsLoadingNextPage(false);
           setHasMore(newData.hasMore);
           setHasMoreUnread(newData.hasMoreUnread);
@@ -95,7 +92,7 @@ export const useNotifications = (
     } catch (e: any) {
       setError(e.message);
     }
-  }, [account, domain, notificationsPerPage, isInfiniteScroll, w3iClient]);
+  }, [account, domain, notificationsPerPage, isInfiniteScroll, w3iClient, setDataWrapper]);
 
   const fetchNextPage = async () => {
     setErrorNextPage(null);
@@ -130,8 +127,8 @@ export const useNotifications = (
       .markNotificationsAsRead(notificationIds, account, domain)
       .catch(setError)
       .then(() => {
-        setData((notifications) =>
-          notifications.map((notification) => {
+        setDataWrapper(({data: notifications}) => ({
+	  data: notifications.map((notification) => {
             if (notificationIds.includes(notification.id)) {
               return {
                 ...notification,
@@ -141,6 +138,7 @@ export const useNotifications = (
               return notification;
             }
           })
+	})
         );
       });
   };
@@ -153,24 +151,26 @@ export const useNotifications = (
       .markAllNotificationsAsRead(account, domain)
       .catch(setError)
       .then(() => {
-        setData((notifications) =>
-          notifications.map((notification) => ({
+        setDataWrapper(({data: notifications}) =>
+	  ({
+	    data: notifications.map((notification) => ({
             ...notification,
             isRead: true,
           }))
+	  })
         );
       });
   };
 
   // If the domain of the account change, all previous data is invalidated.
   useEffect(() => {
-    setData([]);
+    setDataWrapper({data: []});
     setHasMore(false);
   }, [domain, account]);
 
   if (isLoadingNextPage) {
     return {
-      data,
+      data: dataWrapper.data,
       hasMore,
       hasMoreUnread,
       error: null,
@@ -184,7 +184,7 @@ export const useNotifications = (
 
   if (errorNextPage || error) {
     return {
-      data,
+      data: dataWrapper.data,
       hasMore,
       hasMoreUnread,
       error: errorNextPage ?? error,
@@ -197,7 +197,7 @@ export const useNotifications = (
   }
 
   return {
-    data,
+    data: dataWrapper.data,
     hasMore,
     hasMoreUnread,
     error: null,

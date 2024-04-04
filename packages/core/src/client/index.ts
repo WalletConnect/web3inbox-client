@@ -460,16 +460,24 @@ export class Web3InboxClient {
       hasMoreUnread: false,
     });
 
+    // The need for an external hashmap and not depending on the array is
+    // because the `read` function gets mapped to notifications coming from
+    // notify client due to the fact that messages may be coming from notify_message or
+    // getNotificationHistory
+    const readNotifications = proxy<Record<string, boolean>>({})
+
     const currentNotificationIds = proxySet<string>([]);
 
     const onReadWrapper = (notification: NotifyClientTypes.NotifyNotification) => {
-      if (notification.isRead) return;
+      if(readNotifications[notification.id]) return;
 
       this.markNotificationsAsRead(
         [notification.id],
         account,
         domain
       )
+
+      readNotifications[notification.id] = true;
 
       const notificationIdx = data.notifications.findIndex(n => n.id === notification.id);
       if(notificationIdx > -1) {
@@ -544,6 +552,7 @@ export class Web3InboxClient {
       ) => void
     ) => {
       const unsub = subscribe(data, () => {
+	console.log("Calling onNotificationDataUpdate")
         onNotificationDataUpdate(data);
       });
 
