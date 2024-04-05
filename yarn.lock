@@ -3119,10 +3119,10 @@
     axios "^1.4.0"
     jwt-decode "^3.1.2"
 
-"@walletconnect/notify-client@^1.2.2":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-1.2.2.tgz#095d507d8555a7798f3bbbeafc553002fd546cf6"
-  integrity sha512-atrr76pWia35mfwxefGoChLJwU9PyCCPjC5mmdjJeZxhN62dKlRdlsRjPOkxmH4c3U9tmLFtgk6izz7NgrURfw==
+"@walletconnect/notify-client@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-1.2.3.tgz#88a88618e5eae66216664fa0ce39f99fc50c1f0c"
+  integrity sha512-fE+AZCPafLKHcid1PWiUkSxPz1UoMz59xnSbj8bsoYwUA6+63nFCTp+PBinFThwtEX/MDtmJMSs8svG/lEhqzg==
   dependencies:
     "@noble/ed25519" "^1.7.3"
     "@walletconnect/cacao" "1.0.2"
