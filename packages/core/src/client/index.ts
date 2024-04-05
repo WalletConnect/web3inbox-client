@@ -9,6 +9,7 @@ import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 import { isSmartWallet } from "../utils/address";
 import { version as web3inboxCorePackageVersion, name as web3inboxCorePackageName } from '../../package.json'
+import { debounce } from 'lodash'
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
@@ -42,6 +43,9 @@ export class Web3InboxClient {
     account: undefined,
     registration: undefined,
   });
+
+  private MARK_NOTIFICATIONS_AS_READ_DEBOUNCE_TIME = 50;
+  private static notificationsToRead = proxySet<string>([])
 
   private constructor(
     private notifyClient: NotifyClient,
@@ -539,17 +543,11 @@ export class Web3InboxClient {
     };
   }
 
-  /**
-   * Mark specified notifications as read for a account & domain subscription
-   * @param {string[]} notificationIds - Account to get subscription message history for, defaulted to current account
-   * @param {string} [account] - Account to get subscription message history for, defaulted to current account
-   * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
-   */
-  public markNotificationsAsRead(
+  private debouncedMarkNotificationsAsRead = debounce((
     notificationIds: string[],
     account?: string,
     domain?: string
-  ) {
+  ) => {
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
     if (!accountOrInternalAccount) {
@@ -585,6 +583,23 @@ export class Web3InboxClient {
         }`
       );
     }
+  }, this.MARK_NOTIFICATIONS_AS_READ_DEBOUNCE_TIME)
+
+  /**
+   * Mark specified notifications as read for a account & domain subscription
+   * @param {string[]} notificationIds - Account to get subscription message history for, defaulted to current account
+   * @param {string} [account] - Account to get subscription message history for, defaulted to current account
+   * @param {string} [domain] - Domain to get subscription message history for, defaulted to one set in init.
+   */
+  public markNotificationsAsRead(
+    notificationIds: string[],
+    account?: string,
+    domain?: string
+  ) {
+    for(const notificationId of notificationIds) {
+      Web3InboxClient.notificationsToRead.add(notificationId)
+    } 
+    this.debouncedMarkNotificationsAsRead(Array.from(Web3InboxClient.notificationsToRead.values()), account, domain)
   }
 
   /**
