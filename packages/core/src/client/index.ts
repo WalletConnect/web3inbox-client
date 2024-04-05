@@ -8,6 +8,7 @@ import { proxy, subscribe } from "valtio";
 import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 import { isSmartWallet } from "../utils/address";
+import { version as web3inboxCoreVersion } from '../../package.json'
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
@@ -218,6 +219,7 @@ export class Web3InboxClient {
     allApps?: boolean;
     logLevel?: "error" | "info" | "debug";
     rpcUrlBuilder?: Web3InboxClient["rpcUrlBuilder"];
+    sdkVersionMapEntries?: Record<string, string>
   }): Promise<Web3InboxClient> {
     if (Web3InboxClient.clientState.initting) {
       return new Promise<Web3InboxClient>((res) => {
@@ -238,11 +240,16 @@ export class Web3InboxClient {
       projectId: params.projectId,
     });
 
-    const notifyParams = {
+    const notifyParams: Parameters<typeof NotifyClient['init']>[0] = {
       core,
       keyserverUrl: DEFAULT_KEYSERVER_URL,
       projectId: params.projectId,
       logger: params.logLevel ?? "error",
+      sdkVersionMapEntries: {
+	...params.sdkVersionMapEntries,
+	"@web3inbox/core": web3inboxCoreVersion,
+
+      }
     };
 
     const notifyClient = await NotifyClient.init(notifyParams);

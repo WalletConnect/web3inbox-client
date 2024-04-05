@@ -1,4 +1,5 @@
 import { Web3InboxClient } from "@web3inbox/core";
+import { version as web3inboxReactVersion } from '../../package.json'
 
 interface IInitWeb3InboxClient {
   projectId: string;
@@ -29,5 +30,8 @@ export const initWeb3InboxClient = ({
     allApps,
     logLevel,
     rpcUrlBuilder,
+    sdkVersionMapEntries: {
+      "@web3inbox/react": web3inboxReactVersion
+    }
   });
 };
