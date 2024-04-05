@@ -123,24 +123,21 @@ export const useNotifications = (
     await waitFor(() => Boolean(w3iClient));
     const w3iClientTruthy = w3iClient as Web3InboxClient;
 
-    w3iClientTruthy
-      .markNotificationsAsRead(notificationIds, account, domain)
-      .catch(setError)
-      .then(() => {
-        setDataWrapper(({data: notifications}) => ({
-	  data: notifications.map((notification) => {
-            if (notificationIds.includes(notification.id)) {
-              return {
-                ...notification,
-                isRead: true,
-              };
-            } else {
-              return notification;
-            }
-          })
-	})
-        );
-      });
+    w3iClientTruthy.markNotificationsAsRead(notificationIds, account, domain)
+
+    // Optimistic data updates
+    setDataWrapper(({data: notifications}) => ({
+      data: notifications.map((notification) => {
+        if (notificationIds.includes(notification.id)) {
+          return {
+            ...notification,
+            isRead: true,
+          };
+        } else {
+          return notification;
+        }
+      })
+    }));
   };
 
   const markAllNotificationsAsRead = async () => {
