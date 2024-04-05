@@ -599,6 +599,7 @@ export class Web3InboxClient {
     for(const notificationId of notificationIds) {
       Web3InboxClient.notificationsToRead.add(notificationId)
     } 
+
     this.debouncedMarkNotificationsAsRead(Array.from(Web3InboxClient.notificationsToRead.values()), account, domain)
   }
 
