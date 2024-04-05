@@ -44,7 +44,7 @@ export class Web3InboxClient {
     registration: undefined,
   });
 
-  private MARK_NOTIFICATIONS_AS_READ_DEBOUNCE_TIME = 50;
+  private MARK_NOTIFICATIONS_AS_READ_DEBOUNCE_TIME = 250;
   private static notificationsToRead = proxySet<string>([])
 
   private constructor(
@@ -548,7 +548,10 @@ export class Web3InboxClient {
     account?: string,
     domain?: string
   ) => {
-    const accountOrInternalAccount = this.getRequiredAccountParam(account);
+
+    console.log(">> In debounced func", { notificationIds, account, domain })
+
+    const accountOrInternalAccount = this.getRequiredAccountParam(account); 
 
     if (!accountOrInternalAccount) {
       return Promise.reject("No account configured");
@@ -561,14 +564,18 @@ export class Web3InboxClient {
 
     if (sub) {
       try {
-        return createPromiseWithTimeout(
+        const timeoutPromise = createPromiseWithTimeout(
           this.notifyClient.markNotificationsAsRead({
             topic: sub.topic,
             notificationIds,
           }),
           Web3InboxClient.maxTimeout,
           "markNotificationsAsRead"
-        );
+        ).then(() => {
+	  Web3InboxClient.notificationsToRead.clear()
+	});
+
+	return timeoutPromise
       } catch (e) {
         this.notifyClient.core.logger.error(
           "Failed to mark notifications as read",
