@@ -8,7 +8,7 @@ import { proxy, subscribe } from "valtio";
 import { proxySet } from "valtio/utils";
 import { createPromiseWithTimeout } from "../utils/promiseTimeout";
 import { isSmartWallet } from "../utils/address";
-import { version as web3inboxCoreVersion } from '../../package.json'
+import { version as web3inboxCorePackageVersion, name as web3inboxCorePackageName } from '../../package.json'
 
 const DEFAULT_RPC_URL = "https://rpc.walletconnect.com/v1/";
 
@@ -247,7 +247,7 @@ export class Web3InboxClient {
       logger: params.logLevel ?? "error",
       sdkVersionMapEntries: {
 	...params.sdkVersionMapEntries,
-	"@web3inbox/core": web3inboxCoreVersion,
+	[web3inboxCorePackageName]: web3inboxCorePackageVersion,
 
       }
     };
