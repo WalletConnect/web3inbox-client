@@ -9,7 +9,6 @@ import {
   waitFor as rtl_waitFor,
   type waitForOptions,
 } from "@testing-library/react";
-import { createElement } from "react";
 import { WagmiProvider, useSignMessage } from "wagmi";
 export { act, cleanup } from "@testing-library/react";
 

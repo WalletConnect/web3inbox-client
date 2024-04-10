@@ -27,7 +27,7 @@ afterEach(async () => {
   );
 
   await act(async () => {
-    w3iAccountResult.current.setAccount(undefined);
+    w3iAccountResult.current.setAccount(undefined)
   });
 });
 

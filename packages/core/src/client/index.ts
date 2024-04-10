@@ -138,7 +138,13 @@ export class Web3InboxClient {
    *
    * @param {string} account
    */
-  public async setAccount(account: string) {
+  public async setAccount(account: string | undefined) {
+    if(!account) {
+      Web3InboxClient.clientState.registration = undefined;
+      Web3InboxClient.clientState.account = account;
+      return;
+    }
+
     const isRegistered = await this.getAccountIsRegistered(account);
     // Account setting is duplicated to ensure it only gets updated once
     // identity state is confirmed
