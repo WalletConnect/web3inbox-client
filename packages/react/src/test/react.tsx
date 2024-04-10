@@ -17,18 +17,14 @@ import { config } from "./config";
 
 export const queryClient = new QueryClient();
 
-export function createWrapper<TComponent extends React.FunctionComponent<any>>(
-  Wrapper: TComponent,
-  props: Parameters<TComponent>[0]
-) {
-  type Props = { children?: React.ReactNode | undefined };
-  return function CreatedWrapper({ children }: Props) {
-    return createElement(
-      Wrapper,
-      props,
-      createElement(QueryClientProvider, { client: queryClient }, children)
-    );
-  };
+const WagmiWrapper = ({children}: {children: React.ReactNode}) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={config}>
+	{children}
+      </WagmiProvider>
+    </QueryClientProvider>
+  )
 }
 
 export function render<Result, Props>(
@@ -38,10 +34,7 @@ export function render<Result, Props>(
   queryClient.clear();
   return rtl_render(children, {
     ...options,
-    wrapper: createWrapper(WagmiProvider, {
-      config,
-      reconnectOnMount: true,
-    }),
+    wrapper: WagmiWrapper,
   });
 }
 
@@ -51,10 +44,7 @@ export function customRenderHook<Result, Props>(
 ): RenderHookResult<Result, Props> {
   return rtl_renderHook(render, {
     ...options,
-    wrapper: createWrapper(WagmiProvider, {
-      config,
-      reconnectOnMount: true,
-    }),
+    wrapper: WagmiWrapper,
   });
 }
 
