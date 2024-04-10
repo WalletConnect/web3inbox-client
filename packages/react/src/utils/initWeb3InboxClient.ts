@@ -5,7 +5,7 @@ interface IInitWeb3InboxClient {
   projectId: string;
   domain?: string;
   allApps?: boolean;
-  logLevel?: "info" | "error" | "debug";
+  logLevel?: "info" | "error" | "debug" | "trace";
   rpcUrlBuilder?: (chainId: string) => string;
 }
 
