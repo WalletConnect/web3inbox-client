@@ -1,4 +1,61 @@
-# @web3inbox/widget-react
+# @web3inbox/react
+
+## 1.2.1
+
+### Patch Changes
+
+- Fix bug where init state is unclear
+- Updated dependencies
+  - @web3inbox/core@1.2.1
+
+## 1.2.0
+
+### Minor Changes
+
+- Feature complete for wallets
+- Expose `getSubscription` and add optional overrides in `subscribe`
+
+## 1.1.0
+
+### Minor Changes
+
+- Add support for eip1271 validation
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/core@1.1.0
+
+## 1.0.3
+
+### Patch Changes
+
+- Expose log level flag
+
+## 1.0.2
+
+### Patch Changes
+
+- Fix bug where paging notifications was sometimes a noop
+- Updated dependencies
+  - @web3inbox/core@1.0.2
+
+## 1.0.1
+
+### Patch Changes
+
+- Update README and docs
+
+## 1.0.0
+
+### Major Changes
+
+- Stable release
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/core@1.0.0
 
 ## 0.6.26
 

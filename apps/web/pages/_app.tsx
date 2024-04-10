@@ -13,11 +13,11 @@ import Footer from "../components/core/Footer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-import Navbar from "../components/core/Navbar";
-import { initWeb3InboxClient } from "@web3inbox/widget-react";
+import { initWeb3InboxClient } from "@web3inbox/react";
 import { ThemeStore } from "../utils/themeStore";
 import { useEffect } from "react";
 import Layout from "../components/Layout";
+import DevTimeStamp from "../components/DevTimeStamp";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID as string;
 const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
@@ -67,6 +67,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
           <Layout>
+            <DevTimeStamp />
             <Component {...pageProps} />
             <GridItem area={"footer"}>
               <Footer />

@@ -1,5 +1,47 @@
 # @web3inbox/core
 
+## 1.2.1
+
+### Patch Changes
+
+- Fix bug where init state is unclear
+
+## 1.2.0
+
+### Minor Changes
+
+- Feature complete for wallets
+
+## 1.1.0
+
+### Minor Changes
+
+- Add support for eip1271 validation
+
+## 1.0.3
+
+### Patch Changes
+
+- Make log level customizable
+
+## 1.0.2
+
+### Patch Changes
+
+- Fix bug where paging notifications was sometimes a noop
+
+## 1.0.1
+
+### Patch Changes
+
+- Fix bug with duplicate notifications
+
+## 1.0.0
+
+### Major Changes
+
+- Stable release
+
 ## 0.0.25
 
 ### Patch Changes

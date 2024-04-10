@@ -10,7 +10,8 @@
     "dev:web": "turbo run dev --filter=gm-hackers",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "turbo run test --filter=@web3inbox/widget-react"
+    "web:dev": "turbo run dev --filter=hooks-react-sample",
+    "test": "turbo run test --filter=@web3inbox/react"
   },
   "devDependencies": {
     "@tanstack/react-query": "5.0.5",

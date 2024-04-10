@@ -1,9 +1,12 @@
 import { Web3InboxClient } from "@web3inbox/core";
+import { version as web3inboxReactPackageVersion, name as web3inboxReactPackageName } from '../../package.json'
 
 interface IInitWeb3InboxClient {
   projectId: string;
   domain?: string;
   allApps?: boolean;
+  logLevel?: "info" | "error" | "debug" | "trace";
+  rpcUrlBuilder?: (chainId: string) => string;
 }
 
 /**
@@ -18,6 +21,17 @@ export const initWeb3InboxClient = ({
   projectId,
   domain,
   allApps,
+  logLevel,
+  rpcUrlBuilder,
 }: IInitWeb3InboxClient) => {
-  return Web3InboxClient.init({ projectId, domain, allApps });
+  return Web3InboxClient.init({
+    projectId,
+    domain,
+    allApps,
+    logLevel,
+    rpcUrlBuilder,
+    sdkVersionMapEntries: {
+      [web3inboxReactPackageName]: web3inboxReactPackageVersion
+    }
+  });
 };
