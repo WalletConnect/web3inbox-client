@@ -520,22 +520,6 @@ export class Web3InboxClient {
 
     const accountOrInternalAccount = this.getRequiredAccountParam(account);
 
-    this.notifyClient.on("notify_message", async () => {
-      const fetchedNotificationData = await this.getNotificationHistory(
-        notificationsPerPage,
-        undefined,
-        account,
-        domain
-      );
-      const notification = fetchedNotificationData.notifications.shift();
-      if (notification) {
-        data.notifications = [{
-	  ...notification,
-	  read: () => onReadWrapper(notification)
-	}, ...data.notifications];
-      }
-    });
-
     const nextPage = async () => {
       const lastMessage = data.notifications.length
         ? data.notifications[data.notifications.length - 1].id
