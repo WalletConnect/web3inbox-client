@@ -14,15 +14,14 @@ export { act, cleanup } from "@testing-library/react";
 
 import { config } from "./config";
 
-export const queryClient = new QueryClient();
 
-const WagmiWrapper = ({children}: {children: React.ReactNode}) => {
+export const WagmiWrapper = ({children, queryClient}: {children: React.ReactNode, queryClient: QueryClient }) => {
   return (
-    <QueryClientProvider client={queryClient}>
       <WagmiProvider config={config}>
-	{children}
+	<QueryClientProvider client={queryClient} >
+	  {children}
+	</QueryClientProvider>
       </WagmiProvider>
-    </QueryClientProvider>
   )
 }
 
@@ -30,10 +29,8 @@ export function render<Result, Props>(
   children: React.ReactElement,
   options?: RenderHookOptions<Props> | undefined
 ) {
-  queryClient.clear();
   return rtl_render(children, {
     ...options,
-    wrapper: WagmiWrapper,
   });
 }
 
@@ -43,7 +40,6 @@ export function customRenderHook<Result, Props>(
 ): RenderHookResult<Result, Props> {
   return rtl_renderHook(render, {
     ...options,
-    wrapper: WagmiWrapper,
   });
 }
 

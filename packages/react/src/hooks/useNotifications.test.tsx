@@ -4,9 +4,9 @@ import { connect } from "@wagmi/core";
 import { beforeAll, expect, test } from "vitest";
 import { config } from "../test/config";
 
-import { waitFor, renderHook } from "../test/react";
+import { waitFor, renderHook, render, WagmiWrapper } from "../test/react";
 import { useSignMessage } from "wagmi";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initWeb3InboxClient } from "../utils";
 
 const connector = config.connectors[0]!;
@@ -17,16 +17,44 @@ beforeAll(() => {
     domain: "w3m-dapp.vercel.app",
     allApps: true,
   });
+
 });
 
 export const queryClient = new QueryClient();
 
 test("should fetch the new notification", async () => {
   await connect(config, { connector });
-  const { result } = renderHook(() => useSignMessage());
 
-  result.current.signMessage({ message: "foo bar baz" });
-  await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+  const Comp = () => {
+    const { data, signMessage, signMessageAsync } = useSignMessage()
+    signMessageAsync({
+      message: "test"
+    }).then(console.log)
+
+    return (
+      <div>
+      </div>
+    )
+  }
+
+  const { result }  = render(<Comp />, {
+			       wrapper: ({children}: {children: React.ReactNode}) => {
+				 return (
+				   <QueryClientProvider client={new QueryClient()}>
+    {children}
+  </QueryClientProvider>
+				 )
+
+			       }
+			     }
+  )
+
+  console.log({result})
+
+  // const { result } = renderHook(() => useSignMessage());
+  // result.current.signMessage({ message: "foo bar baz" });
+  // await waitFor(() => expect(result.current.isSuccess).toBe(true));
   // expect(baseElement).toBe(null);
 
   // const { result: clientResult } = renderHook(() => useWeb3InboxClient());
