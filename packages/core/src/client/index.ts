@@ -765,6 +765,7 @@ export class Web3InboxClient {
   public prepareRegistration(params: {
     account: string;
   }): ReturnType<NotifyClient["prepareRegistration"]> {
+    console.log(">>>>>", crypto.subtle.digest)
     return this.notifyClient.prepareRegistration({
       account: params.account,
       domain: this.domain,

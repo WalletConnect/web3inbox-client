@@ -5,7 +5,7 @@ import { beforeAll, expect, test } from "vitest";
 import { config } from "../test/config";
 
 import { waitFor, renderHook, render, WagmiWrapper } from "../test/react";
-import { useSignMessage } from "wagmi";
+import { WagmiProvider, useSignMessage } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initWeb3InboxClient } from "../utils";
 
@@ -27,10 +27,6 @@ test("should fetch the new notification", async () => {
 
 
   const Comp = () => {
-    const { data, signMessage, signMessageAsync } = useSignMessage()
-    signMessageAsync({
-      message: "test"
-    }).then(console.log)
 
     return (
       <div>
@@ -41,9 +37,11 @@ test("should fetch the new notification", async () => {
   const { result }  = render(<Comp />, {
 			       wrapper: ({children}: {children: React.ReactNode}) => {
 				 return (
+				   <WagmiProvider config={config}>
 				   <QueryClientProvider client={new QueryClient()}>
     {children}
   </QueryClientProvider>
+				   </WagmiProvider>
 				 )
 
 			       }

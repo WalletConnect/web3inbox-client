@@ -8,10 +8,13 @@ import {
 } from "./";
 import { initWeb3InboxClient } from "../utils";
 import { act, renderHook } from "../test/react";
+import { webcrypto } from 'crypto';
 
 const account = "eip:1:0xf5B035287c1465F29C7e08FbB5c3b8a4975Bf831";
 
+
 beforeEach(async () => {
+
   initWeb3InboxClient({
     projectId: "df639b5df61c997b9e9be51c802bc5de",
     domain: "w3m-dapp.vercel.app",
@@ -36,8 +39,23 @@ beforeEach(async () => {
 
   expect(w3iAccountResult.current.data).toBe(account);
 
+
   const { result: prepareRegistrationResult } = renderHook(() =>
-    usePrepareRegistration()
+    usePrepareRegistration(), {
+      wrapper: ({children}) => {
+  Object.defineProperties(global, {
+    crypto: { value: webcrypto, writable: true }
+  });
+  Object.defineProperties(window, {
+    crypto: { value: webcrypto, writable: true }
+  });
+	return (
+	  <div>
+	{children}
+	</div>
+	)
+      }
+    }
   );
 
   await act(async () => {
