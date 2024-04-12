@@ -8,4 +8,4 @@ export {
 
 export { addressRegex, transactionHashRegex } from "./regex";
 
-export { wait } from "./utils";
+export { wait, resetSingletonState } from "./utils";

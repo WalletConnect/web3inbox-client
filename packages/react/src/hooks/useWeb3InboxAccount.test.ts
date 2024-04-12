@@ -9,26 +9,24 @@ import {
 import { useWeb3InboxAccount, useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
 import { act, renderHook } from "@testing-library/react";
+import { Web3InboxClient } from "@web3inbox/core";
+import { resetSingletonState } from "../test";
 
 const account = "eip:1:0xf5B035287c1465F29C7e08FbB5c3b8a4975Bf831";
 
-beforeEach(() => {
-  initWeb3InboxClient({
+let currentClient: Web3InboxClient
+
+beforeEach(async () => {
+  currentClient = await initWeb3InboxClient({
     projectId: "df639b5df61c997b9e9be51c802bc5de",
     domain: "w3m-dapp.vercel.app",
     allApps: true,
   });
 });
 
-afterEach(async () => {
-  const { result: w3iAccountResult } = renderHook(() =>
-    useWeb3InboxAccount(account)
-  );
-
-  await act(async () => {
-    w3iAccountResult.current.setAccount(undefined)
-  });
-});
+afterEach(() => {
+  resetSingletonState()
+})
 
 describe("useWeb3InboxAccount tests", () => {
   it("should set account as expected", async () => {

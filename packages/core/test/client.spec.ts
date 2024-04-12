@@ -9,6 +9,20 @@ const projectId = process.env.TEST_PROJECT_ID as string;
 const testDomain = "unrelated.example.xyz";
 const testAccount = "testAccount";
 
+export function resetSingletonState() {
+  Web3InboxClient.subscriptionState = proxy({
+    subscriptions: [],
+    messages: [],
+  });
+  Web3InboxClient.instance = null;
+  Web3InboxClient.clientState = proxy({
+    isReady: false,
+    initting: false,
+    account: undefined,
+    registration: undefined,
+  });
+}
+
 const testSub: NotifyClientTypes.NotifySubscription = {
   account: testAccount,
   expiry: Date.now() + 100_000,
@@ -53,20 +67,6 @@ const testSub2 = {
 const testSub3 = {
   ...testSub2,
   account: `testAccount${2}`,
-};
-
-const resetSingletonState = () => {
-  Web3InboxClient.subscriptionState = proxy({
-    subscriptions: [],
-    messages: [],
-  });
-  Web3InboxClient.instance = null;
-  Web3InboxClient.clientState = proxy({
-    isReady: false,
-    initting: false,
-    account: undefined,
-    registration: undefined,
-  });
 };
 
 // Since Web3InboxClient is a singleton, it needs to be constructed
