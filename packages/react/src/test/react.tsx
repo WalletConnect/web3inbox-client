@@ -50,10 +50,6 @@ export function waitFor<T>(
   return rtl_waitFor(callback, { ...options, timeout: 10_000 });
 }
 
-// re-export everything
-export * from "@testing-library/react";
-
 // override render method
-export { customRenderHook as renderHook };
 
 export { useSignMessage };

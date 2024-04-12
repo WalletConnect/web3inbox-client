@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": [".", "../../vitest.config.ts", "../test"],
+  "include": [".", "../../vitest.config.ts", "../test", "../../../../../../tmp/!home!clinenerd!dev!web3inbox-client!packages!react!src!hooks!useSubscribe.test.ts~"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "outDir": "dist",

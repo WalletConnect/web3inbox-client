@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@tanstack/react-query": "^5.29.2",
+    "@testing-library/react": "^15.0.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@viem/anvil": "^0.0.6",

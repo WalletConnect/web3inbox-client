@@ -3,13 +3,12 @@ import {
   it,
   expect,
   vi,
-  beforeAll,
   beforeEach,
   afterEach,
 } from "vitest";
 import { useWeb3InboxAccount, useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
-import { act, renderHook } from "../test/react";
+import { act, renderHook } from "@testing-library/react";
 
 const account = "eip:1:0xf5B035287c1465F29C7e08FbB5c3b8a4975Bf831";
 

@@ -1,0 +1,49 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  useSubscribe,
+} from "./";
+import { initWeb3InboxClient } from "../utils";
+import { Web3InboxClient } from "@web3inbox/core";
+import { renderHook } from '@testing-library/react'
+
+let currentClient: Web3InboxClient
+const TEST_ACCOUNT_1 = "testAccount"
+const TEST_DAPP_1 = "w3m-dapp.vercel.app"
+
+
+beforeEach(async () => {
+  currentClient = await initWeb3InboxClient({
+    projectId: "df639b5df61c997b9e9be51c802bc5de",
+    domain: TEST_DAPP_1,
+    allApps: true,
+    logLevel: 'debug'
+  });
+});
+
+describe("useSubscribe tests", () => {
+  it("should subscribe as expected", async () => {
+    currentClient.subscribeToDapp = vi.fn().mockResolvedValue(true)
+
+    Web3InboxClient.clientState.account = TEST_ACCOUNT_1
+
+    const { result: subscribeResult } = renderHook(() => useSubscribe());
+
+    expect(subscribeResult.current.data).toBe(false);
+    expect(subscribeResult.current.error).toBe(null);
+    expect(subscribeResult.current.isLoading).toBe(false);
+
+    subscribeResult.current.subscribe();
+
+    expect(currentClient.subscribeToDapp).toHaveBeenCalledTimes(1);
+
+    expect(currentClient.subscribeToDapp).toHaveBeenCalledWith(undefined, undefined);
+
+    subscribeResult.current.subscribe(TEST_ACCOUNT_1);
+
+    expect(currentClient.subscribeToDapp).toHaveBeenCalledTimes(2);
+
+    expect(currentClient.subscribeToDapp).toHaveBeenNthCalledWith(2, TEST_ACCOUNT_1, undefined);
+
+
+  });
+});

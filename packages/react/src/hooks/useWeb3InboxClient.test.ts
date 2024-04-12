@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
-import { renderHook } from "../test/react";
+import { renderHook } from "@testing-library/react";
 
 beforeEach(() => {
   initWeb3InboxClient({
@@ -24,7 +24,7 @@ describe.skip("useWeb3InboxClient tests", () => {
       interval: 100,
     });
 
-    expect(result.current.data?.client).not.equal(null);
+    expect(result.current.data).not.equal(null);
     expect(result.current.error).equal(null);
     expect(result.current.isLoading).equal(false);
   });
