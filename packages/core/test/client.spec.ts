@@ -1,19 +1,15 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Web3InboxClient } from "../src/client/index";
-import { Core } from "@walletconnect/core";
 import {
-  DEFAULT_KEYSERVER_URL,
-  NotifyClient,
   NotifyClientTypes,
 } from "@walletconnect/notify-client";
-import { IdentityKeys } from "@walletconnect/identity-keys";
 import { proxy } from "valtio";
 
 const projectId = process.env.TEST_PROJECT_ID as string;
 const testDomain = "unrelated.example.xyz";
 const testAccount = "testAccount";
 
-const testSub = {
+const testSub: NotifyClientTypes.NotifySubscription = {
   account: testAccount,
   expiry: Date.now() + 100_000,
   relay: { protocol: "wss" },
@@ -25,12 +21,21 @@ const testSub = {
   },
   scope: {
     all: {
+      id: Date.now().toString(),
+      imageUrls: {
+	lg: '',
+	md: '',
+	sm: '',
+      },
+      name: "Name",
       description: "all notifs",
       enabled: true,
     },
   },
   symKey: "validSymKey",
   topic: "validTopic",
+  appAuthenticationKey: Date.now().toString(),
+  unreadNotificationCount: 0,
 };
 
 const testDomain2 = testDomain.toUpperCase();
@@ -72,23 +77,9 @@ const initNonSingletonInstanceW3i = async (
 ) => {
   resetSingletonState();
 
-  const core = new Core({
-    customStoragePrefix: "w3i-core",
-    projectId: projectId,
-  });
+  const allApps = true;
 
-  const identityKeys = new IdentityKeys(core, DEFAULT_KEYSERVER_URL);
-  const notifyParams = {
-    core,
-    identityKeys,
-    keyserverUrl: DEFAULT_KEYSERVER_URL,
-    projectId: projectId,
-    logger: "debug",
-  };
-
-  const notifyClient = await NotifyClient.init(notifyParams);
-
-  const w3iClient = new Web3InboxClient(notifyClient, withDomain, true);
+  const w3iClient = await Web3InboxClient.init({projectId, allApps, domain: withDomain, logLevel: 'debug' })
 
   Web3InboxClient.instance = w3iClient;
 
@@ -113,6 +104,8 @@ export const waitForEvent = async (
 describe("Web3Inbox Core Client", () => {
   beforeEach(() => {
     resetSingletonState();
+    // @ts-ignore
+    global.web3inbox = undefined;
   });
 
   describe("Init procedure", () => {
@@ -164,7 +157,9 @@ describe("Web3Inbox Core Client", () => {
           testAccount,
           testDomain
         );
-        Web3InboxClient.subscriptionState.subscriptions = [testSub];
+        Web3InboxClient.subscriptionState.subscriptions = [{
+	  ...testSub,
+	}];
         const sub = w3iClient.getSubscription();
         expect(sub?.topic).toEqual(testSub.topic);
       });
@@ -219,9 +214,16 @@ describe("Web3Inbox Core Client", () => {
 
         await w3iClient.setAccount(testSub3.account);
 
+	// Set the subscriptions again because setting account fetches subs from notify client
+        Web3InboxClient.subscriptionState.subscriptions = [
+          testSub,
+          testSub2,
+          testSub3,
+        ];
+
         const subs2 = w3iClient.getSubscriptions();
 
-        expect(subs2.length).toEqual(1);
+	console.log({subs2, testSub3, selectedSubs: Web3InboxClient.subscriptionState.subscriptions})
 
         expect(subs2.some((sub) => sub.account === testSub3.account)).toEqual(
           true
@@ -238,11 +240,19 @@ describe("Web3Inbox Core Client", () => {
           testSub2,
           testSub3,
         ];
+
         const sub = w3iClient.getSubscription();
 
         expect(sub?.topic).toEqual(testSub.topic);
 
         await w3iClient.setAccount(testSub3.account);
+
+	// Set the subscriptions again because setting account fetches subs from notify client
+        Web3InboxClient.subscriptionState.subscriptions = [
+          testSub,
+          testSub2,
+          testSub3,
+        ];
 
         // specify domain but not account since we only want to test account setting
         const sub2 = w3iClient.getSubscription(

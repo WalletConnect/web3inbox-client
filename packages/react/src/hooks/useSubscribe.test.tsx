@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   usePrepareRegistration,
-  useRegister,
   useSubscribe,
   useWeb3InboxAccount,
   useWeb3InboxClient,
