@@ -1,5 +1,16 @@
 # @web3inbox/react
 
+## 1.3.0
+
+### Minor Changes
+
+- Add read unread support
+
+### Patch Changes
+
+- Updated dependencies
+  - @web3inbox/core@1.3.0
+
 ## 1.2.1
 
 ### Patch Changes
