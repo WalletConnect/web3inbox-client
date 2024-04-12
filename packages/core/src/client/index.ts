@@ -144,7 +144,6 @@ export class Web3InboxClient {
       Web3InboxClient.clientState.account = account;
       return;
     }
-
     const isRegistered = await this.getAccountIsRegistered(account);
     // Account setting is duplicated to ensure it only gets updated once
     // identity state is confirmed
