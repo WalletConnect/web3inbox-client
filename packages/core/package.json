@@ -1,6 +1,6 @@
 {
   "name": "@web3inbox/core",
-  "version": "1.3.0-069f40b",
+  "version": "1.3.0",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -33,8 +33,8 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@walletconnect/core": "2.11.0",
-    "@walletconnect/notify-client": "^1.2.3",
-    "valtio": "^1.11.2"
+    "@walletconnect/core": "2.12.2",
+    "@walletconnect/notify-client": "1.3.1",
+    "valtio": "1.11.2"
   }
 }

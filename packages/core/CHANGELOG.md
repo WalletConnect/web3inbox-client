@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.3.0
+
+### Minor Changes
+
+- Add read unread support
+
 ## 1.2.1
 
 ### Patch Changes
