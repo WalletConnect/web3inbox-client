@@ -11,7 +11,7 @@ beforeEach(() => {
   });
 });
 
-describe.skip("useWeb3InboxClient tests", () => {
+describe("useWeb3InboxClient tests", () => {
   it("wait for client to be ready", async () => {
     const { result } = renderHook(() => useWeb3InboxClient());
 
