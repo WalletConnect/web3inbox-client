@@ -3,10 +3,10 @@ import { useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
 import { renderHook } from "@testing-library/react";
 
-const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID
+const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID;
 
-if(!TEST_PROJECT_ID) {
-  throw new Error("TEST_PROJECT_ID is needed for this test")
+if (!TEST_PROJECT_ID) {
+  throw new Error("TEST_PROJECT_ID is needed for this test");
 }
 
 beforeEach(() => {

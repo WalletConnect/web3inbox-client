@@ -17,4 +17,3 @@ export async function resetSingletonState() {
     registration: undefined,
   });
 }
-

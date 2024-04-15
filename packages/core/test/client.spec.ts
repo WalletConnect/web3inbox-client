@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Web3InboxClient } from "../src/client/index";
-import {
-  NotifyClientTypes,
-} from "@walletconnect/notify-client";
+import { NotifyClientTypes } from "@walletconnect/notify-client";
 import { proxy } from "valtio";
 
 const projectId = process.env.TEST_PROJECT_ID as string;
@@ -37,9 +35,9 @@ const testSub: NotifyClientTypes.NotifySubscription = {
     all: {
       id: Date.now().toString(),
       imageUrls: {
-	lg: '',
-	md: '',
-	sm: '',
+        lg: "",
+        md: "",
+        sm: "",
       },
       name: "Name",
       description: "all notifs",
@@ -79,7 +77,12 @@ const initNonSingletonInstanceW3i = async (
 
   const allApps = true;
 
-  const w3iClient = await Web3InboxClient.init({projectId, allApps, domain: withDomain, logLevel: 'debug' })
+  const w3iClient = await Web3InboxClient.init({
+    projectId,
+    allApps,
+    domain: withDomain,
+    logLevel: "debug",
+  });
 
   Web3InboxClient.instance = w3iClient;
 
@@ -157,9 +160,11 @@ describe("Web3Inbox Core Client", () => {
           testAccount,
           testDomain
         );
-        Web3InboxClient.subscriptionState.subscriptions = [{
-	  ...testSub,
-	}];
+        Web3InboxClient.subscriptionState.subscriptions = [
+          {
+            ...testSub,
+          },
+        ];
         const sub = w3iClient.getSubscription();
         expect(sub?.topic).toEqual(testSub.topic);
       });
@@ -214,7 +219,7 @@ describe("Web3Inbox Core Client", () => {
 
         await w3iClient.setAccount(testSub3.account);
 
-	// Set the subscriptions again because setting account fetches subs from notify client
+        // Set the subscriptions again because setting account fetches subs from notify client
         Web3InboxClient.subscriptionState.subscriptions = [
           testSub,
           testSub2,
@@ -245,7 +250,7 @@ describe("Web3Inbox Core Client", () => {
 
         await w3iClient.setAccount(testSub3.account);
 
-	// Set the subscriptions again because setting account fetches subs from notify client
+        // Set the subscriptions again because setting account fetches subs from notify client
         Web3InboxClient.subscriptionState.subscriptions = [
           testSub,
           testSub2,

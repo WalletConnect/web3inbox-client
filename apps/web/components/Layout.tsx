@@ -3,7 +3,7 @@ import { LayoutHeader } from "./LayoutHeader";
 import { Container } from "@chakra-ui/react";
 
 type Props = {
-  children: React.ReactNode
+  children: React.ReactNode;
 };
 
 export default function Layout({ children }: Props) {

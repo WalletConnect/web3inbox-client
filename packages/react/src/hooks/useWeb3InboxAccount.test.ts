@@ -1,11 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-} from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useWeb3InboxAccount, useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
 import { act, renderHook } from "@testing-library/react";
@@ -14,12 +7,12 @@ import { resetSingletonState } from "../test";
 
 const account = "eip:1:0xf5B035287c1465F29C7e08FbB5c3b8a4975Bf831";
 
-let currentClient: Web3InboxClient
+let currentClient: Web3InboxClient;
 
-const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID
+const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID;
 
-if(!TEST_PROJECT_ID) {
-  throw new Error("TEST_PROJECT_ID is needed for this test")
+if (!TEST_PROJECT_ID) {
+  throw new Error("TEST_PROJECT_ID is needed for this test");
 }
 
 beforeEach(async () => {
@@ -31,8 +24,8 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-  resetSingletonState()
-})
+  resetSingletonState();
+});
 
 describe("useWeb3InboxAccount tests", () => {
   it("should set account as expected", async () => {
