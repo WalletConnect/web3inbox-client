@@ -11,6 +11,7 @@
     },
     "lint": {},
     "test": {
+      "dependsOn": ["build"],
       "env": ["TEST_PROJECT_ID"]
     },
     "dev": {
