@@ -1,8 +1,4 @@
 export {
-  abi,
-  address,
-  accounts,
-  typedData,
   walletConnectProjectId,
 } from "./constants";
 
