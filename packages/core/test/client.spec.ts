@@ -223,8 +223,6 @@ describe("Web3Inbox Core Client", () => {
 
         const subs2 = w3iClient.getSubscriptions();
 
-	console.log({subs2, testSub3, selectedSubs: Web3InboxClient.subscriptionState.subscriptions})
-
         expect(subs2.some((sub) => sub.account === testSub3.account)).toEqual(
           true
         );

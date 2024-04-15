@@ -17,7 +17,6 @@ if(!TEST_PROJECT_ID) {
 
 describe("useNotifications", () => {
   beforeAll(async () => {
-    console.log("Initting...")
     currentClient = await initWeb3InboxClient({
       projectId: TEST_PROJECT_ID,
       domain: "w3m-dapp.vercel.app",
