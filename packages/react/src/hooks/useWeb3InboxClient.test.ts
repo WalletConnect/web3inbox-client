@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
 import { renderHook } from "@testing-library/react";
+import { TEST_DAPP_1 } from "../test";
 
 const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID;
 
@@ -12,7 +13,7 @@ if (!TEST_PROJECT_ID) {
 beforeEach(() => {
   initWeb3InboxClient({
     projectId: TEST_PROJECT_ID,
-    domain: "w3m-dapp.vercel.app",
+    domain: TEST_DAPP_1,
     allApps: true,
   });
 });

@@ -4,10 +4,9 @@ import { initWeb3InboxClient } from "../utils";
 import { Web3InboxClient } from "@web3inbox/core";
 import { useNotifications } from "./useNotifications";
 import { renderHook } from "@testing-library/react";
+import { TEST_DAPP_1, TEST_ACCOUNT_1 } from '../test'
 
 let currentClient: Web3InboxClient;
-const TEST_ACCOUNT_1 = "testAccount";
-const TEST_DAPP_1 = "w3m-dapp.vercel.app";
 
 const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID;
 
@@ -19,7 +18,7 @@ describe("useNotifications", () => {
   beforeAll(async () => {
     currentClient = await initWeb3InboxClient({
       projectId: TEST_PROJECT_ID,
-      domain: "w3m-dapp.vercel.app",
+      domain: TEST_DAPP_1,
       allApps: true,
     });
   });

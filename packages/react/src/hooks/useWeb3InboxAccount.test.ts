@@ -4,8 +4,7 @@ import { initWeb3InboxClient } from "../utils";
 import { act, renderHook } from "@testing-library/react";
 import { Web3InboxClient } from "@web3inbox/core";
 import { resetSingletonState } from "../test";
-
-const account = "eip:1:0xf5B035287c1465F29C7e08FbB5c3b8a4975Bf831";
+import { TEST_DAPP_1, TEST_ACCOUNT_1 } from '../test'
 
 let currentClient: Web3InboxClient;
 
@@ -18,7 +17,7 @@ if (!TEST_PROJECT_ID) {
 beforeEach(async () => {
   currentClient = await initWeb3InboxClient({
     projectId: TEST_PROJECT_ID,
-    domain: "w3m-dapp.vercel.app",
+    domain: TEST_DAPP_1,
     allApps: true,
   });
 });
@@ -37,7 +36,7 @@ describe("useWeb3InboxAccount tests", () => {
     });
 
     const { result: w3iAccountResult } = renderHook(() =>
-      useWeb3InboxAccount(account)
+      useWeb3InboxAccount(TEST_ACCOUNT_1)
     );
 
     await vi.waitUntil(() => w3iAccountResult.current.data !== null, {
@@ -45,7 +44,7 @@ describe("useWeb3InboxAccount tests", () => {
       interval: 1_000,
     });
 
-    expect(w3iAccountResult.current.data).toBe(account);
+    expect(w3iAccountResult.current.data).toBe(TEST_ACCOUNT_1);
   });
 
   it("should set account manually as expected", async () => {
@@ -64,9 +63,9 @@ describe("useWeb3InboxAccount tests", () => {
     expect(w3iAccountResult.current.isLoading).toBe(false);
 
     await act(async () => {
-      w3iAccountResult.current.setAccount(account);
+      w3iAccountResult.current.setAccount(TEST_ACCOUNT_1);
     });
 
-    expect(w3iAccountResult.current.data).toBe(account);
+    expect(w3iAccountResult.current.data).toBe(TEST_ACCOUNT_1);
   });
 });

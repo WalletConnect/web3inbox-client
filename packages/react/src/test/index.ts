@@ -1,4 +1,4 @@
-export { walletConnectProjectId } from "./constants";
+export * from "./constants";
 
 export { addressRegex, transactionHashRegex } from "./regex";
 
