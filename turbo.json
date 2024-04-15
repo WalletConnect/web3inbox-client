@@ -10,6 +10,9 @@
       "outputs": [".next/**", "!.next/cache/**", "dist"]
     },
     "lint": {},
+    "test": {
+      "env": ["TEST_PROJECT_ID"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

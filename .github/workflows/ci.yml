@@ -49,4 +49,4 @@ jobs:
       - name: Unit Tests
         env:
           TEST_PROJECT_ID: ${{ secrets.TEST_PROJECT_ID }}
-        run: yarn vitest
+        run: yarn test

@@ -23,7 +23,8 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest"
+    "test": "vitest --watch false",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@walletconnect/types": "2.11.0",

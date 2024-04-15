@@ -11,7 +11,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "web:dev": "turbo run dev --filter=hooks-react-sample",
-    "test": "turbo run test --filter=@web3inbox/react"
+    "test": "turbo run test --filter=@web3inbox/*"
   },
   "devDependencies": {
     "@tanstack/react-query": "5.0.5",

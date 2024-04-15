@@ -23,7 +23,8 @@
     "dev": "tsup --watch && cp src/compiled.css dist",
     "clean": "",
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest"
+    "test": "vitest --watch false",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "react": "^18.2.0"
