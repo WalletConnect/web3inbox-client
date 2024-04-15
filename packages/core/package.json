@@ -22,10 +22,12 @@
     "build:cjs": "tsup src/index.ts --format cjs --dts",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest --watch false",
+    "test:watch": "vitest"
   },
   "devDependencies": {
-    "@walletconnect/types": "2.11.0",
+    "@walletconnect/types": "2.12.2",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",

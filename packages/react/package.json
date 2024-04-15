@@ -22,23 +22,30 @@
     "build:cjs": "tsup src/index.tsx --format cjs --dts",
     "dev": "tsup --watch && cp src/compiled.css dist",
     "clean": "",
-    "test": "vitest",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest --watch false",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@testing-library/react": "15.0.1",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "@viem/anvil": "0.0.6",
+    "@walletconnect/notify-client": "1.2.3",
     "@web3inbox/core": "*",
-    "eslint": "^7.32.0",
+    "eslint": "7.32.0",
     "eslint-config-custom": "*",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "jsdom": "^23.2.0",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "jsdom": "23.2.0",
     "tsconfig": "*",
-    "tsup": "^7.2.0",
-    "typescript": "^5.1.6"
+    "tsup": "7.2.0",
+    "typescript": "5.1.6",
+    "viem": "2.0.10",
+    "vitest": "1.4.0",
+    "wagmi": "2.2.1"
   },
   "peerDependencies": {
     "@web3inbox/core": "*"

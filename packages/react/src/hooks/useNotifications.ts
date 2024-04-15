@@ -14,7 +14,6 @@ const waitFor = async (condition: () => boolean) => {
   });
 };
 
-
 type UseNotificationsData = (NotifyClientTypes.NotifyNotification & {
   read: () => void;
 })[];
@@ -56,8 +55,10 @@ export const useNotifications = (
   // so `setDataWrapper` won't trigger `useEffect`s to update when it is called. This is because
   // it is receiving the same valtio object. To mitigate this we wrap data in an object
   // and create a new object with the data. The alternative would have been to spread the array
-  // coming from pageNotifications but that is unnecessarily inefficient. 
-  const [dataWrapper, setDataWrapper] = useState<{data: UseNotificationsData}>({data: []});
+  // coming from pageNotifications but that is unnecessarily inefficient.
+  const [dataWrapper, setDataWrapper] = useState<{
+    data: UseNotificationsData;
+  }>({ data: [] });
 
   const [isLoadingNextPage, setIsLoadingNextPage] = useState<boolean>(false);
   const [errorNextPage, setErrorNextPage] = useState<string | null>(null);
@@ -76,9 +77,9 @@ export const useNotifications = (
           isInfiniteScroll,
           account,
           domain,
-	  unreadFirst,
+          unreadFirst
         )((newData) => {
-          setDataWrapper({data: newData.notifications});
+          setDataWrapper({ data: newData.notifications });
           setIsLoadingNextPage(false);
           setHasMore(newData.hasMore);
           setHasMoreUnread(newData.hasMoreUnread);
@@ -92,7 +93,14 @@ export const useNotifications = (
     } catch (e: any) {
       setError(e.message);
     }
-  }, [account, domain, notificationsPerPage, isInfiniteScroll, w3iClient, setDataWrapper]);
+  }, [
+    account,
+    domain,
+    notificationsPerPage,
+    isInfiniteScroll,
+    w3iClient,
+    setDataWrapper,
+  ]);
 
   const fetchNextPage = async () => {
     setErrorNextPage(null);
@@ -123,10 +131,10 @@ export const useNotifications = (
     await waitFor(() => Boolean(w3iClient));
     const w3iClientTruthy = w3iClient as Web3InboxClient;
 
-    w3iClientTruthy.markNotificationsAsRead(notificationIds, account, domain)
+    w3iClientTruthy.markNotificationsAsRead(notificationIds, account, domain);
 
     // Optimistic data updates
-    setDataWrapper(({data: notifications}) => ({
+    setDataWrapper(({ data: notifications }) => ({
       data: notifications.map((notification) => {
         if (notificationIds.includes(notification.id)) {
           return {
@@ -136,7 +144,7 @@ export const useNotifications = (
         } else {
           return notification;
         }
-      })
+      }),
     }));
   };
 
@@ -148,20 +156,18 @@ export const useNotifications = (
       .markAllNotificationsAsRead(account, domain)
       .catch(setError)
       .then(() => {
-        setDataWrapper(({data: notifications}) =>
-	  ({
-	    data: notifications.map((notification) => ({
+        setDataWrapper(({ data: notifications }) => ({
+          data: notifications.map((notification) => ({
             ...notification,
             isRead: true,
-          }))
-	  })
-        );
+          })),
+        }));
       });
   };
 
   // If the domain of the account change, all previous data is invalidated.
   useEffect(() => {
-    setDataWrapper({data: []});
+    setDataWrapper({ data: [] });
     setHasMore(false);
   }, [domain, account]);
 

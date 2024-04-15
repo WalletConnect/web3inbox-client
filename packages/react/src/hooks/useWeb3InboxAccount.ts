@@ -9,7 +9,7 @@ type UseWeb3InboxAccountReturn = HooksReturn<
   {
     identityKey: string | null;
     isRegistered: boolean;
-    setAccount: (account: string) => Promise<void>;
+    setAccount: (account: string | undefined) => Promise<void>;
   }
 >;
 
@@ -32,7 +32,7 @@ export const useWeb3InboxAccount = (
   const identityKey =
     isRegistered && registration ? registration.identity : null;
 
-  const setAccount = async (account: string) => {
+  const setAccount = async (account: string | undefined) => {
     setError(null);
     setIsLoading(true);
 

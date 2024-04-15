@@ -5,11 +5,15 @@
   "globalPassThroughEnv": ["NEXT_PUBLIC_PROJECT_ID"],
   "pipeline": {
     "build": {
-      "env": ["NEXT_PUBLIC_PROJECT_ID"],
+      "env": ["NEXT_PUBLIC_PROJECT_ID", "NODE_ENV", "NOTIFY_API_SECRET", "NEXT_PUBLIC_APP_DOMAIN"],
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist"]
     },
     "lint": {},
+    "test": {
+      "dependsOn": ["build"],
+      "env": ["TEST_PROJECT_ID"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
