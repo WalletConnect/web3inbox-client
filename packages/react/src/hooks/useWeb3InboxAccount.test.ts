@@ -16,9 +16,15 @@ const account = "eip:1:0xf5B035287c1465F29C7e08FbB5c3b8a4975Bf831";
 
 let currentClient: Web3InboxClient
 
+const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID
+
+if(!TEST_PROJECT_ID) {
+  throw new Error("TEST_PROJECT_ID is needed for this test")
+}
+
 beforeEach(async () => {
   currentClient = await initWeb3InboxClient({
-    projectId: "df639b5df61c997b9e9be51c802bc5de",
+    projectId: TEST_PROJECT_ID,
     domain: "w3m-dapp.vercel.app",
     allApps: true,
   });

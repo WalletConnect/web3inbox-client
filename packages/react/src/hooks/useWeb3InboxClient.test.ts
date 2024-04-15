@@ -3,9 +3,15 @@ import { useWeb3InboxClient } from ".";
 import { initWeb3InboxClient } from "../utils";
 import { renderHook } from "@testing-library/react";
 
+const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID
+
+if(!TEST_PROJECT_ID) {
+  throw new Error("TEST_PROJECT_ID is needed for this test")
+}
+
 beforeEach(() => {
   initWeb3InboxClient({
-    projectId: "df639b5df61c997b9e9be51c802bc5de",
+    projectId: TEST_PROJECT_ID,
     domain: "w3m-dapp.vercel.app",
     allApps: true,
   });

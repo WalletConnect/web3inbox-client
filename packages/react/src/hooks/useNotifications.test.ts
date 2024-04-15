@@ -9,11 +9,17 @@ let currentClient: Web3InboxClient
 const TEST_ACCOUNT_1 = "testAccount"
 const TEST_DAPP_1 = "w3m-dapp.vercel.app"
 
+const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID
+
+if(!TEST_PROJECT_ID) {
+  throw new Error("TEST_PROJECT_ID is needed for this test")
+}
+
 describe("useNotifications", () => {
   beforeAll(async () => {
     console.log("Initting...")
     currentClient = await initWeb3InboxClient({
-      projectId: "df639b5df61c997b9e9be51c802bc5de",
+      projectId: TEST_PROJECT_ID,
       domain: "w3m-dapp.vercel.app",
       allApps: true,
     });
