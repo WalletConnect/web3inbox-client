@@ -783,6 +783,28 @@ export class Web3InboxClient {
   }
 
   /**
+   * Prepare a registration via recaps for the register function
+   *
+   * @param {Object} params - register params
+   * @param {string} params.domain - Domain to register under.
+   * @param {Object} params.recapsObject - Key value object for recaps
+   *
+   * @returns {Object} preparedRegistration - Prepared Registration
+   */
+  public prepareRegistrationViaRecaps(
+    params: {
+      domain: string,
+      recapObject: {
+        att: Record<string, Record<string, Record<string, any>[]>>
+      }
+    }
+  ): ReturnType<NotifyClient["prepareRegistrationViaRecaps"]> {
+    return this
+      .notifyClient
+      .prepareRegistrationViaRecaps(params);
+  }
+
+  /**
    * Register account on keyserver, allowing them to subscribe
    *
    * @param {Object} params - register params
