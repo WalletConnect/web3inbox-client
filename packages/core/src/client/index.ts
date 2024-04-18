@@ -793,7 +793,7 @@ export class Web3InboxClient {
    */
   public prepareRegistrationViaRecaps(
     params: {
-      domain: string,
+      domain?: string,
       recapObject: {
         att: Record<string, Record<string, Record<string, any>[]>>
       }
@@ -801,7 +801,10 @@ export class Web3InboxClient {
   ): ReturnType<NotifyClient["prepareRegistrationViaRecaps"]> {
     return this
       .notifyClient
-      .prepareRegistrationViaRecaps(params);
+      .prepareRegistrationViaRecaps({
+	domain: params.domain ?? this.domain,
+	recapObject: params.recapObject
+      });
   }
 
   /**
