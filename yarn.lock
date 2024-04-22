@@ -3627,7 +3627,7 @@
     axios "1.4.0"
     jwt-decode "3.1.2"
 
-"@walletconnect/notify-client@^1.4.0-6cff2cc":
+"@walletconnect/notify-client@1.4.0-6cff2cc":
   version "1.4.0-6cff2cc"
   resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-1.4.0-6cff2cc.tgz#c960ad8802ec46c739c6e387954b283805178bc9"
   integrity sha512-eVpx6qmgV0xC+y9fvRnldpPXHJDq6YyOsZtNRZ9fvgSYurEwy5oZqPf925itOAVlTmCIwceDhnxt4GTWLRKrUg==
