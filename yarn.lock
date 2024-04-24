@@ -3627,10 +3627,10 @@
     axios "1.4.0"
     jwt-decode "3.1.2"
 
-"@walletconnect/notify-client@1.4.0-bbf04a7":
-  version "1.4.0-bbf04a7"
-  resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-1.4.0-bbf04a7.tgz#89fc0cc7ac00edbcce7cc0011e5e6b40d8a6b31b"
-  integrity sha512-uxhK3hVmrFmmskPdMg0EZzQdg3+cSuP7T7xzWvfvokVIImiDdBkvOtQtUetZ+ZG9ni/4ADvhlBXJezbCWzwgjA==
+"@walletconnect/notify-client@1.4.0-a32c253":
+  version "1.4.0-a32c253"
+  resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-1.4.0-a32c253.tgz#2e70ef225e8b9a8b1eb69f2d4a2a250a99c196cd"
+  integrity sha512-3PeAJ/QcFEfjL2VhX/rD/OiBGvmX9ZT7JBtJJ/RK41XAEva0qFClBX0xAy47FBY2D2zp1bhxUovkksb4PJLzlA==
   dependencies:
     "@noble/ed25519" "1.7.3"
     "@walletconnect/cacao" "1.0.2"
