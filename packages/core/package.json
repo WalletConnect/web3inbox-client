@@ -1,6 +1,6 @@
 {
   "name": "@web3inbox/core",
-  "version": "1.4.0-b93c30e",
+  "version": "1.4.0-16773f4",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
