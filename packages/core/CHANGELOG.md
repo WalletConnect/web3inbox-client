@@ -1,5 +1,11 @@
 # @web3inbox/core
 
+## 1.4.0
+
+### Minor Changes
+
+- Add registration via recaps
+
 ## 1.3.0
 
 ### Minor Changes
