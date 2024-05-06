@@ -4,28 +4,28 @@ import { HooksReturn, LoadingOf, SuccessOf } from "../types/hooks";
 import { useWeb3InboxClient } from "./useWeb3InboxClient";
 import { useClientState } from "../utils/snapshots";
 
-type PrepareRegistrationViaRecapsReturnType = Awaited<
-  ReturnType<Web3InboxClient["prepareRegistrationViaRecaps"]>
+type PrepareRegistrationWithRecapsReturnType = Awaited<
+  ReturnType<Web3InboxClient["prepareRegistrationWithRecaps"]>
 >;
-type PrepareRegistrationViaRecapsData = PrepareRegistrationViaRecapsReturnType | null;
-type UsePrepareRegistrationViaRecapsReturn = HooksReturn<
-  PrepareRegistrationViaRecapsData,
+type PrepareRegistrationWithRecapsData = PrepareRegistrationWithRecapsReturnType | null;
+type UsePrepareRegistrationWithRecapsReturn = HooksReturn<
+  PrepareRegistrationWithRecapsData,
   {
-    prepareRegistrationViaRecaps: () => ReturnType<
-      Web3InboxClient["prepareRegistrationViaRecaps"]
+    prepareRegistrationWithRecaps: () => ReturnType<
+      Web3InboxClient["prepareRegistrationWithRecaps"]
     >;
   }
 >;
 
-export const usePrepareRegistrationViaRecaps = (): UsePrepareRegistrationViaRecapsReturn => {
+export const usePrepareRegistrationWithRecaps = (): UsePrepareRegistrationWithRecapsReturn => {
   const { account } = useClientState();
   const { data: w3iClient } = useWeb3InboxClient();
 
-  const [data, setData] = useState<PrepareRegistrationViaRecapsData>(null);
+  const [data, setData] = useState<PrepareRegistrationWithRecapsData>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const prepareRegistrationViaRecaps: Web3InboxClient['prepareRegistrationViaRecaps'] = async (params) => {
+  const prepareRegistrationWithRecaps: Web3InboxClient['prepareRegistrationWithRecaps'] = async (params) => {
     setError(null);
     setIsLoading(true);
 
@@ -45,7 +45,7 @@ export const usePrepareRegistrationViaRecaps = (): UsePrepareRegistrationViaReca
       }
 
       return await w3iClient
-        .prepareRegistrationViaRecaps(params)
+        .prepareRegistrationWithRecaps(params)
         .then((res) => {
           setData(res);
           resolve(res);
@@ -68,14 +68,14 @@ export const usePrepareRegistrationViaRecaps = (): UsePrepareRegistrationViaReca
       data: null,
       isLoading,
       error: null,
-      prepareRegistrationViaRecaps,
-    } as LoadingOf<UsePrepareRegistrationViaRecapsReturn>;
+      prepareRegistrationWithRecaps,
+    } as LoadingOf<UsePrepareRegistrationWithRecapsReturn>;
   }
 
   return {
     data,
     error,
     isLoading: false,
-    prepareRegistrationViaRecaps,
-  } as SuccessOf<UsePrepareRegistrationViaRecapsReturn>;
+    prepareRegistrationWithRecaps,
+  } as SuccessOf<UsePrepareRegistrationWithRecapsReturn>;
 };

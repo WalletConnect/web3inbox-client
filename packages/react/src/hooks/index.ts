@@ -2,7 +2,7 @@ export * from "./useAllSubscriptions";
 export * from "./useNotificationTypes";
 export * from "./useNotifications";
 export * from "./usePrepareRegistration";
-export * from "./usePrepareRegistrationViaRecaps";
+export * from "./usePrepareRegistrationWithRecaps";
 export * from "./useRegister";
 export * from "./useSubscribe";
 export * from "./useSubscription";

@@ -783,7 +783,7 @@ export class Web3InboxClient {
   }
 
   /**
-   * Prepare a registration via recaps for the register function
+   * Prepare a registration with recaps for the register function
    *
    * @param {Object} params - register params
    * @param {string} params.domain - Domain to register under.
@@ -791,15 +791,15 @@ export class Web3InboxClient {
    *
    * @returns {Object} preparedRegistration - Prepared Registration
    */
-  public prepareRegistrationViaRecaps(
+  public prepareRegistrationWithRecaps(
     params: {
       domain?: string,
       allApps?: boolean
     }
-  ): ReturnType<NotifyClient["prepareRegistrationViaRecaps"]> {
+  ): ReturnType<NotifyClient["prepareRegistrationWithRecaps"]> {
     return this
       .notifyClient
-      .prepareRegistrationViaRecaps({
+      .prepareRegistrationWithRecaps({
 	domain: params.domain ?? this.domain,
 	allApps: params.allApps
       });
