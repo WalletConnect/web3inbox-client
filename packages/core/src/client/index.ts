@@ -784,12 +784,16 @@ export class Web3InboxClient {
 
   /**
    * Prepare a registration with recaps for the register function
+   * @typedef {Object} RecapsPreparedRegistration
+   * @property {string} privateIdentityKey
+   * @property {boolean} allApps
+   * @property {Object} CacaoPayload
    *
    * @param {Object} params - register params
    * @param {string} params.domain - Domain to register under.
    * @param {Object} params.recapsObject - Key value object for recaps
    *
-   * @returns {Object} preparedRegistration - Prepared Registration
+   * @returns {RecapsPreparedRegistration} preparedRegistration 
    */
   public prepareRegistrationWithRecaps(
     params: {
