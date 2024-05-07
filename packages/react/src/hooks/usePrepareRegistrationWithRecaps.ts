@@ -27,7 +27,6 @@ export const usePrepareRegistrationWithRecaps = (): UsePrepareRegistrationWithRe
 
   const prepareRegistrationWithRecaps: Web3InboxClient['prepareRegistrationWithRecaps'] = async (params) => {
     setError(null);
-    setIsLoading(true);
 
     return new Promise<any>(async (resolve, reject) => {
       if (!account) {
@@ -43,6 +42,8 @@ export const usePrepareRegistrationWithRecaps = (): UsePrepareRegistrationWithRe
         setError(err.message);
         return reject(err);
       }
+      
+      setIsLoading(true);
 
       return await w3iClient
         .prepareRegistrationWithRecaps(params)
