@@ -783,6 +783,33 @@ export class Web3InboxClient {
   }
 
   /**
+   * Prepare a registration with recaps for the register function
+   * @typedef {Object} RecapsPreparedRegistration
+   * @property {string} privateIdentityKey
+   * @property {boolean} allApps
+   * @property {Object} CacaoPayload
+   *
+   * @param {Object} params - register params
+   * @param {string} params.domain - Domain to register under.
+   * @param {Object} params.recapsObject - Key value object for recaps
+   *
+   * @returns {RecapsPreparedRegistration} preparedRegistration 
+   */
+  public prepareRegistrationWithRecaps(
+    params: {
+      domain?: string,
+      allApps?: boolean
+    }
+  ): ReturnType<NotifyClient["prepareRegistrationWithRecaps"]> {
+    return this
+      .notifyClient
+      .prepareRegistrationWithRecaps({
+	domain: params.domain ?? this.domain,
+	allApps: params.allApps
+      });
+  }
+
+  /**
    * Register account on keyserver, allowing them to subscribe
    *
    * @param {Object} params - register params
